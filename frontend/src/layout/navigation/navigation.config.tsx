@@ -9,8 +9,8 @@ import {
     IconSettings,
     IconLogout,
 } from "../../assets";
-import deelnemerDashboard from "../../pages/deelnemerDashboard/deelnemerDashboard";
-import zorgDashboard from "../../pages/zorgDashboard/zorgDashboard";
+import DeelnemerDashboard from "../../pages/DeelnemerDashboard/deelnemerDashboard";
+import ZorgDashboard from "../../pages/ZorgDashboard/ZorgDashboard";
 import type {NavigationItem} from "../../types/navigation/navigation";
 
 export const navigationItemsMenu: NavigationItem[] = [
@@ -18,7 +18,7 @@ export const navigationItemsMenu: NavigationItem[] = [
         name: "Dashboard",
         path: "/",
         icon: IconDashboard,
-        page: [zorgDashboard(), deelnemerDashboard()],
+        page: [<ZorgDashboard />, <DeelnemerDashboard />],
     },
     {
         name: "Deelnemers",
