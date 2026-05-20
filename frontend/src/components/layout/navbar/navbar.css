@@ -2,12 +2,16 @@
     width: 400px;
     height: 100%;
     transform: skew(-15deg);
-    background: orange;
+    background: #317199;
 }
 
 .right-slider {
     width: 250px;
     height: 75%;
     transform: skew(-15deg);
-    background: yellow;
+    background: #F2880F;
+}
+
+.navbar-content {
+    transform: skew(15deg);
 }
