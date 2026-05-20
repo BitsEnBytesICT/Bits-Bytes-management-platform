@@ -1,0 +1,13 @@
+.left-slider {
+    width: 400px;
+    height: 100%;
+    transform: skew(-15deg);
+    background: orange;
+}
+
+.right-slider {
+    width: 250px;
+    height: 75%;
+    transform: skew(-15deg);
+    background: yellow;
+}
