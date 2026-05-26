@@ -1,9 +1,3 @@
-
-
 export default function Kennisbank() {
-    return (
-        <>
-        Kennisbank
-        </>
-    )
+    return <>Kennisbank</>;
 }

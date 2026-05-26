@@ -1,9 +1,3 @@
-
-
 export default function Servers() {
-    return (
-        <>
-        Servers
-        </>
-    )
+    return <>Servers</>;
 }

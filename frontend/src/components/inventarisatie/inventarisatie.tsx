@@ -1,9 +1,3 @@
-
-
 export default function Inventarisatie() {
-    return (
-        <>
-        Inventarisatie
-        </>
-    )
+    return <>Inventarisatie</>;
 }

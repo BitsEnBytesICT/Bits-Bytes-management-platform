@@ -7,7 +7,7 @@
     "semi": true,
     "quoteProps": "as-needed",
     "bracketSpacing": false,
-    "objectWrap": "collapse",
+    "objectWrap": "preserve",
     "bracketSameLine": true,
     "arrowParens": "avoid",
     "plugins": ["prettier-plugin-classnames", "prettier-plugin-tailwindcss", "prettier-plugin-merge"]

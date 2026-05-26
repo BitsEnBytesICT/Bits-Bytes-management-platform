@@ -2,8 +2,8 @@ import "./navbar.css";
 import {useState} from "react";
 import circleArrowLeft from "../../../assets/circleArrowLeft.png";
 import circleArrowRight from "../../../assets/circleArrowRight.png";
-import { Link } from "react-router-dom";
-import { NavigationLinksLeft, NavigationLinksRight } from "../../../types/navigation/navigation";
+import {Link} from "react-router-dom";
+import {NavigationLinksLeft, NavigationLinksRight} from "../../../types/navigation/navigation";
 
 export default function Navbar({isOpen, setIsOpen}) {
     const [zIndex, setzIndex] = useState("z-0");
@@ -21,23 +21,23 @@ export default function Navbar({isOpen, setIsOpen}) {
         return (
             <>
                 <span
-                    className={`navbar-content mr-[20px] self-end transition-all duration-400 text-white ${!isOpen ? "pointer-events-none opacity-0" : "opacity-100"}`}>
-                        <Link to={`/${content.toLowerCase()}`}>{content}</Link>
+                    className={`navbar-content mr-[20px] self-end text-white transition-all duration-400 ${!isOpen ? "pointer-events-none opacity-0" : "opacity-100"}`}>
+                    <Link to={`/${content.toLowerCase()}`}>{content}</Link>
                 </span>
             </>
         );
-    }
+    };
 
-        const navbarContentRight = (content: string) => {
+    const navbarContentRight = (content: string) => {
         return (
             <>
                 <span
-                    className={`navbar-content ml-[20px] self-start transition-all duration-400 text-white ${!isOpen ? "pointer-events-none opacity-0" : "opacity-100"}`}>
-                        <Link to={`/${content.toLowerCase()}`}>{content}</Link>
+                    className={`navbar-content ml-[20px] self-start text-white transition-all duration-400 ${!isOpen ? "pointer-events-none opacity-0" : "opacity-100"}`}>
+                    <Link to={`/${content.toLowerCase()}`}>{content}</Link>
                 </span>
             </>
         );
-    }
+    };
 
     return (
         <>
@@ -54,7 +54,7 @@ export default function Navbar({isOpen, setIsOpen}) {
                     )}
                 </button>
 
-                { Object.keys(NavigationLinksLeft).map(key => navbarContentLeft(key)) }
+                {Object.keys(NavigationLinksLeft).map(key => navbarContentLeft(key))}
             </div>
             <div
                 onMouseEnter={onToggleNavbarClick}
@@ -68,7 +68,7 @@ export default function Navbar({isOpen, setIsOpen}) {
                         <img src={circleArrowRight} width="40px" height="40px"></img>
                     )}
                 </button>
-                { Object.keys(NavigationLinksRight).map(key => navbarContentRight(key)) }
+                {Object.keys(NavigationLinksRight).map(key => navbarContentRight(key))}
             </div>
         </>
     );

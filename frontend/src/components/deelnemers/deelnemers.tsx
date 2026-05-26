@@ -1,9 +1,3 @@
-
-
 export default function Deelnemers() {
-    return (
-        <>
-        Deelnemers
-        </>
-    )
+    return <>Deelnemers</>;
 }

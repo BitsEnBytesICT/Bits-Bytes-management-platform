@@ -1,7 +1,3 @@
 export default function Plattegrond() {
-    return (
-        <>
-        Plattegrond
-        </>
-    )
+    return <>Plattegrond</>;
 }

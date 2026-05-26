@@ -1,9 +1,3 @@
-
-
 export default function Handtekeningen() {
-    return (
-        <>
-        Handtekeningen
-        </>
-    )
+    return <>Handtekeningen</>;
 }
