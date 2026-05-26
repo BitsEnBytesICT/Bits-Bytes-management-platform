@@ -35,7 +35,7 @@ services:
     command: |
       sh -c "
         set -e
-        ( cd /usr/src/backend && npm run start -- --poll 3000 ) &
+        ( cd /usr/src/backend && npm run start -- --legacy-watch --watch ) &
         wait
       "
     volumes:
