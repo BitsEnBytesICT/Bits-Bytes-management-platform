@@ -16,7 +16,7 @@ export default class UserController implements controllerBase<IUser> {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             age: req.body.age,
-            birthDay: new Date(req.body.bday)
+            birthDay: req.body.bday ? new Date(req.body.bday) : undefined
         });
 
         res.sendStatus(200);
