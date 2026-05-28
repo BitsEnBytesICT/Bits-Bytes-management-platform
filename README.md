@@ -3,6 +3,12 @@ Dit project is het management platform voor bits&amp;bytes
 
 # How to run
 Er is een docker omgeving opgezet. run in de root folder `docker compose up`. Dit zou de frontend en backend moeten starten.
+Als er een nieuwe packages zijn geinstalleerd moet de docker omgeving opnieuw gemaakt worden. Dit doe je door de volgende commands:
+```
+docker compose down -v --rmi all
+docker builder prune -af
+docker compose up
+```
 
 # Main features
 1. Beheren van deelnemers:
