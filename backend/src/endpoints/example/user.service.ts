@@ -13,7 +13,6 @@ export default class UserService implements serviceBase<IUser> {
     //handle data management and receive / send data to dao
     create(user: IUser): void {
         const validationResult = userValidator(user);
-
         if (validationResult.find((r) => r.kind === "error") === undefined) this.dao.create(user);
         else 
             {

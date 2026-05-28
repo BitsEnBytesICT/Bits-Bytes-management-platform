@@ -6,7 +6,7 @@ const validateName = Fun<string, boolean>(name => name.length > 0);
 const validateAbove0 = Fun<number, boolean>(id => id > 0);
 const validateAbove0OrUndefined = Fun<number | undefined, boolean>(id => id === undefined ? true : id > 0);
 const validateBirthday = Fun<Date | undefined, boolean>(bday => 
-    bday === undefined ? true : bday.getFullYear() < 1900 || bday instanceof Date || isNaN(bday) ? false : true);
+    bday === undefined ? true : bday.getFullYear() < 1900 || !(bday instanceof Date) || bday.toString() === "Invalid Date" ? false : true);
 
 export default function userValidator(user: IUser) {
     return validatorPipe(user, ["id", validateAbove0OrUndefined, "id is not valid"], 
