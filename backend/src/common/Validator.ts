@@ -1,15 +1,9 @@
+import { ErrorCodes } from "../types/error/ErrorCodes";
+import IError from "../types/error/IError";
 import { Fun } from "./functor";
 
-export class IError {
-    date: Date;
-    errorMSG: Error;
-    constructor(date: Date, errorMSG: Error) {
-        this.date = date;
-        this.errorMSG = errorMSG;
-    }
-    toString(): string {
-        return `[${this.date.toISOString()}] ${this.errorMSG.message}`;
-    }
+export const assertNever = (x: never): never => {
+  throw new Error("Unexpected value: " + x);
 }
 
 export type Result<a, b> = (
@@ -24,9 +18,9 @@ export const validatorPipe = <a extends object, T extends AllKeysValidators<a>[]
         const [key, validator, errorMSG] = func;
         try {
             if (validator(data[key])) results.push({ kind: "success", value: data[key], key });
-            else results.push({ kind: "error", key, value: data[key], errorMSG: new IError(new Date(), new Error(errorMSG) ) });
+            else results.push({ kind: "error", key, value: data[key], errorMSG: {date: new Date(), errorMSG: new Error(errorMSG), code: ErrorCodes.InvalidData } });
         } catch (error: any) {
-            results.push({ kind: "error", key, value: data[key], errorMSG: new IError(new Date(), new Error(errorMSG) ) });
+            results.push({ kind: "error", key, value: data[key], errorMSG: {date: new Date(), errorMSG: new Error(errorMSG), code: ErrorCodes.InvalidData } });
         }
     });
     return results;

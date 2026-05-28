@@ -15,11 +15,12 @@ export default class UserService implements serviceBase<IUser> {
         const validationResult = userValidator(user);
         if (validationResult.find((r) => r.kind === "error") === undefined) this.dao.create(user);
         else 
-            {
-                const error = validationResult.filter((r) => r.kind === "error").map((error) => error.errorMSG.toString()).join(" ");
-                throw Error(error);
-            }
+        {
+            const error = validationResult.filter((r) => r.kind === "error").map((error) => error.errorMSG);
+            throw error;
+        }
     }
+    
     update(): void {
         throw new Error("Method not implemented.");
     }
