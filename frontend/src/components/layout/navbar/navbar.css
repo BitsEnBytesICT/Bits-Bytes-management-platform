@@ -1,0 +1,17 @@
+.left-slider {
+    width: 400px;
+    height: 100%;
+    transform: skew(-15deg);
+    background: #317199;
+}
+
+.right-slider {
+    width: 300px;
+    height: 90%;
+    transform: skew(-15deg);
+    background: #f2880f;
+}
+
+.navbar-content {
+    transform: skew(15deg);
+}
