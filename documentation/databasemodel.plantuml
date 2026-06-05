@@ -1,0 +1,47 @@
+@startuml
+
+entity Account {
+    * id: number <<primary key>>
+    * firstname: string
+    * lastname: string
+    * role: <<foreign key Permission.role>>
+    * password: string
+}
+
+entity Deelnemer {
+    * id: number <<primary key>>
+    * firstname: string
+    * lastname: string
+    * organisation: string
+    * account: <<foreign key Account.id>>
+    --
+    clockedin: boolean
+}
+
+entity Signature {
+    * id: number <<primry key>>
+    * deelnemerID: number <<foreign key Deelnemer.id>>
+    * date: Date
+    * handtekening: string
+}
+
+entity Attendance {
+    * id: number <<primry key>>
+    * deelnemerID: number <<foreign key Deelnemer.id>>
+    * clockinDate: Date
+    --
+    clockoutDate: Date
+    halfDays: number
+}
+
+entity Permission {
+    * id: number <<primry key>>
+    * role: string
+    * permissions: string
+}
+
+Account ||--|| Permission
+Account ||--|| Deelnemer
+Deelnemer ||--o{ Signature
+Deelnemer ||--o{ Attendance
+@enduml
