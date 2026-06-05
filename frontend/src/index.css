@@ -1,5 +1,35 @@
 @import "tailwindcss";
 
+:root {
+    --color-darkblue: #317199;
+    --color-orange: #f2880f;
+    --color-lightblue: #92d5ff;
+    --color-offwhite: #f7fbff;
+    --sidebar-width: 20rem;
+}
+
+@layer utilities {
+    .bg-offwhite {
+        @apply bg-(--color-offwhite);
+    }
+
+    .bg-orange {
+        @apply bg-(--color-orange);
+    }
+
+    .bg-darkblue {
+        @apply bg-(--color-darkblue);
+    }
+
+    .text-offwhite {
+        @apply text-(--color-offwhite);
+    }
+
+    .text-lightblue {
+        @apply text-(--color-lightblue);
+    }
+}
+
 *,
 :root,
 *::before,
@@ -19,6 +49,10 @@ html {
     font-family: "Nexa", sans-serif;
     font-size: 16px;
     font-weight: 400;
+}
+
+body {
+    background: var(--color-offwhite);
 }
 
 input,
