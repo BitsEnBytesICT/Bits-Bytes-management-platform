@@ -14,34 +14,81 @@ entity Deelnemer {
     * lastname: string
     * organisation: string
     * account: <<foreign key Account.id>>
+    * rfid: string
+    * createdAt: Date
+    * active: boolean
     --
     clockedin: boolean
+    product: string
 }
 
 entity Signature {
-    * id: number <<primry key>>
+    * id: number <<primary key>>
     * deelnemerID: number <<foreign key Deelnemer.id>>
     * date: Date
     * handtekening: string
 }
 
 entity Attendance {
-    * id: number <<primry key>>
+    * id: number <<primary key>>
     * deelnemerID: number <<foreign key Deelnemer.id>>
     * clockinDate: Date
     --
     clockoutDate: Date
-    halfDays: number
+    workDuration: number
 }
 
 entity Permission {
-    * id: number <<primry key>>
+    * id: number <<primary key>>
     * role: string
     * permissions: string
+}
+
+entity Room {
+    * id: number <<primary key>>
+    * name: string
+    * width: number
+    * height: number
+}
+
+entity Walls {
+    * id: number <<primary key>>
+    * xpos: number
+    * ypos: number
+    * height: number
+    * RoomID: number <<foreign key Room.id>>
+}
+
+entity Workplace {
+    * id: number <<primary key>>
+    * xpos: number
+    * ypos: number
+    * RoomID: number <<foreign key Room.id>>
+    * name: string
+    --
+    extraInfo: blob
+}
+
+entity Scedule {
+    * id: number <<primary key>>
+    * name: string
+    * startDate: Date
+    --
+    endDate: Date
+}
+
+entity SceduleDeelnemer {
+    * id: number <<primary key>>
+    * sceduleId: number <<foreign key Scedule.id>>
+    * deelnemerId: number <<foreign key Deelnemer.id>>
 }
 
 Account ||--|| Permission
 Account ||--|| Deelnemer
 Deelnemer ||--o{ Signature
 Deelnemer ||--o{ Attendance
+Deelnemer ||--o{ SceduleDeelnemer
+Scedule ||--o{ SceduleDeelnemer
+Room ||--o{ Walls
+Room ||--o{ Workplace
 @enduml
