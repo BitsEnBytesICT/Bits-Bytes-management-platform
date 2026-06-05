@@ -4,7 +4,7 @@ import UserRouter from './endpoints/example/user.routes';
 import cors from "cors";
 import IError from './types/error/IError';
 import { ErrorCodes } from './types/error/ErrorCodes';
-import { assertNever } from './common/validator';
+import { assertNever } from './common/Validator';
 
 const app: Express = express();
 

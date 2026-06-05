@@ -4,6 +4,7 @@ services:
   bitsenbytesfrontend:
     mem_limit: 512m
     memswap_limit: 512m
+    image: 10.10.1.110:32000/managementplatform:bitsenbytesfrontend_0.0.1
     container_name: bitsenbytesfrontend
     working_dir: /usr/src
     command: |
@@ -30,6 +31,7 @@ services:
   bitsenbytesbackend:
     mem_limit: 512m
     memswap_limit: 512m
+    image: 10.10.1.110:32000/managementplatform:bitsenbytesbackend_0.0.1
     container_name: bitsenbytesbackend
     working_dir: /usr/src
     command: |
