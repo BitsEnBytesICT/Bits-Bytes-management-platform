@@ -1,9 +1,12 @@
-import "./navbar.css";
 import {useState} from "react";
-import circleArrowLeft from "../../../assets/circleArrowLeft.png";
-import circleArrowRight from "../../../assets/circleArrowRight.png";
 import {Link} from "react-router-dom";
-import {NavigationLinksLeft, NavigationLinksRight} from "../../../types/navigation/navigation";
+
+// import {NavigationLinksLeft, NavigationLinksRight} from "../../types/navigation/navigation";
+
+import circleArrowRight from "../../assets/ui/circleArrowRight.png";
+import circleArrowLeft from "../../assets/ui/circleArrowLeft.png";
+
+import "./navbar.css";
 
 export default function Navbar({isOpen, setIsOpen}) {
     const [zIndex, setzIndex] = useState("z-0");
@@ -54,7 +57,7 @@ export default function Navbar({isOpen, setIsOpen}) {
                     )}
                 </button>
 
-                {Object.keys(NavigationLinksLeft).map(key => navbarContentLeft(key))}
+                {/* {Object.keys(NavigationLinksLeft).map(key => navbarContentLeft(key))} */}
             </div>
             <div
                 onMouseEnter={onToggleNavbarClick}
@@ -68,7 +71,7 @@ export default function Navbar({isOpen, setIsOpen}) {
                         <img src={circleArrowRight} width="40px" height="40px"></img>
                     )}
                 </button>
-                {Object.keys(NavigationLinksRight).map(key => navbarContentRight(key))}
+                {/* {Object.keys(NavigationLinksRight).map(key => navbarContentRight(key))} */}
             </div>
         </>
     );

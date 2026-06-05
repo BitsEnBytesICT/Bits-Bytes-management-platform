@@ -1,4 +1,4 @@
-import {NavigationLinksRight, NavigationLinksLeft} from "../../../types/navigation/navigation";
+import {NavigationLinksRight, NavigationLinksLeft} from "../../../../types/navigation/navigation";
 import "./mainBody.css";
 import {Routes, Route} from "react-router-dom";
 
