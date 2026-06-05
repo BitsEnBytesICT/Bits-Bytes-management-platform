@@ -3,8 +3,8 @@ import {StrictMode, useState} from "react";
 import {createRoot} from "react-dom/client";
 import {BrowserRouter} from "react-router-dom";
 
-import MainBody from "./layout//navbar/navbar";
-import Navbar from "./layout//navbar/navbar";
+import MainBody from "./layout/navbar/navbar";
+import Navbar from "./layout/navbar/navbar";
 
 import "./index.css";
 
