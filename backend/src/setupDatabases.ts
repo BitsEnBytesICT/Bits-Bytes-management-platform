@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 
 const db = new Database('database.db', { verbose: console.log });
+db.pragma('foreign_keys = OFF');
 
 const inventoryDB = new Database('inventoryDatabase.db', { verbose: console.log });
 
@@ -106,6 +107,8 @@ inventoryDB.prepare(`CREATE TABLE IF NOT EXISTS Categories (
     name TEXT NOT NULL
     )`
 ).run();
+
+db.pragma('foreign_keys = ON');
 
 const existingDeelnemer = db.prepare('SELECT COUNT(*) as count FROM Deelnemers').get() as any;
 if (existingDeelnemer.count === 0) {

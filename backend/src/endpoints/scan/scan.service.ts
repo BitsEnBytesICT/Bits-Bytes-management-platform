@@ -4,8 +4,10 @@ export interface ScanResult {
     success: boolean;
     action: string;
     message: string;
-    user_name: string;
-    user_department: string;
+    user: {
+        name: string;
+        department: string;
+    };
 }
 
 export default class ScanService {
@@ -23,8 +25,7 @@ export default class ScanService {
                 success: false,
                 action: 'clock_in',
                 message: 'Kaart niet geregistreerd',
-                user_name: '',
-                user_department: '',
+                user: { name: '', department: '' },
             };
         }
 
@@ -42,8 +43,10 @@ export default class ScanService {
                 success: true,
                 action: 'clock_out',
                 message: 'Tot ziens, ' + deelnemer.firstname + '!',
-                user_name: deelnemer.firstname + ' ' + deelnemer.lastname,
-                user_department: deelnemer.organisation,
+                user: {
+                    name: deelnemer.firstname + ' ' + deelnemer.lastname,
+                    department: deelnemer.organisation,
+                },
             };
         }
 
@@ -51,8 +54,10 @@ export default class ScanService {
             success: true,
             action: 'clock_in',
             message: 'Welkom, ' + deelnemer.firstname + '!',
-            user_name: deelnemer.firstname + ' ' + deelnemer.lastname,
-            user_department: deelnemer.organisation,
+            user: {
+                name: deelnemer.firstname + ' ' + deelnemer.lastname,
+                department: deelnemer.organisation,
+            },
         };
     }
 
