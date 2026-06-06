@@ -8,8 +8,7 @@ const inventoryDB = new Database('inventoryDatabase.db', { verbose: console.log 
 
 export const dbQuery = (sql: string, values?: any[]) => {
     try {
-        const statement = db.prepare(sql);
-        return statement.run(values);
+        return db.prepare(sql).run(values);
     } catch (err) {
         throw {
             date: new Date(),
@@ -21,8 +20,7 @@ export const dbQuery = (sql: string, values?: any[]) => {
 
 export const inventoryDBQuery = (sql: string, values?: any[]) => {
     try {
-        const statement = inventoryDB.prepare(sql);
-        return statement.run(values);
+        return inventoryDB.prepare(sql).run(values);
     } catch (err) {
         throw {
             date: new Date(),
