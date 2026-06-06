@@ -42,6 +42,10 @@ app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
                 responseData.push(error.errorMSG.message);
                 res.status(500);
                 continue;
+            case ErrorCodes.sqlError:
+                responseData.push(error.errorMSG.message);
+                res.status(500);
+                continue;
             default:
                 assertNever(error.code);
                 continue;

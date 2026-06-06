@@ -26,7 +26,7 @@ entity Signature {
     * id: number <<primary key>>
     * deelnemerID: number <<foreign key Deelnemer.id>>
     * date: Date
-    * handtekening: string
+    * signature: string
 }
 
 entity Attendance {
@@ -51,7 +51,7 @@ entity Room {
     * height: number
 }
 
-entity Walls {
+entity Wall {
     * id: number <<primary key>>
     * xpos: number
     * ypos: number
@@ -89,6 +89,6 @@ Deelnemer ||--o{ Signature
 Deelnemer ||--o{ Attendance
 Deelnemer ||--o{ SceduleDeelnemer
 Scedule ||--o{ SceduleDeelnemer
-Room ||--o{ Walls
+Room ||--o{ Wall
 Room ||--o{ Workplace
 @enduml
