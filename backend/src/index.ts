@@ -4,7 +4,7 @@ import UserRouter from './endpoints/example/user.routes';
 import cors from "cors";
 import IError from './types/error/IError';
 import { ErrorCodes } from './types/error/ErrorCodes';
-import { assertNever } from './common/validator';
+import { assertNever } from './common/Validator';
 
 const app: Express = express();
 
@@ -39,6 +39,10 @@ app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
                 res.status(422);
                 continue;
             case ErrorCodes.Unknown:
+                responseData.push(error.errorMSG.message);
+                res.status(500);
+                continue;
+            case ErrorCodes.sqlError:
                 responseData.push(error.errorMSG.message);
                 res.status(500);
                 continue;
