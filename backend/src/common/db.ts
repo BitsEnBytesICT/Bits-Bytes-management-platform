@@ -18,6 +18,30 @@ export const dbQuery = (sql: string, values?: any[]) => {
     }
 }
 
+export const dbGet = (sql: string, values?: any[]) => {
+    try {
+        return db.prepare(sql).get(values);
+    } catch (err) {
+        throw {
+            date: new Date(),
+            errorMSG: err,
+            code: ErrorCodes.sqlError
+        } as IError
+    }
+}
+
+export const dbAll = (sql: string, values?: any[]) => {
+    try {
+        return db.prepare(sql).all(values);
+    } catch (err) {
+        throw {
+            date: new Date(),
+            errorMSG: err,
+            code: ErrorCodes.sqlError
+        } as IError
+    }
+}
+
 export const inventoryDBQuery = (sql: string, values?: any[]) => {
     try {
         return inventoryDB.prepare(sql).run(values);

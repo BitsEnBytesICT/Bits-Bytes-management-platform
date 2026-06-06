@@ -106,3 +106,18 @@ inventoryDB.prepare(`CREATE TABLE IF NOT EXISTS Categories (
     name TEXT NOT NULL
     )`
 ).run();
+
+const existingDeelnemer = db.prepare('SELECT COUNT(*) as count FROM Deelnemers').get() as any;
+if (existingDeelnemer.count === 0) {
+    db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('admin', 'all');
+    db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('medewerker', 'clockin');
+
+    db.prepare("INSERT INTO Accounts (firstname, lastname, role, password) VALUES (?, ?, ?, ?)").run('Systeem', 'Admin', 'admin', 'changeme');
+
+    const now = new Date().toISOString();
+    db.prepare("INSERT INTO Deelnemers (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, product) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Jan', 'de Vries', 'IT Afdeling', 1, '11F3EF12', now, 1, 0, 'Develop');
+    db.prepare("INSERT INTO Deelnemers (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, product) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Maria', 'Jansen', 'HR', 1, 'AABBCCDD', now, 1, 1, 'Zorg');
+    db.prepare("INSERT INTO Deelnemers (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, product) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Peter', 'Bakker', 'Facilitair', 1, '98765432', now, 1, 0, 'Dagbesteding');
+
+    console.log('Seed data inserted');
+}

@@ -1,10 +1,11 @@
 import express, { Express, NextFunction, Request, Response } from 'express';
 import { AddressInfo } from "net";
-import UserRouter from './endpoints/example/user.routes';
 import cors from "cors";
-import IError from './types/error/IError';
 import { ErrorCodes } from './types/error/ErrorCodes';
-import { assertNever } from './common/Validator';
+import UserRouter from './endpoints/example/user.routes';
+import HealthRouter from './endpoints/health/health.routes';
+import ScanRouter from './endpoints/scan/scan.routes';
+import './setupDatabases';
 
 const app: Express = express();
 
@@ -23,36 +24,40 @@ app.use(cors({
     credentials: true,
 }));
 
-app.use(express.json({ limit: "5kb" }));
-app.use(express.urlencoded({ extended: true, limit: "5kb" }));
+app.use(express.json({ limit: "200kb" }));
+app.use(express.urlencoded({ extended: true, limit: "200kb" }));
 app.set('port', process.env.PORT || 3000);
 
+app.use(HealthRouter);
+app.use(ScanRouter);
 app.use(UserRouter);
 
-app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
-    console.log(err)
-    let responseData = [];
-    for (const error of err) {
-        switch (error.code) {
-            case ErrorCodes.InvalidData:
-                responseData.push(error.errorMSG.message);
-                res.status(422);
-                continue;
-            case ErrorCodes.Unknown:
-                responseData.push(error.errorMSG.message);
-                res.status(500);
-                continue;
-            case ErrorCodes.sqlError:
-                responseData.push(error.errorMSG.message);
-                res.status(500);
-                continue;
-            default:
-                assertNever(error.code);
-                continue;
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    console.error(err);
+    if (Array.isArray(err)) {
+        let responseData: string[] = [];
+        for (const error of err) {
+            switch (error.code) {
+                case ErrorCodes.InvalidData:
+                    responseData.push(error.errorMSG.message);
+                    res.status(422);
+                    continue;
+                case ErrorCodes.Unknown:
+                    responseData.push(error.errorMSG.message);
+                    res.status(500);
+                    continue;
+                case ErrorCodes.sqlError:
+                    responseData.push(error.errorMSG.message);
+                    res.status(500);
+                    continue;
+                default:
+                    continue;
+            }
         }
+        res.json(responseData);
+    } else {
+        res.status(500).json({ success: false, message: err?.message || 'Internal server error' });
     }
-
-    res.json(responseData);
 });
 
 const server = app.listen(app.get('port'), function () {
