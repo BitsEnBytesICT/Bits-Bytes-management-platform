@@ -4,6 +4,8 @@
   },
   "main": "index.ts",
   "dependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "better-sqlite3": "^12.10.0",
     "casbin": "^5.50.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
