@@ -1,14 +1,12 @@
+import { ErrorCodes } from '../../types/error/ErrorCodes';
+import IError from '../../types/error/IError';
+import IDeelnemer from '../../types/deelnemer/IDeelnemer';
+import IAttendance from '../../types/attendance/IAttendance';
+import ISignature from '../../types/signature/ISignature';
+import { ScanResult } from '../../types/scan/ScanResult';
+import attendanceValidator from '../../validators/attendance/attendanceValidator';
+import signatureValidator from '../../validators/signature/signatureValidator';
 import ScanDao from './scan.dao';
-
-export interface ScanResult {
-    success: boolean;
-    action: string;
-    message: string;
-    user: {
-        name: string;
-        department: string;
-    };
-}
 
 export default class ScanService {
     private dao: ScanDao;
@@ -17,7 +15,29 @@ export default class ScanService {
         this.dao = new ScanDao();
     }
 
+    private validateRfid(rfid_uid: string): void {
+        if (typeof rfid_uid !== 'string' || rfid_uid.length === 0) {
+            throw {
+                date: new Date(),
+                errorMSG: new Error('rfid_uid is required'),
+                code: ErrorCodes.InvalidData,
+            } as IError;
+        }
+    }
+
+    private validateSignature(signature: string): void {
+        if (typeof signature !== 'string' || signature.length === 0) {
+            throw {
+                date: new Date(),
+                errorMSG: new Error('signature is required'),
+                code: ErrorCodes.InvalidData,
+            } as IError;
+        }
+    }
+
     processScan(rfid_uid: string): ScanResult {
+        this.validateRfid(rfid_uid);
+
         const deelnemer = this.dao.findDeelnemerByRFID(rfid_uid);
 
         if (!deelnemer) {
@@ -25,7 +45,6 @@ export default class ScanService {
                 success: false,
                 action: 'clock_in',
                 message: 'Kaart niet geregistreerd',
-                user: { name: '', department: '' },
             };
         }
 
@@ -36,8 +55,25 @@ export default class ScanService {
             const clockin = new Date(openAttendance.clockinDate).getTime();
             const clockout = new Date(now).getTime();
             const durationMinutes = Math.round((clockout - clockin) / 60000);
-            this.dao.updateAttendanceClockOut(openAttendance.id!, now, durationMinutes);
-            this.dao.setDeelnemerClockedIn(deelnemer.id!, 0);
+
+            const attendanceUpdate: IAttendance = {
+                id: openAttendance.id,
+                deelnemerID: deelnemer.id!,
+                clockinDate: openAttendance.clockinDate,
+                clockoutDate: now,
+                workDuration: durationMinutes,
+            };
+
+            const validationResult = attendanceValidator(attendanceUpdate);
+            if (validationResult.find((r) => r.kind === 'error') === undefined) {
+                this.dao.updateAttendanceClockOut(attendanceUpdate);
+                this.dao.setDeelnemerClockedIn(deelnemer.id!, 0);
+            } else {
+                const errors = validationResult
+                    .filter((r) => r.kind === 'error')
+                    .map((error) => error.errorMSG);
+                throw errors;
+            }
 
             return {
                 success: true,
@@ -61,19 +97,56 @@ export default class ScanService {
         };
     }
 
-    processClockInWithSignature(rfid_uid: string, signature: string): boolean {
+    processClockInWithSignature(rfid_uid: string, signature: string): void {
+        this.validateRfid(rfid_uid);
+        this.validateSignature(signature);
+
         const deelnemer = this.dao.findDeelnemerByRFID(rfid_uid);
-        if (!deelnemer) return false;
+        if (!deelnemer) {
+            throw {
+                date: new Date(),
+                errorMSG: new Error('Kaart niet geregistreerd'),
+                code: ErrorCodes.InvalidData,
+            } as IError;
+        }
 
         const now = new Date().toISOString();
-        this.dao.createAttendance(deelnemer.id!, now);
-        this.dao.setDeelnemerClockedIn(deelnemer.id!, 1);
-        this.dao.createSignature(deelnemer.id!, now, signature);
+        const attendance: IAttendance = {
+            deelnemerID: deelnemer.id!,
+            clockinDate: now,
+        };
 
-        return true;
+        const attendanceCheck = attendanceValidator(attendance);
+        if (attendanceCheck.find((r) => r.kind === 'error') !== undefined) {
+            const errors = attendanceCheck
+                .filter((r) => r.kind === 'error')
+                .map((error) => error.errorMSG);
+            throw errors;
+        }
+
+        this.dao.createAttendance(attendance);
+        this.dao.setDeelnemerClockedIn(deelnemer.id!, 1);
+
+        const sig: ISignature = {
+            deelnemerID: deelnemer.id!,
+            date: now,
+            signature,
+        };
+
+        const sigCheck = signatureValidator(sig);
+        if (sigCheck.find((r) => r.kind === 'error') !== undefined) {
+            const errors = sigCheck
+                .filter((r) => r.kind === 'error')
+                .map((error) => error.errorMSG);
+            throw errors;
+        }
+
+        this.dao.createSignature(sig);
     }
 
     fetchLast30Days(rfid_uid: string): string[] {
+        this.validateRfid(rfid_uid);
+
         const deelnemer = this.dao.findDeelnemerByRFID(rfid_uid);
         if (!deelnemer) return [];
 

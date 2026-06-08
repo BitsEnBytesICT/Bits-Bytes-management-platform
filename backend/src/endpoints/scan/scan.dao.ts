@@ -1,6 +1,7 @@
 import { dbQuery, dbGet, dbAll } from '../../common/db';
-import IDeelnemer from '../../types/deelnemer';
-import IAttendance from '../../types/attendance';
+import IDeelnemer from '../../types/deelnemer/IDeelnemer';
+import IAttendance from '../../types/attendance/IAttendance';
+import ISignature from '../../types/signature/ISignature';
 
 export default class ScanDao {
 
@@ -12,12 +13,12 @@ export default class ScanDao {
         return dbGet('SELECT * FROM Attendances WHERE deelnemerID = ? AND clockoutDate IS NULL ORDER BY clockinDate DESC LIMIT 1', [deelnemerID]) as IAttendance | undefined;
     }
 
-    createAttendance(deelnemerID: number, clockinDate: string): void {
-        dbQuery('INSERT INTO Attendances (deelnemerID, clockinDate) VALUES (?, ?)', [deelnemerID, clockinDate]);
+    createAttendance(attendance: IAttendance): void {
+        dbQuery('INSERT INTO Attendances (deelnemerID, clockinDate) VALUES (?, ?)', [attendance.deelnemerID, attendance.clockinDate]);
     }
 
-    updateAttendanceClockOut(attendanceID: number, clockoutDate: string, workDuration: number): void {
-        dbQuery('UPDATE Attendances SET clockoutDate = ?, workDuration = ? WHERE id = ?', [clockoutDate, workDuration, attendanceID]);
+    updateAttendanceClockOut(attendance: IAttendance): void {
+        dbQuery('UPDATE Attendances SET clockoutDate = ?, workDuration = ? WHERE id = ?', [attendance.clockoutDate, attendance.workDuration, attendance.id]);
     }
 
     setDeelnemerClockedIn(deelnemerID: number, clockedin: number): void {
@@ -35,7 +36,7 @@ export default class ScanDao {
         return rows.map(r => r.date);
     }
 
-    createSignature(deelnemerID: number, date: string, signature: string): void {
-        dbQuery('INSERT INTO Signature (deelnemerID, date, signature) VALUES (?, ?, ?)', [deelnemerID, date, signature]);
+    createSignature(signature: ISignature): void {
+        dbQuery('INSERT INTO Signatures (deelnemerID, date, signature) VALUES (?, ?, ?)', [signature.deelnemerID, signature.date, signature.signature]);
     }
 }

@@ -7,6 +7,6 @@ export default interface IDeelnemer {
     rfid: string;
     createdAt: string;
     active: number;
-    clockedin: number | null;
-    product: string | null;
+    clockedin?: number;
+    product?: string;
 }

@@ -40,8 +40,8 @@ db.prepare(`CREATE TABLE IF NOT EXISTS Deelnemers (
     )`
 ).run();
 
-db.prepare(`DROP TABLE IF EXISTS Signature`).run();
-db.prepare(`CREATE TABLE IF NOT EXISTS Signature (
+db.prepare(`DROP TABLE IF EXISTS Signatures`).run();
+db.prepare(`CREATE TABLE IF NOT EXISTS Signatures (
     id INTEGER PRIMARY KEY,
     deelnemerID INTEGER NOT NULL,
     date TEXT NOT NULL,
