@@ -32,7 +32,6 @@ export default class DeelnemersService {
             },
         );
 
-        console.log(data);
         return data;
     };
 }
