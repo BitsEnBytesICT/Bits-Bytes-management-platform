@@ -1,12 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+@import url("https://fonts.cdnfonts.com/css/future-forces");
 
 @import "tailwindcss";
 
 :root {
-    --color-darkblue: #317199;
     --color-orange: #f2880f;
+    --color-lightorange: #ffd6a7;
+
+    --color-darkblue: #317199;
     --color-lightblue: #92d5ff;
+
     --color-offwhite: #f7fbff;
+
     --sidebar-width: 20rem;
 }
 
@@ -34,7 +39,25 @@
     .text-lightblue {
         @apply text-(--color-lightblue);
     }
+
+    .bg-lightorange {
+        @apply text-(--color-lightorange);
+    }
 }
+
+/* @font-face {
+    font-family: "Future Forces";
+    src: url("../assets/fonts/FutureForces.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Outfit";
+    src: url("../assets/fonts/Outfit-Variable.ttf") format("truetype");
+    font-weight: 100 900;
+    font-style: normal;
+} */
 
 *,
 :root,
@@ -47,13 +70,9 @@
     overflow-x: hidden;
 
     font-size: 16px;
-
-    /* background-color: black; */
 }
 
 html {
-    /* font: Outfit on Google Fonts */
-
     font-family: "Outfit", sans-serif;
     font-size: 16px;
     font-weight: 400;

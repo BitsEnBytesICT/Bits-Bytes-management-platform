@@ -1,8 +1,6 @@
 // ui
-export {default as ShapeDesktopLeft} from "./ui/shape-desktop-left.svg";
-export {default as ShapeDesktopRight} from "./ui/shape-desktop-right.svg";
-export {default as ShapeMobileLeft} from "./ui/shape-mobile-left.svg";
-export {default as ShapeMobileRight} from "./ui/shape-mobile-right.svg";
+export {default as ShapeLeft} from "./ui/shape-left.svg";
+export {default as ShapeRight} from "./ui/shape-right.svg";
 export {default as ButtonMenu} from "./ui/button-menu.svg";
 
 export {default as IconDashboard} from "./ui/icon-dashboard.svg";

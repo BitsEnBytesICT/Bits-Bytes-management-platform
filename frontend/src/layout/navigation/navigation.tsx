@@ -5,17 +5,11 @@ import {navigationItemsMenu, navigationItemsBeheer, navigationItemsAccount} from
 
 import "./navigation.scss";
 
-import {
-    ShapeMobileLeft,
-    ShapeMobileRight,
-    ShapeDesktopLeft,
-    ShapeDesktopRight,
-    ButtonMenu,
-    LogoWhite,
-} from "../../assets";
+import {ShapeLeft, ShapeRight, ButtonMenu, LogoWhite} from "../../assets";
 
 export default function Navigation() {
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
+    const [versionNumber, setVersionNumber] = useState("0.0.0"); // get the version number through .env?
 
     return (
         <>
@@ -25,19 +19,33 @@ export default function Navigation() {
                     onMouseEnter={() => setIsOpen(true)}
                     onMouseLeave={() => setIsOpen(false)}>
                     <div className="container_logo">
-                        <NavLink to={"/"} className="logo">
+                        <div className="logo">
                             <img alt="Bits & Bytes" src={LogoWhite} className="image_Logo" />
-                        </NavLink>
+                        </div>
 
                         <div className="button_toggle" onClick={() => setIsOpen(prev => !prev)}>
                             <img src={ButtonMenu} className={`icon_Menu ${isOpen ? "rotate" : ""}`} />
+
+                            <svg
+                                className={`icon_Arrow ${isOpen ? "disappear" : ""}`}
+                                width="12"
+                                height="19"
+                                viewBox="0 0 12 19"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M0.864258 17.9028L9.86426 9.51617L0.864258 0.902832"
+                                    stroke="currentColor"
+                                    stroke-width="2.5"
+                                />
+                            </svg>
                         </div>
                     </div>
 
                     <div className="container_nav">
                         <nav>
                             <div className="section_Menu">
-                                <div className="nav_text">Menu</div>
+                                <div className="section_text">Menu</div>
 
                                 {navigationItemsMenu.map(item => (
                                     <div className="nav_item" key={item.path}>
@@ -53,7 +61,7 @@ export default function Navigation() {
                             </div>
 
                             <div className="section_Beheer">
-                                <div className="nav_text">Beheer</div>
+                                <div className="section_text">Beheer</div>
 
                                 {navigationItemsBeheer.map(item => (
                                     <div className="nav_item" key={item.path}>
@@ -69,7 +77,7 @@ export default function Navigation() {
                             </div>
 
                             <div className="section_Account">
-                                <div className="nav_text">Account</div>
+                                <div className="section_text">Account</div>
 
                                 {navigationItemsAccount.map(item => (
                                     <div className="nav_item" key={item.path}>
@@ -85,69 +93,24 @@ export default function Navigation() {
                             </div>
                         </nav>
 
-                        <img src={ShapeMobileLeft} className="image_shapeLeft" />
+                        <img src={ShapeLeft} className="image_ShapeLeft" />
                     </div>
                 </div>
 
                 <div className={`container_nav_right ${isOpen ? "open" : ""}`}>
                     <div className="container_flex">
-                        <img src={ShapeMobileRight} className="image_shapeRight" />
+                        <img src={ShapeRight} className="image_ShapeRight" />
 
-                        <div className="container_space" />
+                        <div className="container_space">
+                            <div className="container_info">
+                                <div className="copyright_text">© {new Date().getFullYear()} Bits & Bytes</div>
+
+                                <div className="version_text">Management {versionNumber}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            {/* Mobile Navigation */}
-            {/* <div className="fixed flex h-fit flex-row justify-between sm:hidden">
-                <div
-                    className={`relative top-0 flex h-screen grow-0 gap-0 transition-all duration-400 ${isOpen ? "translate-x-[0vw]" : "translate-x-[-65vw]"}`}>
-                    <div className="bg-darkblue w-[70vw]"></div>
-
-                    <button
-                        onClick={() => setIsOpen(prev => !prev)}
-                        className="absolute top-[3.5%] right-[12.5%] z-20 cursor-pointer">
-                        <img
-                            src={ButtonMenu}
-                            className={`h-fit w-fit transition-transform duration-400 ${isOpen ? "rotate-180" : ""}`}
-                        />
-                    </button>
-
-                    <img src={ShapeMobileLeft} className="shrink-0 select-none" />
-                </div>
-
-                <div
-                    className={`relative top-0 -z-10 flex h-screen grow-0 gap-0 transition-all duration-400 ${isOpen ? "translate-x-[-70vw]" : "translate-x-[0vw]"}`}>
-                    <img src={ShapeMobileRight} className="shrink-0 select-none" />
-                    <div className="bg-orange w-[50rem]" />
-                </div>
-            </div> */}
-
-            {/* Button Menu - Fixed, not inside containers */}
-
-            {/* Temporary toggle button */}
-            {/* <div
-                className="absolute top-0 z-15 h-[4rem] w-[4rem] cursor-pointer bg-amber-400"
-                onClick={() => setIsOpen(prev => !prev)}>
-                {isOpen ? (
-                    <span className="absolute top-1/2 left-1/2 text-xl text-white">True</span>
-                ) : (
-                    <span className="absolute top-1/2 left-1/2 text-xl text-white">False</span>
-                )}
-            </div> */}
-
-            {/* Desktop Navigation
-            <div className="hidden h-screen w-screen flex-row justify-between md:flex">
-                <div className="flex h-screen gap-0">
-                    <div className="bg-darkblue h-screen w-[10.625rem]" />
-                    <img src={ShapeDesktopLeft} className="relative right-[1px] h-screen w-auto select-none" />
-                </div>
-
-                <div className="flex h-screen gap-0">
-                    <img src={ShapeDesktopRight} className="relative left-[1px] h-screen w-auto select-none" />
-                    <div className="bg-orange h-screen w-[10.625rem]" />
-                </div>
-            </div> */}
         </>
     );
 }
