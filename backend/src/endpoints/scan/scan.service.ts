@@ -3,7 +3,7 @@ import IError from '../../types/error/IError';
 import IDeelnemer from '../../types/deelnemer/IDeelnemer';
 import IAttendance from '../../types/attendance/IAttendance';
 import ISignature from '../../types/signature/ISignature';
-import { ScanResult } from '../../types/scan/ScanResult';
+import IScanResult from '../../types/scan/IScanResult';
 import attendanceValidator from '../../validators/attendance/attendanceValidator';
 import signatureValidator from '../../validators/signature/signatureValidator';
 import ScanDao from './scan.dao';
@@ -35,7 +35,7 @@ export default class ScanService {
         }
     }
 
-    processScan(rfid_uid: string): ScanResult {
+    processScan(rfid_uid: string): IScanResult {
         this.validateRfid(rfid_uid);
 
         const deelnemer = this.dao.findDeelnemerByRFID(rfid_uid);

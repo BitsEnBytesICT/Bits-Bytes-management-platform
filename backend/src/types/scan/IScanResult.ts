@@ -1,4 +1,4 @@
-export interface ScanResult {
+export default interface IScanResult {
     success: boolean;
     action: string;
     message: string;
