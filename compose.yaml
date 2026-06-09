@@ -1,0 +1,69 @@
+name: bitsenbytes
+
+services:
+  bitsenbytesfrontend:
+    mem_limit: 512m
+    memswap_limit: 512m
+    container_name: bitsenbytesfrontend
+    working_dir: /usr/src
+    command: |
+      sh -c "
+        set -e
+        ( cd /usr/src/frontend && npm run dev -- --host 0.0.0.0 ) &
+        wait
+      "
+    volumes:
+      - ./frontend:/usr/src/frontend:cached
+      - bitsenbytesfrontend_node_modules:/usr/src/frontend/node_modules
+    build:
+      context: .
+      target: bitsenbytesfrontend
+    ports:
+      - 5173:5173
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=1536
+    expose:
+      - 5173
+    networks:
+      default:
+        ipv4_address: 100.0.200.101
+  bitsenbytesbackend:
+    mem_limit: 512m
+    memswap_limit: 512m
+    container_name: bitsenbytesbackend
+    working_dir: /usr/src
+    command: |
+      sh -c "
+        set -e
+        ( cd /usr/src/backend && npm run start -- --legacy-watch --watch ) &
+        wait
+      "
+    volumes:
+      - ./backend:/usr/src/backend:cached
+      - bitsenbytesbackend_node_modules:/usr/src/backend/node_modules
+    build:
+      context: .
+      target: bitsenbytesbackend
+    ports:
+      - 3000:3000
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=1536
+    expose:
+      - 3000
+    networks:
+      default:
+        ipv4_address: 100.0.200.100
+        
+volumes:
+    bitsenbytesfrontend_node_modules:
+    bitsenbytesbackend_node_modules:
+      
+networks:
+  default:
+    name: bitsenbytesnetwork
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 100.0.200.0/24
+          gateway: 100.0.200.1
