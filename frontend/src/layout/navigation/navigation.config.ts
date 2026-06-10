@@ -9,14 +9,9 @@ import {
     IconSettings,
     IconLogout,
 } from "../../assets";
-<<<<<<< HEAD
-
-export const navigationItemsMenu = [
-=======
 import type {NavigationItem} from "../../types/navigation/navigation";
 
 export const navigationItemsMenu: NavigationItem[] = [
->>>>>>> de66e41a6e0b2a0376da269a59511afcf76210f5
     {
         name: "Dashboard",
         path: "/",
