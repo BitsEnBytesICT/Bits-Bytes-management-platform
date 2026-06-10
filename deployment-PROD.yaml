@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bitsenbytes-frontend-prod
+  namespace: bitsenbytes-management-platform
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bitsenbytes-frontend-prod
+  template:
+    metadata:
+      labels:
+        app: bitsenbytes-frontend-prod
+    spec:
+      containers:
+        - name: bitsenbytes-frontend-prod
+          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesfrontendPROD_0.0.2
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bitsenbytes-frontend-prod
+  namespace: bitsenbytes-management-platform
+spec:
+  selector:
+    app: bitsenbytes-frontend-prod
+  ports:
+    - port: 8080
+      targetPort: 80
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bitsenbytes-frontend-prod
+  namespace: bitsenbytes-management-platform
+spec:
+  rules:
+    - host: management.bitsenbytes.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bitsenbytes-frontend-prod
+                port:
+                  number: 8080

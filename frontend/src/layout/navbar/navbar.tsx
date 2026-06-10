@@ -1,5 +1,4 @@
 import {useState} from "react";
-import {Link} from "react-router-dom";
 
 // import {NavigationLinksLeft, NavigationLinksRight} from "../../types/navigation/navigation";
 
@@ -20,27 +19,27 @@ export default function Navbar({isOpen, setIsOpen}) {
         if (!isOpen && e.propertyName === property) setzIndex("z-0");
     };
 
-    const navbarContentLeft = (content: string) => {
-        return (
-            <>
-                <span
-                    className={`navbar-content mr-[20px] self-end text-white transition-all duration-400 ${!isOpen ? "pointer-events-none opacity-0" : "opacity-100"}`}>
-                    <Link to={`/${content.toLowerCase()}`}>{content}</Link>
-                </span>
-            </>
-        );
-    };
+    // const navbarContentLeft = (content: string) => {
+    //     return (
+    //         <>
+    //             <span
+    //                 className={`navbar-content mr-[20px] self-end text-white transition-all duration-400 ${!isOpen ? "pointer-events-none opacity-0" : "opacity-100"}`}>
+    //                 <Link to={`/${content.toLowerCase()}`}>{content}</Link>
+    //             </span>
+    //         </>
+    //     );
+    // };
 
-    const navbarContentRight = (content: string) => {
-        return (
-            <>
-                <span
-                    className={`navbar-content ml-[20px] self-start text-white transition-all duration-400 ${!isOpen ? "pointer-events-none opacity-0" : "opacity-100"}`}>
-                    <Link to={`/${content.toLowerCase()}`}>{content}</Link>
-                </span>
-            </>
-        );
-    };
+    // const navbarContentRight = (content: string) => {
+    //     return (
+    //         <>
+    //             <span
+    //                 className={`navbar-content ml-[20px] self-start text-white transition-all duration-400 ${!isOpen ? "pointer-events-none opacity-0" : "opacity-100"}`}>
+    //                 <Link to={`/${content.toLowerCase()}`}>{content}</Link>
+    //             </span>
+    //         </>
+    //     );
+    // };
 
     return (
         <>

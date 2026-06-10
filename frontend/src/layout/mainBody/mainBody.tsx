@@ -1,4 +1,4 @@
-import {Routes, Route} from "react-router-dom";
+import {Routes} from "react-router-dom";
 
 // import {NavigationLinksRight, NavigationLinksLeft} from "../../types/navigation/navigation";
 

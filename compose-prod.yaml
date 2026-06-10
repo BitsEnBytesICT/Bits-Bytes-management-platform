@@ -1,0 +1,13 @@
+name: bitsenbytesPROD
+
+services:
+  bitsenbytesfrontendPROD:
+    mem_limit: 512m
+    memswap_limit: 512m
+    image: 10.10.1.110:32000/managementplatform:bitsenbytesfrontendPROD_0.0.2
+    container_name: bitsenbytesfrontendPROD
+    build:
+      context: .
+      target: bitsenbytesfrontendPROD
+    ports:
+      - 8080:80
