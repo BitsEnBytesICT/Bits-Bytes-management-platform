@@ -4,5 +4,5 @@ export interface NavigationItem {
     name: string;
     path: string;
     icon: string;
-    component?: JSX.Element;
+    page?: JSX.Element | JSX.Element[];
 }

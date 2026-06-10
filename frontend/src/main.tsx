@@ -6,11 +6,14 @@ import {BrowserRouter} from "react-router-dom";
 import Navigation from "./layout/navigation/navigation";
 
 import "./index.css";
+import MainBody from "./layout/mainBody/mainBody";
 
 function App() {
+    const [isOpen, setIsOpen] = useState(false);
     return (
         <>
-            <Navigation />
+            <MainBody isOpen={isOpen} setIsOpen={setIsOpen} />
+            <Navigation isOpen={isOpen} setIsOpen={setIsOpen} />
         </>
     );
 }

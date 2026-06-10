@@ -13,32 +13,6 @@
     --color-offwhite: #f7fbff;
 }
 
-@layer utilities {
-    .bg-offwhite {
-        @apply bg-(--color-offwhite);
-    }
-
-    .bg-orange {
-        @apply bg-(--color-orange);
-    }
-
-    .bg-darkblue {
-        @apply bg-(--color-darkblue);
-    }
-
-    .text-offwhite {
-        @apply text-(--color-offwhite);
-    }
-
-    .text-lightblue {
-        @apply text-(--color-lightblue);
-    }
-
-    .bg-lightorange {
-        @apply text-(--color-lightorange);
-    }
-}
-
 /* @font-face {
     font-family: "Future Forces";
     src: url("../assets/fonts/FutureForces.ttf") format("truetype");

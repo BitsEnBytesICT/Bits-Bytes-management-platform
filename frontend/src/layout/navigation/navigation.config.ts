@@ -9,6 +9,8 @@ import {
     IconSettings,
     IconLogout,
 } from "../../assets";
+import deelnemerDashboard from "../../pages/deelnemerDashboard/deelnemerDashboard";
+import zorgDashboard from "../../pages/zorgDashboard/zorgDashboard";
 import type {NavigationItem} from "../../types/navigation/navigation";
 
 export const navigationItemsMenu: NavigationItem[] = [
@@ -16,6 +18,7 @@ export const navigationItemsMenu: NavigationItem[] = [
         name: "Dashboard",
         path: "/",
         icon: IconDashboard,
+        page: [zorgDashboard(), deelnemerDashboard()],
     },
     {
         name: "Deelnemers",
@@ -44,11 +47,7 @@ export const navigationItemsMenu: NavigationItem[] = [
     },
 ];
 
-<<<<<<< HEAD
-export const navigationItemsBeheer = [
-=======
 export const navigationItemsBeheer: NavigationItem[] = [
->>>>>>> de66e41a6e0b2a0376da269a59511afcf76210f5
     {
         name: "VM's",
         path: "/VMs",
@@ -61,11 +60,7 @@ export const navigationItemsBeheer: NavigationItem[] = [
     },
 ];
 
-<<<<<<< HEAD
-export const navigationItemsAccount = [
-=======
 export const navigationItemsAccount: NavigationItem[] = [
->>>>>>> de66e41a6e0b2a0376da269a59511afcf76210f5
     {
         name: "Instellingen",
         path: "/settings",
