@@ -11,12 +11,15 @@
     --color-lightblue: #92d5ff;
 
     --color-offwhite: #f7fbff;
+<<<<<<< HEAD
 
     --sidebar-width: 20rem;
 }
 
 @theme {
     --breakpoint-sm: 500px;
+=======
+>>>>>>> de66e41a6e0b2a0376da269a59511afcf76210f5
 }
 
 @layer utilities {

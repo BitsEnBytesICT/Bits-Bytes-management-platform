@@ -2,7 +2,10 @@
 export {default as ShapeLeft} from "./ui/shape-left.svg";
 export {default as ShapeRight} from "./ui/shape-right.svg";
 export {default as ButtonMenu} from "./ui/button-menu.svg";
+<<<<<<< HEAD
 
+=======
+>>>>>>> de66e41a6e0b2a0376da269a59511afcf76210f5
 export {default as IconDashboard} from "./ui/icon-dashboard.svg";
 export {default as IconHandtekeningen} from "./ui/icon-handtekeningen.svg";
 export {default as IconInventarisatie} from "./ui/icon-inventarisatie.svg";

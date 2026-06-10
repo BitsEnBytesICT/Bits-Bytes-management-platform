@@ -9,8 +9,14 @@ import {
     IconSettings,
     IconLogout,
 } from "../../assets";
+<<<<<<< HEAD
 
 export const navigationItemsMenu = [
+=======
+import type {NavigationItem} from "../../types/navigation/navigation";
+
+export const navigationItemsMenu: NavigationItem[] = [
+>>>>>>> de66e41a6e0b2a0376da269a59511afcf76210f5
     {
         name: "Dashboard",
         path: "/",
@@ -43,7 +49,11 @@ export const navigationItemsMenu = [
     },
 ];
 
+<<<<<<< HEAD
 export const navigationItemsBeheer = [
+=======
+export const navigationItemsBeheer: NavigationItem[] = [
+>>>>>>> de66e41a6e0b2a0376da269a59511afcf76210f5
     {
         name: "VM's",
         path: "/VMs",
@@ -56,7 +66,11 @@ export const navigationItemsBeheer = [
     },
 ];
 
+<<<<<<< HEAD
 export const navigationItemsAccount = [
+=======
+export const navigationItemsAccount: NavigationItem[] = [
+>>>>>>> de66e41a6e0b2a0376da269a59511afcf76210f5
     {
         name: "Instellingen",
         path: "/settings",
