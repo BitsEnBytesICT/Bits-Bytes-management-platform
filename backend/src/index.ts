@@ -21,7 +21,6 @@ app.use(cors({
             callback(null, false);
         }
     },
-    withCredentials: true,
     credentials: true,
 }));
 

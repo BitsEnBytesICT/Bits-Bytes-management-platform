@@ -2,12 +2,12 @@ import { Fun } from "../common/functor";
 import { ValidatorMap, validatorPipe, validatorPipePartial, ValidatorTuple } from "../common/Validator";
 import IDeelnemer from "../types/deelnemer/IDeelnemer";
 
-const validateStringNotEmpty = Fun<string, boolean>(str => str.length > 0);
+const validateStringNotEmpty = Fun<string | undefined, boolean>(str => str === undefined ? true : str.length > 0);
 const validateAbove0 = Fun<number, boolean>(id => id > 0);
 const validateAbove0OrUndefined = Fun<number | undefined, boolean>(id => id === undefined ? true : id > 0);
 const validateDate = Fun<string, boolean>(s => !isNaN(Date.parse(s)));
 const validateOneorZero = Fun<number, boolean>(id => id === 0 || id === 1);
-const validateOneorZeroUndefined = Fun<number, boolean>(id => id === undefined ? true : id === 0 || id === 1);
+const validateOneorZeroUndefined = Fun<number | undefined, boolean>(id => id === undefined ? true : id === 0 || id === 1);
 
 export const deelnemerValidatorFunctors: ValidatorMap<IDeelnemer> = {
     id: [validateAbove0OrUndefined, "id is not valid"],
@@ -23,7 +23,7 @@ export const deelnemerValidatorFunctors: ValidatorMap<IDeelnemer> = {
 }
 
 export function deelnemerValidator(deelnemer: IDeelnemer) {
-    const mappedValidators = (Object.keys(deelnemerValidatorFunctors)).map((key) => 
+    const mappedValidators = (Object.keys(deelnemerValidatorFunctors) as Array<keyof IDeelnemer>).map((key) => 
         [key, deelnemerValidatorFunctors[key][0], deelnemerValidatorFunctors[key][1]] as ValidatorTuple<IDeelnemer>);
     return validatorPipe(deelnemer, ...mappedValidators);
 }

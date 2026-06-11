@@ -15,7 +15,7 @@ export const signatureValidatorFunctors: ValidatorMap<ISignature> = {
 }
 
 export function signatureValidator(signature: ISignature) {
-    const mappedValidators = (Object.keys(signatureValidatorFunctors)).map((key) => 
+    const mappedValidators = (Object.keys(signatureValidatorFunctors) as Array<keyof ISignature>).map((key) => 
         [key, signatureValidatorFunctors[key][0], signatureValidatorFunctors[key][1]] as ValidatorTuple<ISignature>);
     return validatorPipe(signature, ...mappedValidators);
 }

@@ -23,7 +23,7 @@ export default class DeelnemerService implements serviceBase<IDeelnemer> {
         const validatorFunctors = args.map((item) => 
             [item[0], deelnemerValidatorFunctors[item[0]][0], deelnemerValidatorFunctors[item[0]][1]] as ValidatorTuple<IDeelnemer>);
 
-        const validationResult = partialDeelnemerValidator(Object.fromEntries(args) as Partial<IDeelnemer>, validatorFunctors);
+        const validationResult = partialDeelnemerValidator(Object.fromEntries(args), validatorFunctors);
         const errors = validationResult.filter((r) => r.kind === "error").map((r) => r.errorMSG);
         if (errors.length > 0) throw errors;
 

@@ -29,7 +29,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
         const validatorFunctors = args.map((item) => 
                     [item[0], attendanceValidatorFunctors[item[0]][0], attendanceValidatorFunctors[item[0]][1]] as ValidatorTuple<IAttendance>);
         
-        const validationResult = partialAttendanceValidator(Object.fromEntries(args) as Partial<IAttendance>, validatorFunctors);
+        const validationResult = partialAttendanceValidator(Object.fromEntries(args), validatorFunctors);
         const errors = validationResult.filter((r) => r.kind === "error").map((r) => r.errorMSG);
         if (errors.length > 0) throw errors;
 
@@ -50,7 +50,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
             };
         }
 
-        const openAttendance = this.dao.findOne(["deelnemerID", deelnemer.id!], ["clockoutDate", null]);
+        const openAttendance = this.dao.findOne(["deelnemerID", deelnemer.id!], ["clockoutDate", undefined]);
 
         if (openAttendance) {
             const now = new Date().toISOString();

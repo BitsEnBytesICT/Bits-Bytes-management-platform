@@ -10,20 +10,21 @@ export type Result<a, b> = (
     | { kind: "error", key: keyof a, value?: b, errorMSG: IError }
     | { kind: "success", key: keyof a, value?: b });
 
-export type ValidatorTuple<T> = {
-    [K in keyof T]: [
-        K,
-        Fun<T[K], boolean>,
-        string
-    ]
-}[keyof T];
+export type ValidatorTuple<T, K extends keyof T = keyof T> =
+    K extends keyof T
+        ? [
+            K,
+            Fun<T[K], boolean>,
+            string
+        ]
+        : never;
 
 export type ValidatorMap<T> = {
     [K in keyof T]-?: [Fun<T[K], boolean>, string];
 };
 
 export type KeyValuePair<T> = {
-    [K in keyof T]: [K, T[K]]
+    [K in keyof T]-?: [K, T[K]]
 }[keyof T];
 
 type AllKeysValidators<a> = { [K in keyof a]: [K, Fun<a[K], boolean>, string] }[keyof a];
@@ -42,12 +43,13 @@ export const validatorPipe = <a extends object, T extends AllKeysValidators<a>[]
     return results;
 };
 
-export const validatorPipePartial = <A extends object,T extends AllKeysValidators<A>[]>(data: A,...args: T): Result<A, A[keyof A]>[] => {
+export const validatorPipePartial = <A extends object>(data: Partial<A>,...args: ValidatorTuple<A>[]): Result<A, A[keyof A]>[] => {
     const results: Array<Result<A, A[keyof A]>> = [];
-    (args as Array<[keyof A, Fun<any, boolean>, string]>).forEach((func) => {
-        const [key, validator, errorMSG] = func;
+    args.forEach((func) => {
+        const [key, validator, errorMSG] = func as [keyof A, Fun<A[keyof A], boolean>, string];
+
         try {
-            if (validator(data[key])) results.push({ kind: "success", value: data[key], key });
+            if (validator(data[key] as A[keyof A])) results.push({ kind: "success", value: data[key], key });
             else results.push({ kind: "error", key, value: data[key], errorMSG: {date: new Date(), errorMSG: new Error(errorMSG), code: ErrorCodes.InvalidData } });
         } catch (error: any) {
             results.push({ kind: "error", key, value: data[key], errorMSG: {date: new Date(), errorMSG: new Error(errorMSG), code: ErrorCodes.InvalidData } });

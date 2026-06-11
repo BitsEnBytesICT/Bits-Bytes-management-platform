@@ -22,8 +22,8 @@ export default class DeelnemerDao implements daoBase<IDeelnemer> {
     }
 
     findOne(...args: KeyValuePair<IDeelnemer>[]): IDeelnemer {
-        return dbGet(`SELECT * FROM Deelnemers WHERE ${args.map(([key], index) => {
-            if (args[index][1] === null) return `${String(key)} IS NULL`
-            return `${String(key)} = ?`}).join(" AND ")} LIMIT 1`, args.filter(([, value]) => value !== null).map(([, value]) => value));
+        return dbGet(`SELECT * FROM Deelnemers WHERE ${args.map(([key, value]) => 
+        value === undefined ? `${String(key)} IS NULL` : `${String(key)} = ?`).join(" AND ")} LIMIT 1`, 
+        args.filter(([, value]) => value !== undefined).map(([, value]) => value));
     }
 }

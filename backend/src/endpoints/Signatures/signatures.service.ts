@@ -28,7 +28,7 @@ export default class SignatureService implements serviceBase<ISignature> {
         const validatorFunctors = args.map((item) => 
                     [item[0], signatureValidatorFunctors[item[0]][0], signatureValidatorFunctors[item[0]][1]] as ValidatorTuple<ISignature>);
         
-        const validationResult = partialSignatureValidator(Object.fromEntries(args) as Partial<ISignature>, validatorFunctors);
+        const validationResult = partialSignatureValidator(Object.fromEntries(args), validatorFunctors);
         const errors = validationResult.filter((r) => r.kind === "error").map((r) => r.errorMSG);
         if (errors.length > 0) throw errors;
 

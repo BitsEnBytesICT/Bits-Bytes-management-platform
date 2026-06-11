@@ -1,6 +1,5 @@
 import daoBase from "../../common/daoBase";
 import { dbGet, dbQuery } from "../../common/db";
-import serviceBase from "../../common/serviceBase";
 import { KeyValuePair } from "../../common/Validator";
 import ISignature from "../../types/signature/ISignature";
 
@@ -24,8 +23,8 @@ export default class SignatureDao implements daoBase<ISignature> {
     }
 
     findOne(...args: KeyValuePair<ISignature>[]): ISignature {
-        return dbGet(`SELECT * FROM Signatures WHERE ${args.map(([key], index) => {
-        if (args[index][1] === null) return `${String(key)} IS NULL`
-        return `${String(key)} = ?`}).join(" AND ")} LIMIT 1`, args.filter(([, value]) => value !== null).map(([, value]) => value));
+        return dbGet(`SELECT * FROM Signatures WHERE ${args.map(([key, value]) => 
+        value === undefined ? `${String(key)} IS NULL` : `${String(key)} = ?`).join(" AND ")} LIMIT 1`, 
+        args.filter(([, value]) => value !== undefined).map(([, value]) => value));
     }
 }

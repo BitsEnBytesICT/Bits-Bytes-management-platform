@@ -17,7 +17,7 @@ export const attendanceValidatorFunctors: ValidatorMap<IAttendance> = {
 }
 
 export function attendanceValidator(signature: IAttendance) {
-    const mappedValidators = (Object.keys(attendanceValidatorFunctors)).map((key) => 
+    const mappedValidators = (Object.keys(attendanceValidatorFunctors) as Array<keyof IAttendance>).map((key) => 
         [key, attendanceValidatorFunctors[key][0], attendanceValidatorFunctors[key][1]] as ValidatorTuple<IAttendance>);
     return validatorPipe(signature, ...mappedValidators);
 }
