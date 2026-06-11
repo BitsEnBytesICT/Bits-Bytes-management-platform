@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import ScanService from './scan.service';
+import ScanService from './attendance.service';
 
-export default class ScanController {
+export default class AttendanceController {
     private service: ScanService;
 
     constructor() {
@@ -9,7 +9,7 @@ export default class ScanController {
     }
 
     scan = (req: Request, res: Response): void => {
-        const result = this.service.processScan(req.body.rfid_uid);
+        const result = this.service.scan(req.body.rfid_uid);
 
         if (!result.success && result.message === 'Kaart niet geregistreerd') {
             res.status(404).json(result);

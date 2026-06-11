@@ -4,9 +4,8 @@ import cors from "cors";
 import { ErrorCodes } from './types/error/ErrorCodes';
 import IError from './types/error/IError';
 import { assertNever } from './common/Validator';
-import UserRouter from './endpoints/example/user.routes';
 import HealthRouter from './endpoints/health/health.routes';
-import ScanRouter from './endpoints/scan/scan.routes';
+import ScanRouter from './endpoints/attendances/attendance.routes';
 import './setupDatabases';
 
 const app: Express = express();
@@ -32,7 +31,6 @@ app.set('port', process.env.PORT || 3000);
 
 app.use(HealthRouter);
 app.use(ScanRouter);
-app.use(UserRouter);
 
 app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
     console.log(err)

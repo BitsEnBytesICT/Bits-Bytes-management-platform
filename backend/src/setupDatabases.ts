@@ -61,6 +61,10 @@ db.prepare(`CREATE TABLE IF NOT EXISTS Attendances (
     )`
 ).run();
 
+db.prepare(`CREATE UNIQUE INDEX unique_one_null_clockout
+    ON Attendances((1))
+    WHERE clockoutDate IS NULL;`).run();
+
 db.prepare(`DROP TABLE IF EXISTS Rooms`).run();
 db.prepare(`CREATE TABLE IF NOT EXISTS Rooms (
     id INTEGER PRIMARY KEY,

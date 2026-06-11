@@ -1,8 +1,8 @@
 import express from 'express';
 import { Router } from 'express';
-import ScanController from './scan.controller';
+import ScanController from './attendance.controller';
 
-class ScanRouter {
+class AttendanceRouter {
     private router: Router;
     private controller: ScanController = new ScanController();
 
@@ -22,4 +22,4 @@ class ScanRouter {
     }
 }
 
-export default new ScanRouter().getRouter();
+export default new AttendanceRouter().getRouter();
