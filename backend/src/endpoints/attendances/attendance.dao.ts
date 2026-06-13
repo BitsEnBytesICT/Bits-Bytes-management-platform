@@ -10,7 +10,7 @@ export default class AttendanceDao implements daoBase<IAttendance> {
 
     update(where: KeyValuePair<IAttendance>, ...args: KeyValuePair<IAttendance>[]): void {
         dbQuery(`UPDATE Attendances SET ${args.map(([key]) => 
-            `${String(key)} = ?`).join(", ")} WHERE ${String(where[0])} = ?`, args.concat(where).map(([, value]) => value));
+            `${String(key)} = ?`).join(", ")} WHERE ${String(where[0])} = ?`, args.concat([where]).map(([, value]) => value));
     }
     
     delete(...args: any[]): void {
@@ -25,6 +25,10 @@ export default class AttendanceDao implements daoBase<IAttendance> {
         return dbGet(`SELECT * FROM Attendances WHERE ${args.map(([key, value]) => 
         value === undefined ? `${String(key)} IS NULL` : `${String(key)} = ?`).join(" AND ")} LIMIT 1`, 
         args.filter(([, value]) => value !== undefined).map(([, value]) => value));
+    }
+
+    findOpenAttendance(deelnemerID: number): IAttendance | undefined {
+        return dbGet('SELECT * FROM Attendances WHERE deelnemerID = ? AND clockoutDate IS NULL ORDER BY clockinDate DESC LIMIT 1', [deelnemerID]) as IAttendance | undefined;
     }
 
     getAttendanceLast30Days(deelnemerID: number): string[] {

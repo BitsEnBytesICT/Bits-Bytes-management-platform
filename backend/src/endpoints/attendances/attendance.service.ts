@@ -40,7 +40,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
         
         this.validateRfid(rfid_uid);
 
-        const deelnemer = this.deelnemerService.findOne(["rfid", rfid_uid]);
+        const deelnemer = this.deelnemerService.findOne(["rfid", rfid_uid], ["active", 1]);
 
         if (!deelnemer) {
             return {
@@ -50,7 +50,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
             };
         }
 
-        const openAttendance = this.dao.findOne(["deelnemerID", deelnemer.id!], ["clockoutDate", undefined]);
+        const openAttendance = this.dao.findOpenAttendance(deelnemer.id!);
 
         if (openAttendance) {
             const now = new Date().toISOString();
@@ -134,7 +134,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
         this.validateRfid(rfid_uid);
         this.validateSignature(signature);
 
-        const deelnemer = this.deelnemerService.findOne(["rfid", rfid_uid]);
+        const deelnemer = this.deelnemerService.findOne(["rfid", rfid_uid], ["active", 1]);
 
         if (!deelnemer) {
             throw {
@@ -173,7 +173,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
     fetchLast30Days(rfid_uid: string): string[] {
         this.validateRfid(rfid_uid);
 
-        const deelnemer = this.deelnemerService.findOne(["rfid", rfid_uid]);
+        const deelnemer = this.deelnemerService.findOne(["rfid", rfid_uid], ["active", 1]);
         
         if (!deelnemer) return [];
 

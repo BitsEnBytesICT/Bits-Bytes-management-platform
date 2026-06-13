@@ -11,7 +11,7 @@ export default class SignatureDao implements daoBase<ISignature> {
 
     update(where: KeyValuePair<ISignature>, ...args: KeyValuePair<ISignature>[]): void {
         dbQuery(`UPDATE Signatures SET ${args.map(([key]) => 
-            `${String(key)} = ?`).join(", ")} WHERE ${String(where[0])} = ?`, args.concat(where).map(([, value]) => value));
+            `${String(key)} = ?`).join(", ")} WHERE ${String(where[0])} = ?`, args.concat([where]).map(([, value]) => value));
     }
 
     delete(...args: any[]): void {

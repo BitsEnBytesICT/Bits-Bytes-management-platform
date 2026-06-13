@@ -10,7 +10,7 @@ export default class DeelnemerDao implements daoBase<IDeelnemer> {
 
     update(where: KeyValuePair<IDeelnemer>, ...args: KeyValuePair<IDeelnemer>[]): void {
         dbQuery(`UPDATE Deelnemers SET ${args.map(([key]) => 
-            `${String(key)} = ?`).join(", ")} WHERE ${String(where[0])} = ?`, args.concat(where).map(([, value]) => value));
+            `${String(key)} = ?`).join(", ")} WHERE ${String(where[0])} = ?`, args.concat([where]).map(([, value]) => value));
     }
 
     delete(...args: any[]): void {
