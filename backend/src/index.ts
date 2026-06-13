@@ -1,10 +1,12 @@
 import express, { Express, NextFunction, Request, Response } from 'express';
 import { AddressInfo } from "net";
-import UserRouter from './endpoints/example/user.routes';
 import cors from "cors";
-import IError from './types/error/IError';
 import { ErrorCodes } from './types/error/ErrorCodes';
+import IError from './types/error/IError';
 import { assertNever } from './common/Validator';
+import HealthRouter from './endpoints/health/health.routes';
+import ScanRouter from './endpoints/attendances/attendance.routes';
+import './setupDatabases';
 
 const app: Express = express();
 
@@ -19,20 +21,21 @@ app.use(cors({
             callback(null, false);
         }
     },
-    withCredentials: true,
     credentials: true,
 }));
 
-app.use(express.json({ limit: "5kb" }));
-app.use(express.urlencoded({ extended: true, limit: "5kb" }));
+app.use(express.json({ limit: "20kb" }));
+app.use(express.urlencoded({ extended: true, limit: "20kb" }));
 app.set('port', process.env.PORT || 3000);
 
-app.use(UserRouter);
+app.use(HealthRouter);
+app.use(ScanRouter);
 
 app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
     console.log(err)
+    const errorData = Array.isArray(err) ? err : [err]
     let responseData = [];
-    for (const error of err) {
+    for (const error of errorData) {
         switch (error.code) {
             case ErrorCodes.InvalidData:
                 responseData.push(error.errorMSG.message);
@@ -51,7 +54,6 @@ app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
                 continue;
         }
     }
-
     res.json(responseData);
 });
 
