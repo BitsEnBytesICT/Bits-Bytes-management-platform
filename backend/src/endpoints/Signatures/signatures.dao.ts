@@ -1,17 +1,16 @@
-import daoBase from "../../common/daoBase";
+import { daoBase, daoBaseType } from "../../common/daoBase";
 import { dbGet, dbQuery } from "../../common/db";
 import { KeyValuePair } from "../../common/Validator";
 import ISignature from "../../types/signature/ISignature";
 
 
-export default class SignatureDao implements daoBase<ISignature> {
+export default class SignatureDao extends daoBase<ISignature> implements daoBaseType<ISignature> {
     create(signature: ISignature): void {
          dbQuery('INSERT INTO Signatures (deelnemerID, date, signature) VALUES (?, ?, ?)', [signature.deelnemerID, signature.date, signature.signature]);
     }
 
     update(where: KeyValuePair<ISignature>, ...args: KeyValuePair<ISignature>[]): void {
-        dbQuery(`UPDATE Signatures SET ${args.map(([key]) => 
-            `${String(key)} = ?`).join(", ")} WHERE ${String(where[0])} = ?`, args.concat([where]).map(([, value]) => value));
+        this.updateFunc("Signatures", where, ...args);
     }
 
     delete(...args: any[]): void {
@@ -23,8 +22,6 @@ export default class SignatureDao implements daoBase<ISignature> {
     }
 
     findOne(...args: KeyValuePair<ISignature>[]): ISignature {
-        return dbGet(`SELECT * FROM Signatures WHERE ${args.map(([key, value]) => 
-        value === undefined ? `${String(key)} IS NULL` : `${String(key)} = ?`).join(" AND ")} LIMIT 1`, 
-        args.filter(([, value]) => value !== undefined).map(([, value]) => value));
+        return this.findOneFunc("Signatures", ...args);
     }
 }

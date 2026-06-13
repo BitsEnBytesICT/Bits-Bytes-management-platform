@@ -1,16 +1,15 @@
 import { dbQuery, dbGet, dbAll } from '../../common/db';
 import IAttendance from '../../types/attendance/IAttendance';
-import daoBase from '../../common/daoBase';
 import { KeyValuePair } from '../../common/Validator';
+import { daoBase, daoBaseType } from '../../common/daoBase';
 
-export default class AttendanceDao implements daoBase<IAttendance> {
+export default class AttendanceDao extends daoBase<IAttendance> implements daoBaseType<IAttendance> {
     create(attendance: IAttendance): void {
         dbQuery('INSERT INTO Attendances (deelnemerID, clockinDate) VALUES (?, ?)', [attendance.deelnemerID, attendance.clockinDate]);
     }
 
     update(where: KeyValuePair<IAttendance>, ...args: KeyValuePair<IAttendance>[]): void {
-        dbQuery(`UPDATE Attendances SET ${args.map(([key]) => 
-            `${String(key)} = ?`).join(", ")} WHERE ${String(where[0])} = ?`, args.concat([where]).map(([, value]) => value));
+        this.updateFunc("Attendances", where, ...args);
     }
     
     delete(...args: any[]): void {
@@ -22,13 +21,7 @@ export default class AttendanceDao implements daoBase<IAttendance> {
     }
     
     findOne(...args: KeyValuePair<IAttendance>[]): IAttendance {
-        return dbGet(`SELECT * FROM Attendances WHERE ${args.map(([key, value]) => 
-        value === undefined ? `${String(key)} IS NULL` : `${String(key)} = ?`).join(" AND ")} LIMIT 1`, 
-        args.filter(([, value]) => value !== undefined).map(([, value]) => value));
-    }
-
-    findOpenAttendance(deelnemerID: number): IAttendance | undefined {
-        return dbGet('SELECT * FROM Attendances WHERE deelnemerID = ? AND clockoutDate IS NULL ORDER BY clockinDate DESC LIMIT 1', [deelnemerID]) as IAttendance | undefined;
+        return this.findOneFunc("Attendances", ...args);
     }
 
     getAttendanceLast30Days(deelnemerID: number): string[] {

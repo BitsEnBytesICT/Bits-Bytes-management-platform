@@ -44,7 +44,6 @@ export default class SignatureService implements serviceBase<ISignature> {
     }
 
     findOne(...args: KeyValuePair<ISignature>[]): ISignature {
-
         return this.dao.findOne(...args);
     }
 }

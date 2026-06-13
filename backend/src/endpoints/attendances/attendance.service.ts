@@ -35,6 +35,18 @@ export default class AttendanceService implements serviceBase<IAttendance> {
 
         this.dao.update(where, ...args);
     }
+
+    delete(...args: any[]): void {
+        throw new Error('Method not implemented.');
+    }
+    
+    list(...args: any[]): IAttendance[] {
+        throw new Error('Method not implemented.');
+    }
+
+    findOne(...args: KeyValuePair<IAttendance>[]): IAttendance {
+        throw new Error('Method not implemented.');
+    }
         
     scan = (rfid_uid: string): IScanResult => {
         
@@ -50,7 +62,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
             };
         }
 
-        const openAttendance = this.dao.findOpenAttendance(deelnemer.id!);
+        const openAttendance = this.dao.findOne(["deelnemerID", deelnemer.id!], ["clockoutDate", undefined]);
 
         if (openAttendance) {
             const now = new Date().toISOString();
@@ -96,18 +108,6 @@ export default class AttendanceService implements serviceBase<IAttendance> {
                 department: deelnemer.organisation,
             },
         };
-    }
-
-    delete(...args: any[]): void {
-        throw new Error('Method not implemented.');
-    }
-    
-    list(...args: any[]): IAttendance[] {
-        throw new Error('Method not implemented.');
-    }
-
-    findOne(...args: KeyValuePair<IAttendance>[]): IAttendance {
-        throw new Error('Method not implemented.');
     }
 
     private validateRfid(rfid_uid: string): void {
