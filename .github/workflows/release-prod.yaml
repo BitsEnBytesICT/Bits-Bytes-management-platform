@@ -1,0 +1,45 @@
+name: Release PROD
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-deploy-prod:
+    if: ${{ github.event.release.target_commitish == 'main' }}
+    runs-on: [self-hosted]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Build backend
+        working-directory: ./backend
+        run: npm run build
+
+      - name: Build Docker images
+        run: docker-compose -f compose-prod.yaml build
+
+      - name: Push Docker images
+        run: docker-compose -f compose-prod.yaml push
+
+      - name: Deploy to Kubernetes
+        run: kubectl apply -f ./deployment-PROD.yaml

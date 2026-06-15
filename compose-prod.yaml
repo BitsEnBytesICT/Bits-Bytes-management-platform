@@ -4,10 +4,21 @@ services:
   bitsenbytesfrontendPROD:
     mem_limit: 512m
     memswap_limit: 512m
-    image: 10.10.1.110:32000/managementplatform:bitsenbytesfrontendPROD_${VERSION}
+    image: 10.10.1.110:32000/managementplatform:bitsenbytesfrontendPROD_${VERSION_FRONTEND}
     container_name: bitsenbytesfrontendPROD
     build:
       context: .
       target: bitsenbytesfrontendPROD
     ports:
       - 8080:80
+
+  bitsenbytesbackendPROD:
+    mem_limit: 512m
+    memswap_limit: 512m
+    image: 10.10.1.110:32000/managementplatform:bitsenbytesbackendPROD_${VERSION_BACKEND}
+    container_name: bitsenbytesbackendPROD
+    build:
+      context: .
+      target: bitsenbytesbackendPROD
+    ports:
+      - 3000:3000

@@ -1,4 +1,4 @@
-import daoBase from "./daoBase";
+import { daoBase } from "./daoBase";
 import { KeyValuePair } from "./Validator";
 
 export default interface serviceBase<a> {

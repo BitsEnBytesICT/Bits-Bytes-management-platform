@@ -10,7 +10,7 @@ class HealthRouter {
     }
 
     initializeRoutes() {
-        this.router.get('/health', (req: Request, res: Response) => {
+        this.router.get('/api/health', (req: Request, res: Response) => {
             res.sendStatus(200);
         });
     }

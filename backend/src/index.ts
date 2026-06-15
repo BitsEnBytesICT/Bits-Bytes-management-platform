@@ -5,7 +5,7 @@ import { ErrorCodes } from './types/error/ErrorCodes';
 import IError from './types/error/IError';
 import { assertNever } from './common/Validator';
 import HealthRouter from './endpoints/health/health.routes';
-import ScanRouter from './endpoints/attendances/attendance.routes';
+import attendanceRouter from './endpoints/attendances/attendance.routes';
 import './setupDatabases';
 
 const app: Express = express();
@@ -29,7 +29,7 @@ app.use(express.urlencoded({ extended: true, limit: "20kb" }));
 app.set('port', process.env.PORT || 3000);
 
 app.use(HealthRouter);
-app.use(ScanRouter);
+app.use(attendanceRouter);
 
 app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
     console.log(err)
