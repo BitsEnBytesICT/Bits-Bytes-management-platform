@@ -22,7 +22,7 @@ entity Deelnemer {
     product: string
 }
 
-entity Signature {
+entity Signatures {
     * id: number <<primary key>>
     * deelnemerID: number <<foreign key Deelnemer.id>>
     * date: Date
@@ -85,7 +85,7 @@ entity SceduleDeelnemer {
 
 Account ||--|| Permission
 Account ||--|| Deelnemer
-Deelnemer ||--o{ Signature
+Deelnemer ||--o{ Signatures
 Deelnemer ||--o{ Attendance
 Deelnemer ||--o{ SceduleDeelnemer
 Scedule ||--o{ SceduleDeelnemer
