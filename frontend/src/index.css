@@ -11,6 +11,8 @@
     --color-lightblue: #92d5ff;
 
     --color-offwhite: #f7fbff;
+
+    --color-offblack: #414141;
 }
 
 /* @font-face {
@@ -31,15 +33,16 @@
 :root,
 *::before,
 *::after {
-    margin: 0;
+    /* margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    box-sizing: border-box; */
 
-    overflow-x: hidden;
+    /* overflow-x: hidden; */
 }
 
 html {
     font-family: "Outfit", sans-serif;
+    color: var(--color-offblack);
     font-size: 16px;
     font-weight: 400;
     font-optical-sizing: auto;
@@ -49,6 +52,7 @@ html {
 body {
     background: var(--color-offwhite);
 
+    /* 150vh for testing only, the page should be the height of everything together */
     height: 150vh;
 }
 

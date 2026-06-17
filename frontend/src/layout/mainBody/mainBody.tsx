@@ -8,7 +8,7 @@ export default function MainBody({isOpen, setIsOpen}) {
     return (
         <div
             onClick={() => setIsOpen(false)}
-            className={`absolute top-1/2 left-1/2 z-0 h-[95vh] w-[85vw] -translate-x-1/2 -translate-y-1/2 rounded-xl transition-all duration-400`}>
+            className={`absolute top-1/2 left-1/2 z-0 h-[90vh] w-[80vw] -translate-x-1/2 -translate-y-1/2 rounded-xl transition-all duration-400`}>
             <Routes>
                 {routes.map(route => {
                     if (route.path === "/" && currentAccountType === "zorg") {
