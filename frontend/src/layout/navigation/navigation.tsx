@@ -27,11 +27,12 @@ export default function Navigation({isOpen, setIsOpen}) {
 
     return (
         <>
-            <div className="fixed flex h-fit flex-row">
+            <div className="fixed flex h-fit flex-row pointer-events-none">
                 <div
                     className={`relative top-0 flex h-[100vh] grow-0 flex-row transition-[left] duration-400 ${isOpen ? "left-0" : "left-[-15.5rem]"}`}
                     onMouseEnter={() => setIsOpen(true)}
-                    onMouseLeave={() => setIsOpen(false)}>
+                    onMouseLeave={() => setIsOpen(false)}
+                    style={{ pointerEvents: "auto" }}>
                     <div className="absolute top-[1.25rem] left-[1.5rem] flex flex-row gap-[4rem] min-[1000px]:gap-[4rem] [@media(min-height:670px)]:gap-[5rem]">
                         <div className="logo">
                             <img

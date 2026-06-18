@@ -1,7 +1,7 @@
 import {Routes, Route} from "react-router-dom";
 import {navigationItemsAccount, navigationItemsBeheer, navigationItemsMenu} from "../navigation/navigation.config";
 
-export default function MainBody({isOpen, setIsOpen}) {
+export default function MainBody({setIsOpen}) {
     const routes = navigationItemsMenu.concat(navigationItemsBeheer).concat(navigationItemsAccount);
 
     const currentAccountType: string = "zorg"; //dit is als test totdat we een login hebben!
