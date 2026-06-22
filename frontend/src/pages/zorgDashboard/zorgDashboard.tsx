@@ -34,11 +34,35 @@ export default function ZorgDashboard() {
                     </div>
                 </div>
 
-                <div className="">
-                    <Button onClick={navigate} label="Navigeer" icon={<img src={IconLink} />} />
-                </div>
+                <div className="flex flex-col gap-[1rem]">
+                    <div className="flex flex-row justify-between">
+                        <div className="flex flex-row gap-[1.5rem]">
+                            <Button
+                                onClick={() => window.open("https://www.google.nl", "_blank")}
+                                label="Cliendo"
+                                icon={<img src={IconLink} />}
+                            />
+                            <Button
+                                onClick={() => window.open("https://www.google.nl", "_blank")}
+                                label="ZilliZ"
+                                icon={<img src={IconLink} />}
+                            />
+                        </div>
 
-                <div className="">
+                        <div className="flex flex-row gap-[1.5rem]">
+                            <Button
+                                onClick={() => window.open("https://www.google.nl", "_blank")}
+                                label="Deelnemer toevoegen"
+                                icon={<img src={IconAddUser} />}
+                            />
+                            <Button
+                                onClick={() => window.open("https://www.google.nl", "_blank")}
+                                label="Exporteer"
+                                icon={<img src={IconExport} />}
+                            />
+                        </div>
+                    </div>
+
                     <DeelnemerTable tableColumns={["firstname", "lastname", "organisation", "product", "active"]} />
                 </div>
 

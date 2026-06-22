@@ -14,12 +14,11 @@ const columnLabels: Record<keyof IDeelnemer, string> = {
     product: "Plaats",
 };
 
-const headerStyle: React.CSSProperties = {
+const tableColumnsStyle: React.CSSProperties = {
     color: "color-mix(in srgb, var(--color-darkblue) 50%, transparent)",
     backgroundColor: "color-mix(in srgb, var(--color-darkblue) 2%, transparent)",
 };
 
-// this will need to be fetched! (also x2 for scrolltesting)
 const tempData: IDeelnemer[] = [
     {
         id: 1,
@@ -137,7 +136,7 @@ export default function DeelnemerTable({tableColumns}: IDeelnemerTable) {
         return (
             <div key={row.id} className="flex flex-row">
                 {tableColumns.map(col => (
-                    <div key={col} className="flex-1 px-4 py-4 text-sm font-semibold">
+                    <div key={col} className="flex-1 px-[1rem] py-[1rem] text-sm font-semibold">
                         {renderColumn(col, row)}
                     </div>
                 ))}
@@ -146,16 +145,16 @@ export default function DeelnemerTable({tableColumns}: IDeelnemerTable) {
     }
 
     return (
-        <div className="w-full">
-            <div className="flex flex-row rounded-lg" style={headerStyle}>
+        <div className="w-full pr-[0.75rem]">
+            <div className="flex flex-row rounded-lg" style={tableColumnsStyle}>
                 {tableColumns.map(col => (
-                    <div key={col} className="flex-1 px-4 py-3 text-sm font-medium">
+                    <div key={col} className="flex-1 px-[1rem] py-[0.75rem] text-sm font-medium">
                         {columnLabels[col]}
                     </div>
                 ))}
             </div>
 
-            <div className="max-h-64 overflow-y-scroll [&::-webkit-scrollbar]:w-0.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-(--color-darkblue)">
+            <div className="-mr-[0.30rem] max-h-[16rem] overflow-y-scroll [&::-webkit-scrollbar]:w-[0.30rem] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-(--color-darkblue) [&::-webkit-scrollbar-track]:bg-transparent">
                 {tempData.map(row => renderRow(row))}
             </div>
         </div>
