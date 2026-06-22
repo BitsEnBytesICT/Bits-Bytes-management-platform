@@ -13,5 +13,9 @@ export {default as IconVPNs} from "./ui/icon-VPNs.svg";
 export {default as IconSettings} from "./ui/icon-settings.svg";
 export {default as IconLogout} from "./ui/icon-logout.svg";
 
+export {default as IconAddUser} from "./ui/icon-adduser.svg";
+export {default as IconExport} from "./ui/icon-export.svg";
+export {default as IconLink} from "./ui/icon-link.svg";
+
 // logo
 export {default as LogoWhite} from "./logo/logo-white.svg";
