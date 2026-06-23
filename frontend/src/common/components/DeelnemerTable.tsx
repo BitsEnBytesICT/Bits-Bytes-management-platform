@@ -14,7 +14,6 @@ const columnLabels: Record<keyof IDeelnemer, string> = {
     product: "Plaats",
 };
 
-
 const tempData: IDeelnemer[] = [
     {
         id: 1,
@@ -142,7 +141,7 @@ export default function DeelnemerTable({tableColumns}: IDeelnemerTable) {
 
     return (
         <div className="w-full pr-[0.75rem]">
-            <div className="flex flex-row rounded-lg text-[color-mix(in_srgb,var(--color-darkblue)_50%,transparent)] bg-[color-mix(in_srgb,var(--color-darkblue)_2%,transparent)]">
+            <div className="flex flex-row rounded-lg bg-(--color-darkblue)/2 text-(--color-darkblue)/50">
                 {tableColumns.map(col => (
                     <div key={col} className="flex-1 px-[1rem] py-[0.75rem] text-sm font-medium">
                         {columnLabels[col]}
@@ -150,7 +149,7 @@ export default function DeelnemerTable({tableColumns}: IDeelnemerTable) {
                 ))}
             </div>
 
-            <div className="-mr-[0.30rem] max-h-[16rem] overflow-y-scroll [&::-webkit-scrollbar]:w-[0.30rem] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-(--color-darkblue) [&::-webkit-scrollbar-track]:bg-transparent">
+            <div className="-mr-[0.30rem] max-h-[16rem] overflow-y-scroll [&::-webkit-scrollbar]:w-[0.30rem] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-(--color-black)/10 [&::-webkit-scrollbar-track]:bg-transparent">
                 {tempData.map(row => renderRow(row))}
             </div>
         </div>

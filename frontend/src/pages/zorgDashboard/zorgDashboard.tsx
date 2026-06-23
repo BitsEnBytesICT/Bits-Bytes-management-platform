@@ -2,9 +2,11 @@ import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import Card from "../../common/components/Card";
 import DeelnemerTable from "../../common/components/DeelnemerTable";
 import Button from "../../common/components/Button";
-import Agenda from "../../common/components/Agenda";
+import Agenda from "../../common/components/Calendar";
 
 import {IconAddUser, IconExport, IconLink} from "../../assets";
+import Calendar from "../../common/components/Calendar";
+import FloorPlans from "../../common/components/FloorPlans";
 
 export default function ZorgDashboard() {
     return (
@@ -56,7 +58,9 @@ export default function ZorgDashboard() {
                     <DeelnemerTable tableColumns={["firstname", "lastname", "organisation", "product", "active"]} />
                 </div>
 
-                <Agenda />
+                <FloorPlans />
+
+                <Calendar />
             </div>
         </>
     );

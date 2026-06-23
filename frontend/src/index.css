@@ -7,12 +7,13 @@
     --color-orange: #f2880f;
     --color-lightorange: #ffd6a7;
 
-    --color-darkblue: rgb(49, 113, 153);
+    --color-darkblue: #317199;
     --color-lightblue: #92d5ff;
 
     --color-white: #ffffff;
     --color-offwhite: #f7fbff;
 
+    --color-black: #000000;
     --color-offblack: #414141;
 }
 
@@ -53,8 +54,7 @@ html {
 body {
     background: var(--color-offwhite);
 
-    /* 150vh for testing only, the page should be the height of everything together */
-    height: 150vh;
+    height: 100%;
 }
 
 input,

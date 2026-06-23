@@ -3,13 +3,14 @@ import {NavLink} from "react-router-dom";
 
 import {navigationItemsMenu, navigationItemsBeheer, navigationItemsAccount} from "./navigation.config";
 
+import type {INavigationItem} from "../../types/navigation/INavigation";
+
 import {ShapeLeft, ShapeRight, ButtonMenu, LogoWhite} from "../../assets";
-import type {NavigationItem} from "../../types/navigation/navigation";
 
 export default function Navigation({isOpen, setIsOpen}) {
     const [versionNumber, setVersionNumber] = useState("0.0.0"); // get the version number through .env?
 
-    const navMenuItem = (item: NavigationItem) => (
+    const navMenuItem = (item: INavigationItem) => (
         <>
             <div className="flex cursor-pointer items-center gap-[0.625rem]" key={item.path}>
                 <img src={item.icon} className="h-fit w-fit shrink-0 select-none [-webkit-user-drag:none]" />
@@ -27,12 +28,12 @@ export default function Navigation({isOpen, setIsOpen}) {
 
     return (
         <>
-            <div className="fixed flex h-fit flex-row pointer-events-none">
+            <div className="pointer-events-none fixed flex h-fit flex-row">
                 <div
                     className={`relative top-0 flex h-[100vh] grow-0 flex-row transition-[left] duration-400 ${isOpen ? "left-0" : "left-[-15.5rem]"}`}
                     onMouseEnter={() => setIsOpen(true)}
                     onMouseLeave={() => setIsOpen(false)}
-                    style={{ pointerEvents: "auto" }}>
+                    style={{pointerEvents: "auto"}}>
                     <div className="absolute top-[1.25rem] left-[1.5rem] flex flex-row gap-[4rem] min-[1000px]:gap-[4rem] [@media(min-height:670px)]:gap-[5rem]">
                         <div className="logo">
                             <img

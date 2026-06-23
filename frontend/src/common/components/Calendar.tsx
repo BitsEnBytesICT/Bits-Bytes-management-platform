@@ -15,7 +15,7 @@ const calendars = [
     },
 ];
 
-export default function Agenda() {
+export default function Calendar() {
     const [active, setActive] = useState(0);
 
     return (
@@ -29,7 +29,7 @@ export default function Agenda() {
                 </div>
             </div>
 
-            <div className="flex flex-row gap-[0.75rem]">
+            <div className="flex flex-row gap-[1.5rem]">
                 {calendars.map((calendar, i) => (
                     <Button
                         icon={<img src={IconCalendar} />}

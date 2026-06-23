@@ -11,9 +11,9 @@ import {
 } from "../../assets";
 import DeelnemerDashboard from "../../pages/DeelnemerDashboard/deelnemerDashboard";
 import ZorgDashboard from "../../pages/ZorgDashboard/ZorgDashboard";
-import type {NavigationItem} from "../../types/navigation/navigation";
+import type {INavigationItem} from "../../types/navigation/INavigation";
 
-export const navigationItemsMenu: NavigationItem[] = [
+export const navigationItemsMenu: INavigationItem[] = [
     {
         name: "Dashboard",
         path: "/",
@@ -47,7 +47,7 @@ export const navigationItemsMenu: NavigationItem[] = [
     },
 ];
 
-export const navigationItemsBeheer: NavigationItem[] = [
+export const navigationItemsBeheer: INavigationItem[] = [
     {
         name: "VM's",
         path: "/VMs",
@@ -60,7 +60,7 @@ export const navigationItemsBeheer: NavigationItem[] = [
     },
 ];
 
-export const navigationItemsAccount: NavigationItem[] = [
+export const navigationItemsAccount: INavigationItem[] = [
     {
         name: "Instellingen",
         path: "/settings",

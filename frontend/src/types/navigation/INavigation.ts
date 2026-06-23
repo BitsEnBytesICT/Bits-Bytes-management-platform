@@ -1,6 +1,6 @@
 import type {JSX} from "react";
 
-export interface NavigationItem {
+export interface INavigationItem {
     name: string;
     path: string;
     icon: string;
