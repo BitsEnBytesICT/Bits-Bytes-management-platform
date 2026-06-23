@@ -14,10 +14,6 @@ const columnLabels: Record<keyof IDeelnemer, string> = {
     product: "Plaats",
 };
 
-const tableColumnsStyle: React.CSSProperties = {
-    color: "color-mix(in srgb, var(--color-darkblue) 50%, transparent)",
-    backgroundColor: "color-mix(in srgb, var(--color-darkblue) 2%, transparent)",
-};
 
 const tempData: IDeelnemer[] = [
     {
@@ -146,7 +142,7 @@ export default function DeelnemerTable({tableColumns}: IDeelnemerTable) {
 
     return (
         <div className="w-full pr-[0.75rem]">
-            <div className="flex flex-row rounded-lg" style={tableColumnsStyle}>
+            <div className="flex flex-row rounded-lg text-[color-mix(in_srgb,var(--color-darkblue)_50%,transparent)] bg-[color-mix(in_srgb,var(--color-darkblue)_2%,transparent)]">
                 {tableColumns.map(col => (
                     <div key={col} className="flex-1 px-[1rem] py-[0.75rem] text-sm font-medium">
                         {columnLabels[col]}

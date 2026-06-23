@@ -4,7 +4,7 @@ import {navigationItemsAccount, navigationItemsBeheer, navigationItemsMenu} from
 export default function MainBody({setIsOpen}) {
     const routes = navigationItemsMenu.concat(navigationItemsBeheer).concat(navigationItemsAccount);
 
-    const currentAccountType: string = "zorg"; //dit is als test totdat we een login hebben!
+    const currentAccountType: string = "zorg"; // dit is als test totdat we een login hebben!
     return (
         <div
             onClick={() => setIsOpen(false)}
