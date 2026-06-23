@@ -19,17 +19,18 @@ export default function Calendar() {
     const [active, setActive] = useState(0);
 
     return (
-        <div className="flex flex-col gap-[1rem]">
+        <div className="flex flex-col gap-4">
             <div className="overflow-hidden">
                 <div
-                    className={`flex w-[200%] transition-transform duration-400 ease-in-out ${active === 0 ? "translate-x-0" : "-translate-x-1/2"}`}>
+                    className={`flex w-[200%] transition-transform duration-400 ease-in-out
+                        ${active === 0 ? "translate-x-0" : "-translate-x-1/2"}`}>
                     {calendars.map(calendar => (
                         <iframe key={calendar.label} className="h-100 w-1/2 border-0" src={calendar.url} />
                     ))}
                 </div>
             </div>
 
-            <div className="flex flex-row gap-[1.5rem]">
+            <div className="flex flex-row gap-6">
                 {calendars.map((calendar, i) => (
                     <Button
                         icon={<img src={IconCalendar} />}

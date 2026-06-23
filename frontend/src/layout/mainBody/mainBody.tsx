@@ -1,19 +1,20 @@
 import {Routes, Route} from "react-router-dom";
-import {navigationItemsAccount, navigationItemsBeheer, navigationItemsMenu} from "../navigation/navigation.config";
+import {navigationItemsAccount, navigationItemsAdmin, navigationItemsMenu} from "../navigation/Navigation.config";
 
 export default function MainBody({setIsOpen}) {
-    const routes = navigationItemsMenu.concat(navigationItemsBeheer).concat(navigationItemsAccount);
+    const routes = navigationItemsMenu.concat(navigationItemsAdmin).concat(navigationItemsAccount);
 
-    const currentAccountType: string = "zorg"; // dit is als test totdat we een login hebben!
+    const currentAccountType: string = "support"; // dit is als test totdat we een login hebben!
+
     return (
         <div
             onClick={() => setIsOpen(false)}
-            className={`absolute top-1/2 left-1/2 z-0 h-[90vh] w-[80vw] -translate-x-1/2 -translate-y-1/2 rounded-xl transition-all duration-400`}>
+            className={"mx-auto my-20 w-[80vw] max-w-350 z-0 transition-all duration-400"}>
             <Routes>
                 {routes.map(route => {
-                    if (route.path === "/" && currentAccountType === "zorg") {
+                    if (route.path === "/" && currentAccountType === "support") {
                         return <Route path={route.path} element={route.page[0]} />;
-                    } else if (route.path === "/" && currentAccountType === "deelnemer") {
+                    } else if (route.path === "/" && currentAccountType === "participant") {
                         return <Route path={route.path} element={route.page[1]} />;
                     } else return <Route path={route.path} element={route.page} />;
                 })}

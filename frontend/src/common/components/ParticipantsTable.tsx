@@ -1,7 +1,7 @@
-import type IDeelnemer from "../../types/compontents/IDeelnemer";
-import type IDeelnemerTable from "../../types/compontents/IDeelnemerTable";
+import type IParticipant from "../../types/compontents/IParticipant";
+import type IParticipantsTable from "../../types/compontents/IParticipantsTable";
 
-const columnLabels: Record<keyof IDeelnemer, string> = {
+const columnLabels: Record<keyof IParticipant, string> = {
     id: "ID",
     firstname: "Naam",
     lastname: "Achternaam",
@@ -14,7 +14,7 @@ const columnLabels: Record<keyof IDeelnemer, string> = {
     product: "Plaats",
 };
 
-const tempData: IDeelnemer[] = [
+const tempData: IParticipant[] = [
     {
         id: 1,
         firstname: "John",
@@ -113,8 +113,8 @@ const tempData: IDeelnemer[] = [
     },
 ];
 
-export default function DeelnemerTable({tableColumns}: IDeelnemerTable) {
-    function renderColumn(column: keyof IDeelnemer, row: IDeelnemer): React.ReactNode {
+export default function DeelnemerTable({tableColumns}: IParticipantsTable) {
+    function renderColumn(column: keyof IParticipant, row: IParticipant): React.ReactNode {
         if (column === "active") {
             const present = row.clockedin === 1;
             return (
@@ -127,11 +127,11 @@ export default function DeelnemerTable({tableColumns}: IDeelnemerTable) {
         return <span>{String(row[column])}</span>;
     }
 
-    function renderRow(row: IDeelnemer) {
+    function renderRow(row: IParticipant) {
         return (
             <div key={row.id} className="flex flex-row">
                 {tableColumns.map(col => (
-                    <div key={col} className="flex-1 px-[1rem] py-[1rem] text-sm font-semibold">
+                    <div key={col} className="px-4 py-4 flex-1 text-sm font-semibold">
                         {renderColumn(col, row)}
                     </div>
                 ))}
@@ -140,16 +140,19 @@ export default function DeelnemerTable({tableColumns}: IDeelnemerTable) {
     }
 
     return (
-        <div className="w-full pr-[0.75rem]">
-            <div className="flex flex-row rounded-lg bg-(--color-darkblue)/2 text-(--color-darkblue)/50">
+        <div className="pr-3 w-full">
+            <div className="flex flex-row text-(--color-darkblue)/50 rounded-lg bg-(--color-darkblue)/2">
                 {tableColumns.map(col => (
-                    <div key={col} className="flex-1 px-[1rem] py-[0.75rem] text-sm font-medium">
+                    <div key={col} className="px-4 py-3 flex-1 text-sm font-medium">
                         {columnLabels[col]}
                     </div>
                 ))}
             </div>
 
-            <div className="-mr-[0.30rem] max-h-[16rem] overflow-y-scroll [&::-webkit-scrollbar]:w-[0.30rem] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-(--color-black)/10 [&::-webkit-scrollbar-track]:bg-transparent">
+            <div
+                className="-mr-[0.30rem] overflow-y-scroll max-h-64 [&::-webkit-scrollbar]:w-[0.30rem]
+                    [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-(--color-black)/10
+                    [&::-webkit-scrollbar-track]:bg-transparent">
                 {tempData.map(row => renderRow(row))}
             </div>
         </div>

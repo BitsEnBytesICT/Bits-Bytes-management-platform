@@ -1,32 +1,33 @@
 import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import Card from "../../common/components/Card";
-import DeelnemerTable from "../../common/components/DeelnemerTable";
+import ParticipantsTable from "../../common/components/ParticipantsTable";
 import Button from "../../common/components/Button";
-import Agenda from "../../common/components/Calendar";
+import FloorPlans from "../../common/components/FloorPlans";
+import Calendar from "../../common/components/Calendar";
 
 import {IconAddUser, IconExport, IconLink} from "../../assets";
-import Calendar from "../../common/components/Calendar";
-import FloorPlans from "../../common/components/FloorPlans";
 
-export default function ZorgDashboard() {
+export default function SupportDashboard() {
     return (
         <>
-            <div className="mx-auto flex max-w-[87.5rem] flex-col gap-25">
+            <div className="flex flex-col gap-25">
                 <div className="flex flex-row justify-between">
-                    <div className="flex flex-col gap-[1.5rem]">
+                    <div className="flex flex-col gap-6">
                         <div className="text-[22px] font-semibold text-(--color-darkblue)">Dashboard</div>
+
                         <DateTimeDisplay />
                     </div>
 
-                    <div className="flex flex-row gap-[2rem] min-[1000px]:gap-[4rem]">
+                    <div className="flex flex-row gap-8 min-[1000px]:gap-16">
                         <Card title="Deelnemers aanwezig:" value={17} />
+
                         <Card title="Deelnemers totaal:" value={40} />
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-[1rem]">
+                <div className="flex flex-col gap-4">
                     <div className="flex flex-row justify-between">
-                        <div className="flex flex-row gap-[1.5rem]">
+                        <div className="flex flex-row gap-6">
                             <Button
                                 icon={<img src={IconLink} />}
                                 label="Cliendo"
@@ -40,7 +41,7 @@ export default function ZorgDashboard() {
                             />
                         </div>
 
-                        <div className="flex flex-row gap-[1.5rem]">
+                        <div className="flex flex-row gap-6">
                             <Button
                                 icon={<img src={IconAddUser} />}
                                 label="Deelnemer toevoegen"
@@ -55,7 +56,7 @@ export default function ZorgDashboard() {
                         </div>
                     </div>
 
-                    <DeelnemerTable tableColumns={["firstname", "lastname", "organisation", "product", "active"]} />
+                    <ParticipantsTable tableColumns={["firstname", "lastname", "organisation", "product", "active"]} />
                 </div>
 
                 <FloorPlans />

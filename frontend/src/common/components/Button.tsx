@@ -4,7 +4,7 @@ export default function Button({icon, label, active, onClick}: IButton) {
     return (
         <button
             onClick={onClick}
-            className={`flex cursor-pointer appearance-none flex-row gap-[0.625rem] rounded-lg px-[0.75rem] py-[0.5rem] shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)] transition-colors duration-300 ease-in-out hover:bg-(--color-darkblue)/10 ${active ? "bg-(--color-darkblue)/5" : "bg-(--color-white)"}`}>
+            className={`px-3 py-2 flex flex-row gap-2.5 appearance-none rounded-lg shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)] ${active ? "bg-(--color-darkblue)/5" : "bg-(--color-white)"} hover:bg-(--color-darkblue)/10 cursor-pointer transition-colors duration-300 ease-in-out`}>
             {icon}
 
             <span className="text-sm font-semibold text-(--color-darkblue)">{label}</span>

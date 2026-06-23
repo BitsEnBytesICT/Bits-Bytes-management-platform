@@ -31,17 +31,6 @@
     font-style: normal;
 } */
 
-*,
-:root,
-*::before,
-*::after {
-    /* margin: 0;
-    padding: 0;
-    box-sizing: border-box; */
-
-    /* overflow-x: hidden; */
-}
-
 html {
     font-family: "Outfit", sans-serif;
     color: var(--color-offblack);
@@ -53,8 +42,6 @@ html {
 
 body {
     background: var(--color-offwhite);
-
-    height: 100%;
 }
 
 input,

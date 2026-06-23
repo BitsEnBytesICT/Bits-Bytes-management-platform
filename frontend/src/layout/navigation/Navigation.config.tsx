@@ -1,44 +1,46 @@
+import ParticipantDashboard from "../../pages/ParticipantDashboard/ParticipantDashboard";
+import SupportDashboard from "../../pages/SupportDashboard/SupportDashboard";
+
+import type {INavigationItem} from "../../types/navigation/INavigation";
+
 import {
     IconDashboard,
-    IconDeelnemers,
-    IconHandtekeningen,
-    IconInventarisatie,
-    IconKennisbank,
+    IconParticipant,
+    IconSignature,
+    IconInventory,
+    IconKnowledgeBase,
     IconVMs,
     IconVPNs,
     IconSettings,
     IconLogout,
 } from "../../assets";
-import DeelnemerDashboard from "../../pages/DeelnemerDashboard/deelnemerDashboard";
-import ZorgDashboard from "../../pages/ZorgDashboard/ZorgDashboard";
-import type {INavigationItem} from "../../types/navigation/INavigation";
 
 export const navigationItemsMenu: INavigationItem[] = [
     {
         name: "Dashboard",
         path: "/",
         icon: IconDashboard,
-        page: [<ZorgDashboard />, <DeelnemerDashboard />],
+        page: [<SupportDashboard />, <ParticipantDashboard />],
     },
     {
         name: "Deelnemers",
         path: "/deelnemers",
-        icon: IconDeelnemers,
+        icon: IconParticipant,
     },
     {
         name: "Handtekeningen",
         path: "/handtekeningen",
-        icon: IconHandtekeningen,
+        icon: IconSignature,
     },
     {
         name: "Inventarisatie",
         path: "/inventarisatie",
-        icon: IconInventarisatie,
+        icon: IconInventory,
     },
     {
         name: "Kennisbank",
         path: "/kennisbank",
-        icon: IconKennisbank,
+        icon: IconKnowledgeBase,
     },
     {
         name: "Servers",
@@ -47,7 +49,7 @@ export const navigationItemsMenu: INavigationItem[] = [
     },
 ];
 
-export const navigationItemsBeheer: INavigationItem[] = [
+export const navigationItemsAdmin: INavigationItem[] = [
     {
         name: "VM's",
         path: "/VMs",
