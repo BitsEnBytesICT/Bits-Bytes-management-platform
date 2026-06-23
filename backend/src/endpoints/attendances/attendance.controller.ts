@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import ScanService from './attendance.service';
+import AuthenticationDecorator from '../../common/authenticationDecorator';
 
 export default class AttendanceController {
     private service: ScanService;
