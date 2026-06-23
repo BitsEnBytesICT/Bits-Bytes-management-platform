@@ -36,6 +36,7 @@ export default function DateTimeDisplay() {
     return (
         <div className="container_dates">
             <div className="font-black text-(--color-orange)/70">{formattedDate}</div>
+
             <div className="font-black text-(--color-orange)/70">{formattedTime}</div>
         </div>
     );
