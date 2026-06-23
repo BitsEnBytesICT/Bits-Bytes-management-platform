@@ -1,30 +1,28 @@
 import {useState} from "react";
 import {NavLink} from "react-router-dom";
 
-import {navigationItemsMenu, navigationItemsAdmin, navigationItemsAccount} from "./Navigation.config";
+import {navigationItemsMenu, navigationItemsIT, navigationItemsAccount} from "./Navigation.config";
 
 import type {INavigationItem} from "../../types/navigation/INavigation";
 
 import {ShapeLeft, ShapeRight, ButtonMenu, LogoWhite} from "../../assets";
 
 export default function Navigation({isOpen, setIsOpen}) {
-    const [versionNumber, setVersionNumber] = useState("0.0.0"); // get the version number through .env?
+    const [versionNumber, setVersionNumber] = useState("0.0.0");
 
     const navMenuItem = (item: INavigationItem) => (
-        <>
-            <div className="flex items-center gap-2.5 cursor-pointer" key={item.path}>
-                <img src={item.icon} className="shrink-0 h-fit w-fit select-none [-webkit-user-drag:none]" />
+        <div key={item.path} className="flex items-center gap-2.5 cursor-pointer">
+            <img src={item.icon} className="shrink-0 h-fit w-fit select-none [-webkit-user-drag:none]" />
 
-                <NavLink
-                    to={item.path}
-                    className={({isActive}) =>
-                        `${isActive ? "text-(--color-orange)" : "text-(--color-offwhite)"} hover:text-(--color-orange)
-                        transition-colors duration-300 ease`
-                    }>
-                    {item.name}
-                </NavLink>
-            </div>
-        </>
+            <NavLink
+                to={item.path}
+                className={({isActive}) =>
+                    `${isActive ? "text-(--color-orange)" : "text-(--color-offwhite)"} hover:text-(--color-orange)
+                    transition-colors duration-300 ease`
+                }>
+                {item.name}
+            </NavLink>
+        </div>
     );
 
     return (
@@ -69,7 +67,7 @@ export default function Navigation({isOpen, setIsOpen}) {
                                 <path
                                     d="M0.864258 17.9028L9.86426 9.51617L0.864258 0.902832"
                                     stroke="currentColor"
-                                    stroke-width="2.5"
+                                    strokeWidth="2.5"
                                 />
                             </svg>
                         </div>
@@ -97,7 +95,7 @@ export default function Navigation({isOpen, setIsOpen}) {
                                     Beheer
                                 </div>
 
-                                {navigationItemsAdmin.map(item => navMenuItem(item))}
+                                {navigationItemsIT.map(item => navMenuItem(item))}
                             </div>
 
                             <div className="flex flex-col gap-3.5">

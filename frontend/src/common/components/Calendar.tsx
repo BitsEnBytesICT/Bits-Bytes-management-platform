@@ -33,6 +33,7 @@ export default function Calendar() {
             <div className="flex flex-row gap-6">
                 {calendars.map((calendar, i) => (
                     <Button
+                        key={calendar.label}
                         icon={<img src={IconCalendar} />}
                         label={calendar.label}
                         active={active === i}

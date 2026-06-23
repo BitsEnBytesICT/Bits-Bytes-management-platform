@@ -49,7 +49,7 @@ export const navigationItemsMenu: INavigationItem[] = [
     },
 ];
 
-export const navigationItemsAdmin: INavigationItem[] = [
+export const navigationItemsIT: INavigationItem[] = [
     {
         name: "VM's",
         path: "/VMs",

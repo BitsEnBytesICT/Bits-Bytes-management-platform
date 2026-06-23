@@ -16,6 +16,7 @@ export {default as IconAddUser} from "./ui/icon-adduser.svg";
 export {default as IconExport} from "./ui/icon-export.svg";
 export {default as IconLink} from "./ui/icon-link.svg";
 export {default as IconCalendar} from "./ui/icon-calendar.svg";
+export {default as IconProduct} from "./ui/icon-product.svg";
 
 // logo
 export {default as LogoWhite} from "./logo/logo-white.svg";
