@@ -15,6 +15,9 @@
 
     --color-black: #000000;
     --color-offblack: #414141;
+
+    --color-red: #ff6b6b;
+    --color-green: #60f376;
 }
 
 /* @font-face {
@@ -52,6 +55,10 @@ button {
 }
 
 @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }

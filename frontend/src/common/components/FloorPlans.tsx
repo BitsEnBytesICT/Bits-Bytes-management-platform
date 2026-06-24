@@ -21,7 +21,7 @@ export default function FloorPlans() {
                 {floorPlans.map((plan, i) => (
                     <Button
                         key={plan.label}
-                        icon={<img src={IconProduct} />}
+                        icon={<img className="select-none [-webkit-user-drag:none]" src={IconProduct} />}
                         label={plan.label}
                         active={active === i}
                         onClick={() => setActive(i)}

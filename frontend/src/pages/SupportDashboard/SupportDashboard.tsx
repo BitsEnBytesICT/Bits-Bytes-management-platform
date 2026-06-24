@@ -29,13 +29,13 @@ export default function SupportDashboard() {
                     <div className="flex flex-row justify-between">
                         <div className="flex flex-row gap-6">
                             <Button
-                                icon={<img src={IconLink} />}
+                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconLink} />}
                                 label="Cliendo"
                                 onClick={() => window.open("https://www.google.nl", "_blank")}
                             />
 
                             <Button
-                                icon={<img src={IconLink} />}
+                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconLink} />}
                                 label="ZilliZ"
                                 onClick={() => window.open("https://www.google.nl", "_blank")}
                             />
@@ -43,13 +43,13 @@ export default function SupportDashboard() {
 
                         <div className="flex flex-row gap-6">
                             <Button
-                                icon={<img src={IconAddUser} />}
+                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconAddUser} />}
                                 label="Deelnemer toevoegen"
                                 onClick={() => console.log("must be a different action")}
                             />
 
                             <Button
-                                icon={<img src={IconExport} />}
+                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconExport} />}
                                 label="Exporteer"
                                 onClick={() => console.log("must be a different action")}
                             />

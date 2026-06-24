@@ -118,13 +118,13 @@ export default function DeelnemerTable({tableColumns}: IParticipantsTable) {
         if (column === "active") {
             const present = row.clockedin === 1;
             return (
-                <span className={present ? "font-semibold text-green-400" : "font-semibold text-red-400"}>
+                <div className={present ? "font-semibold text-(--color-green)" : "font-semibold text-(--color-red)"}>
                     {present ? "Aanwezig" : "Afwezig"}
-                </span>
+                </div>
             );
         }
 
-        return <span>{String(row[column])}</span>;
+        return <div>{String(row[column])}</div>;
     }
 
     function renderRow(row: IParticipant) {

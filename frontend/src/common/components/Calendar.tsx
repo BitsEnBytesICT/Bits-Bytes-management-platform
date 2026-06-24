@@ -34,7 +34,7 @@ export default function Calendar() {
                 {calendars.map((calendar, i) => (
                     <Button
                         key={calendar.label}
-                        icon={<img src={IconCalendar} />}
+                        icon={<img className="select-none [-webkit-user-drag:none]" src={IconCalendar} />}
                         label={calendar.label}
                         active={active === i}
                         onClick={() => setActive(i)}
