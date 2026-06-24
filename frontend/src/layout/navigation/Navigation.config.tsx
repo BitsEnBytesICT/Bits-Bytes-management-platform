@@ -1,44 +1,46 @@
+import ParticipantDashboard from "../../pages/ParticipantDashboard/ParticipantDashboard";
+import SupportDashboard from "../../pages/SupportDashboard/SupportDashboard";
+
+import type {INavigationItem} from "../../types/navigation/INavigation";
+
 import {
     IconDashboard,
-    IconDeelnemers,
-    IconHandtekeningen,
-    IconInventarisatie,
-    IconKennisbank,
+    IconParticipant,
+    IconSignature,
+    IconInventory,
+    IconKnowledgeBase,
     IconVMs,
     IconVPNs,
     IconSettings,
     IconLogout,
 } from "../../assets";
-import deelnemerDashboard from "../../pages/deelnemerDashboard/deelnemerDashboard";
-import zorgDashboard from "../../pages/zorgDashboard/zorgDashboard";
-import type {NavigationItem} from "../../types/navigation/navigation";
 
-export const navigationItemsMenu: NavigationItem[] = [
+export const navigationItemsMenu: INavigationItem[] = [
     {
         name: "Dashboard",
         path: "/",
         icon: IconDashboard,
-        page: [zorgDashboard(), deelnemerDashboard()],
+        page: [<SupportDashboard />, <ParticipantDashboard />],
     },
     {
         name: "Deelnemers",
         path: "/deelnemers",
-        icon: IconDeelnemers,
+        icon: IconParticipant,
     },
     {
         name: "Handtekeningen",
         path: "/handtekeningen",
-        icon: IconHandtekeningen,
+        icon: IconSignature,
     },
     {
         name: "Inventarisatie",
         path: "/inventarisatie",
-        icon: IconInventarisatie,
+        icon: IconInventory,
     },
     {
         name: "Kennisbank",
         path: "/kennisbank",
-        icon: IconKennisbank,
+        icon: IconKnowledgeBase,
     },
     {
         name: "Servers",
@@ -47,7 +49,7 @@ export const navigationItemsMenu: NavigationItem[] = [
     },
 ];
 
-export const navigationItemsBeheer: NavigationItem[] = [
+export const navigationItemsIT: INavigationItem[] = [
     {
         name: "VM's",
         path: "/VMs",
@@ -60,7 +62,7 @@ export const navigationItemsBeheer: NavigationItem[] = [
     },
 ];
 
-export const navigationItemsAccount: NavigationItem[] = [
+export const navigationItemsAccount: INavigationItem[] = [
     {
         name: "Instellingen",
         path: "/settings",
