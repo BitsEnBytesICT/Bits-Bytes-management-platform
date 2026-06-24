@@ -1,15 +1,19 @@
-import daoBase from "../../common/daoBase";
 import serviceBase from "../../common/serviceBase";
 import IPermissions from "../../types/permissions/IPermissions";
 import IPermissionsDB from "../../types/permissions/IPermissionsDB";
-import { PermissionsList } from "../../types/permissions/permissionsList";
-import { Roles } from "../../types/permissions/rolesList";
-import permissionsValidator from "../../validators/permissions/PermissionsValidator";
+import { permissionsValidator } from "../../validators/PermissionsValidator";
 import PermissionsDAO from "./permissions.dao";
-
 
 export default class PermissionsService implements serviceBase<object> {
     dao: PermissionsDAO;
+
+    constructor() {
+        this.dao = new PermissionsDAO();
+    }
+
+    findOne(...args: never[]): object {
+        throw new Error("Method not implemented.");
+    }
 
     create(permissions: IPermissions): void {
         const validationResult = permissionsValidator(permissions);
@@ -26,12 +30,14 @@ export default class PermissionsService implements serviceBase<object> {
     update(...args: any[]): void {
         throw new Error("Method not implemented.");
     }
+
     delete(...args: any[]): void {
         throw new Error("Method not implemented.");
     }
+
     list(): IPermissions[] {
         return this.dao.list().map((item) => 
-            ({role: Roles[item.role], permissions: item.permissions.split(";").map((permission) => 
-                PermissionsList[permission])}));
+            ({role: item.role, permissions: item.permissions.split(";").map((permission) => 
+                permission)} as IPermissions));
     }
 }

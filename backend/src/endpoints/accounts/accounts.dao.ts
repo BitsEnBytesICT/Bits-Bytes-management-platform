@@ -1,8 +1,13 @@
-import daoBase from "../../common/daoBase";
+import { daoBase, daoBaseType } from "../../common/daoBase";
+import { dbAll } from "../../common/db";
+import { KeyValuePair } from "../../common/Validator";
 import IAccount from "../../types/accounts/IAccount";
 
-export default class AccountDAO implements daoBase<IAccount> {
+export default class AccountDAO extends daoBase<IAccount> implements daoBaseType<IAccount> {
 
+    findOne(...args: KeyValuePair<IAccount>[]): IAccount {
+        throw new Error("Method not implemented.");
+    }
     create(...args: any[]): void {
         throw new Error("Method not implemented.");
     }
@@ -13,6 +18,6 @@ export default class AccountDAO implements daoBase<IAccount> {
         throw new Error("Method not implemented.");
     }
     list(...args: any[]): IAccount[] {
-        throw new Error("Method not implemented.");
+        return dbAll('SELECT * FROM Accounts');
     }
 }

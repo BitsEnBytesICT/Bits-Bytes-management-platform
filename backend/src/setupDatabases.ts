@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 
 const db = new Database('database.db', { verbose: console.log });
+db.pragma('foreign_keys = OFF');
 
 const inventoryDB = new Database('inventoryDatabase.db', { verbose: console.log });
 
@@ -30,7 +31,7 @@ db.prepare(`CREATE TABLE IF NOT EXISTS Deelnemers (
     lastname TEXT NOT NULL,
     organisation TEXT NOT NULL,
     account INTEGER NOT NULL,
-    rfid TEXT NOT NULL,
+    rfid TEXT NOT NULL UNIQUE,
     createdAt TEXT NOT NULL,
     active INTEGER NOT NULL,
     clockedin INTEGER,
@@ -39,8 +40,8 @@ db.prepare(`CREATE TABLE IF NOT EXISTS Deelnemers (
     )`
 ).run();
 
-db.prepare(`DROP TABLE IF EXISTS Signature`).run();
-db.prepare(`CREATE TABLE IF NOT EXISTS Signature (
+db.prepare(`DROP TABLE IF EXISTS Signatures`).run();
+db.prepare(`CREATE TABLE IF NOT EXISTS Signatures (
     id INTEGER PRIMARY KEY,
     deelnemerID INTEGER NOT NULL,
     date TEXT NOT NULL,
@@ -59,6 +60,10 @@ db.prepare(`CREATE TABLE IF NOT EXISTS Attendances (
     FOREIGN KEY(deelnemerID) REFERENCES Deelnemers(id)
     )`
 ).run();
+
+db.prepare(`CREATE UNIQUE INDEX unique_one_null_clockout
+    ON Attendances(deelnemerID)
+    WHERE clockoutDate IS NULL;`).run();
 
 db.prepare(`DROP TABLE IF EXISTS Rooms`).run();
 db.prepare(`CREATE TABLE IF NOT EXISTS Rooms (
@@ -106,3 +111,17 @@ inventoryDB.prepare(`CREATE TABLE IF NOT EXISTS Categories (
     name TEXT NOT NULL
     )`
 ).run();
+
+db.pragma('foreign_keys = ON');
+
+db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('admin', 'all');
+db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('medewerker', 'clockin');
+
+db.prepare("INSERT INTO Accounts (firstname, lastname, role, password) VALUES (?, ?, ?, ?)").run('Systeem', 'Admin', 'admin', 'changeme');
+
+const now = new Date().toISOString();
+db.prepare("INSERT INTO Deelnemers (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, product) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Jan', 'de Vries', 'IT Afdeling', 1, '11F3EF12', now, 1, 0, 'Develop');
+db.prepare("INSERT INTO Deelnemers (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, product) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Maria', 'Jansen', 'HR', 1, '4D6108F9', now, 1, 1, 'Zorg');
+db.prepare("INSERT INTO Deelnemers (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, product) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Peter', 'Bakker', 'Facilitair', 1, '98765432', now, 1, 0, 'Dagbesteding');
+
+console.log('Seed data inserted');
