@@ -6,7 +6,11 @@ import IError from './types/error/IError';
 import { assertNever } from './common/Validator';
 import HealthRouter from './endpoints/health/health.routes';
 import attendanceRouter from './endpoints/attendances/attendance.routes';
-import './setupDatabases';
+import { setupDatabase } from './setupDatabases';
+import { createConnection } from './common/db';
+
+if (process.env.DATABASE_TYPE === "sqllite") setupDatabase();
+else if (process.env.DATABASE_TYPE === "mysql") createConnection();
 
 const app: Express = express();
 

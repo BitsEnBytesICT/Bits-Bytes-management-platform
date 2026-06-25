@@ -20,13 +20,13 @@ export async function BuildEnforcerPolicies() {
     try {
         console.log("Rebuilding Enforcer");
         enforcerInstance.clearPolicy();
-        const RolesAndPermissions = permissionsSerivce.list();
+        const RolesAndPermissions = await permissionsSerivce.list();
         for (const roleAndPermission of RolesAndPermissions) {
             for (const permission of roleAndPermission.permissions) {
                 await enforcerInstance.addPermissionForUser(roleAndPermission.role, permission);
             }
         }
-        const accounts = accountService.list();
+        const accounts = await accountService.list();
         for (const account of accounts) {
             await enforcerInstance.addRoleForUser(`${account.firstname} ${account.lastname}`, account.role);
         }

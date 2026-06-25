@@ -6,6 +6,6 @@ export default interface serviceBase<a> {
     create(...args: any[]): void;
     update(where: KeyValuePair<a>, ...args: KeyValuePair<a>[]): void;
     delete(...args: any[]): void;
-    list(...args: any[]): a[];
-    findOne(...args: KeyValuePair<a>[]): a;
+    list(...args: any[]): Promise<a[]>;
+    findOne(...args: KeyValuePair<a>[]): Promise<a>;
 }

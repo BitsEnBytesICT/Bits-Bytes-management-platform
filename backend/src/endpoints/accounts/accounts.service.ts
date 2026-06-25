@@ -10,7 +10,7 @@ export default class AccountService implements serviceBase<IAccount> {
         this.dao = new AccountDAO();
     }
 
-    findOne(...args: KeyValuePair<IAccount>[]): IAccount {
+    async findOne(...where: KeyValuePair<IAccount>[]): Promise<IAccount> {
         throw new Error("Method not implemented.");
     }
 
@@ -23,7 +23,7 @@ export default class AccountService implements serviceBase<IAccount> {
     delete(...args: any[]): void {
         throw new Error("Method not implemented.");
     }
-    list(): IAccount[] {
-        return this.dao.list();
+    async list(): Promise<IAccount[]> {
+        return await this.dao.list();
     }
 }

@@ -5,19 +5,19 @@ import IPermissionsDB from "../../types/permissions/IPermissionsDB";
 
 export default class PermissionsDAO extends daoBase<IPermissionsDB> implements daoBaseType<IPermissionsDB> {
 
-    findOne(...args: KeyValuePair<IPermissionsDB>[]): IPermissionsDB {
+    async findOne(...where: KeyValuePair<IPermissionsDB>[]): Promise<IPermissionsDB> {
         throw new Error("Method not implemented.");
     }
-    create(permissions: IPermissionsDB): void {
-        dbQuery('INSERT INTO Permissions (role, permissions) VALUES (?, ?)', [permissions.role, permissions.permissions]);
+    async create(permissions: IPermissionsDB) {
+        await dbQuery('INSERT INTO Permissions (role, permissions) VALUES (?, ?)', [permissions.role, permissions.permissions]);
     }
-    update(...args: any[]): void {
+    update(...values: any[]): void {
         throw new Error("Method not implemented.");
     }
-    delete(...args: any[]): void {
+    delete(...where: any[]): void {
         throw new Error("Method not implemented.");
     }
-    list(): IPermissionsDB[] {
-        return dbAll('SELECT * FROM Permissions');
+    async list(): Promise<IPermissionsDB[]> {
+        return await dbAll('SELECT * FROM Permissions');
     }   
 }
