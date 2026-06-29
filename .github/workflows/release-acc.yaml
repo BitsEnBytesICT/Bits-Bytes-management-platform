@@ -1,0 +1,49 @@
+name: Release ACC
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  build-and-deploy-acc:
+    if: ${{ github.event.pull_request.merged == true }}
+    runs-on: [self-hosted]
+
+    steps:
+      - name: Checkout merged commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Build backend
+        working-directory: ./backend
+        run: npm run build
+
+      - name: Build Docker images
+        run: docker-compose -f compose-acc.yaml build
+
+      - name: Push Docker images
+        run: docker-compose -f compose-acc.yaml push
+
+      - name: Deploy to Kubernetes
+        run: kubectl apply -f ./deployment-ACC.yaml

@@ -1,5 +1,4 @@
 #dev
-
 FROM node:22-bookworm AS bitsenbytesfrontend
 RUN apt-get update
 RUN apt-get install iputils-ping -y
@@ -17,6 +16,16 @@ COPY ./backend/package-lock.json ./backend/package-lock.json
 COPY ./backend/package.json ./backend/package.json
 WORKDIR /usr/src/backend
 RUN npm ci --no-audit --no-fund
+
+#acc
+FROM nginx:stable-alpine-perl as bitsenbytesfrontendACC
+COPY ./frontend/dist /usr/share/nginx/html
+FROM node:22-bookworm AS bitsenbytesbackendACC
+COPY ./backend/dist /usr/backend
+COPY ./backend/package.json /usr/backend/package.json
+WORKDIR /usr/backend
+RUN npm i
+CMD ["node", "/usr/backend/index.js"]
 
 # prod
 FROM nginx:stable-alpine-perl as bitsenbytesfrontendPROD
