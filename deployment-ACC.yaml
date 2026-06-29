@@ -76,8 +76,49 @@ spec:
     spec:
       containers:
         - name: bitsenbytes-backend-acc
-          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesbackendACC_0.0.6
+          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesbackendACC_0.0.7
           imagePullPolicy: Always
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: NODE_ENV
+            - name: DATABASE_TYPE
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_TYPE
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_USERNAME
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_PASSWORD
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_NAME
+            - name: INVENTORYDB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: INVENTORYDB_NAME
+            - name: DATABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_PORT
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_URL
 ---
 apiVersion: v1
 kind: Service
