@@ -1,4 +1,3 @@
-import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import Card from "../../common/components/Card";
 import ParticipantsTable from "../../common/components/ParticipantsTable";
 import Button from "../../common/components/Button";
@@ -6,6 +5,7 @@ import FloorPlans from "../../common/components/FloorPlans";
 import Calendar from "../../common/components/Calendar";
 
 import {IconAddUser, IconExport, IconLink} from "../../assets";
+import DateTimeDisplay from "../../common/components/dateTimeDisplay";
 
 export default function SupportDashboard() {
     return (
