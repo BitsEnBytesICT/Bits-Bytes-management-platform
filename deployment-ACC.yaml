@@ -133,6 +133,22 @@ spec:
       targetPort: 3000
   type: ClusterIP
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bitsenbytes-backend-secret
+  namespace: bitsenbytes-management-platform
+type: Opaque
+stringData:
+  NODE_ENV: "production"
+  DATABASE_TYPE: "mysql"
+  DATABASE_URL: "bitsenbytes-mysql"
+  DATABASE_USERNAME: "bitsenbytes"
+  DATABASE_PASSWORD: "password"
+  DATABASE_NAME: "managementDB"
+  INVENTORYDB_NAME: "managementDB"
+  DATABASE_PORT: "3306"
+---
 
 #Mysql
 
@@ -145,7 +161,7 @@ metadata:
 type: Opaque
 stringData:
   MYSQL_ROOT_PASSWORD: "password"
-  MYSQL_DATABASE: "bitsenbytes_prod"
+  MYSQL_DATABASE: "managementDB"
   MYSQL_USER: "bitsenbytes"
   MYSQL_PASSWORD: "password"
 
