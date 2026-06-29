@@ -25,7 +25,7 @@ class MySqlMigrationStore {
                 WHERE id = 1
             `);
 
-            if (rows.length === 0) {
+            if (!rows || rows.length === 0) {
                 callback(null, {
                     lastRun: null,
                     migrations: [],
@@ -85,7 +85,7 @@ export function runMigrations(): Promise<void> {
     return new Promise((resolve, reject) => {
         load(
             {
-                migrationsDirectory: path.resolve(__dirname, "migrations"),
+                migrationsDirectory: "/usr/backend/migrations",
                 stateStore: new MySqlMigrationStore(),
             },
             (loadError, migrationSet) => {

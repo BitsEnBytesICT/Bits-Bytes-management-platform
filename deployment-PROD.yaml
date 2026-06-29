@@ -76,8 +76,49 @@ spec:
     spec:
       containers:
         - name: bitsenbytes-backend-prod
-          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesbackendPROD_0.0.2
+          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesbackendPROD_0.0.2_test_deployment_3
           imagePullPolicy: Always
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: NODE_ENV
+            - name: DATABASE_TYPE
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_TYPE
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_USERNAME
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_PASSWORD
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_NAME
+            - name: INVENTORYDB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: INVENTORYDB_NAME
+            - name: DATABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_PORT
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_URL
 ---
 apiVersion: v1
 kind: Service
@@ -92,6 +133,22 @@ spec:
       targetPort: 3000
   type: ClusterIP
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bitsenbytes-backend-secret
+  namespace: bitsenbytes-management-platform
+type: Opaque
+stringData:
+  NODE_ENV: "production"
+  DATABASE_TYPE: "mysql"
+  DATABASE_URL: "bitsenbytes-mysql"
+  DATABASE_USERNAME: "bitsenbytes"
+  DATABASE_PASSWORD: "password"
+  DATABASE_NAME: "managementDB"
+  INVENTORYDB_NAME: "managementDB"
+  DATABASE_PORT: "3306"
+---
 
 #Mysql
 
@@ -104,10 +161,9 @@ metadata:
 type: Opaque
 stringData:
   MYSQL_ROOT_PASSWORD: "password"
-  MYSQL_DATABASE: "bitsenbytes_prod"
+  MYSQL_DATABASE: "managementDB"
   MYSQL_USER: "bitsenbytes"
   MYSQL_PASSWORD: "password"
-
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

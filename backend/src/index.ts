@@ -8,9 +8,13 @@ import HealthRouter from './endpoints/health/health.routes';
 import attendanceRouter from './endpoints/attendances/attendance.routes';
 import { setupDatabase } from './setupDatabases';
 import { createConnection } from './common/db';
+import { environmentFileChecker } from './common/environmentFileChecker';
+
+environmentFileChecker();
 
 if (process.env.DATABASE_TYPE === "sqllite") setupDatabase();
 else if (process.env.DATABASE_TYPE === "mysql") createConnection();
+
 
 const app: Express = express();
 

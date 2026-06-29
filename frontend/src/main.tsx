@@ -36,7 +36,6 @@ function App() {
         return () => window.removeEventListener("resize", handler);
     }, []);
 
-
     if (isMobile) return <Mobile />;
 
     return (

@@ -14,6 +14,7 @@ export const createConnection = async () => {
         managementDB = await mysql.createConnection({
         host: process.env.DATABASE_URL,
         user: process.env.DATABASE_USERNAME,
+        port: Number(process.env.DATABASE_PORT),
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_NAME,
     });
@@ -21,13 +22,16 @@ export const createConnection = async () => {
     inventoryDB = await mysql.createConnection({
         host: process.env.DATABASE_URL,
         user: process.env.DATABASE_USERNAME,
+        port: Number(process.env.DATABASE_PORT),
         password: process.env.DATABASE_PASSWORD,
         database: process.env.INVENTORYDB_NAME,
     });
 
+    console.log("connected to databases");
     await runMigrations();
+    console.log("finished migrations");
     } catch (error) {
-        console.log("cannot create db connection!!");
+        console.log("cannot create db connection or run migrations!!!");
         console.log(`error: ${error}`);
         await sleep(5000);
         createConnection();

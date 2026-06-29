@@ -21,9 +21,10 @@ RUN npm ci --no-audit --no-fund
 # prod
 FROM nginx:stable-alpine-perl as bitsenbytesfrontendPROD
 COPY ./frontend/dist /usr/share/nginx/html
+
 FROM node:22-bookworm AS bitsenbytesbackendPROD
 COPY ./backend/dist /usr/backend
 COPY ./backend/package.json /usr/backend/package.json
 WORKDIR /usr/backend
-RUN npm i
-CMD ["node", "/usr/backend/index.js"]
+RUN npm i --ignore-scripts
+CMD ["node", "/usr/backend/src/index.js"]

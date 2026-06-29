@@ -4,7 +4,7 @@ services:
   bitsenbytesfrontendPROD:
     mem_limit: 512m
     memswap_limit: 512m
-    image: 10.10.1.110:32000/managementplatform:bitsenbytesfrontendPROD_${VERSION_FRONTEND}
+    image: 10.10.1.110:32000/managementplatform:bitsenbytesfrontendPROD_0.0.4
     container_name: bitsenbytesfrontendPROD
     build:
       context: .
@@ -15,7 +15,7 @@ services:
   bitsenbytesbackendPROD:
     mem_limit: 512m
     memswap_limit: 512m
-    image: 10.10.1.110:32000/managementplatform:bitsenbytesbackendPROD_${VERSION_BACKEND}
+    image: 10.10.1.110:32000/managementplatform:bitsenbytesbackendPROD_0.0.2_test_deployment_3
     container_name: bitsenbytesbackendPROD
     build:
       context: .
