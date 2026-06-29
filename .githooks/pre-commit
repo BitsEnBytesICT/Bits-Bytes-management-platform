@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cmd.exe /c "githooks\pre-commit.cmd"
+exit $?
