@@ -2,31 +2,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bitsenbytes-frontend-prod
+  name: bitsenbytes-frontend-acc
   namespace: bitsenbytes-management-platform
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: bitsenbytes-frontend-prod
+      app: bitsenbytes-frontend-acc
   template:
     metadata:
       labels:
-        app: bitsenbytes-frontend-prod
+        app: bitsenbytes-frontend-acc
     spec:
       containers:
-        - name: bitsenbytes-frontend-prod
-          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesfrontendPROD_0.0.4
+        - name: bitsenbytes-frontend-acc
+          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesfrontendACC_0.0.4
           imagePullPolicy: Always
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: bitsenbytes-frontend-prod
+  name: bitsenbytes-frontend-acc
   namespace: bitsenbytes-management-platform
 spec:
   selector:
-    app: bitsenbytes-frontend-prod
+    app: bitsenbytes-frontend-acc
   ports:
     - port: 8080
       targetPort: 80
@@ -35,18 +35,18 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: bitsenbytes-prod
+  name: bitsenbytes-acc
   namespace: bitsenbytes-management-platform
 spec:
   rules:
-    - host: management.bitsenbytes.net
+    - host: management-acc.bitsenbytes.net
       http:
         paths:
           - path: /api
             pathType: Prefix
             backend:
               service:
-                name: bitsenbytes-backend-prod
+                name: bitsenbytes-backend-acc
                 port:
                   number: 3000
 
@@ -54,7 +54,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: bitsenbytes-frontend-prod
+                name: bitsenbytes-frontend-acc
                 port:
                   number: 8080
 ---
@@ -62,31 +62,31 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bitsenbytes-backend-prod
+  name: bitsenbytes-backend-acc
   namespace: bitsenbytes-management-platform
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: bitsenbytes-backend-prod
+      app: bitsenbytes-backend-acc
   template:
     metadata:
       labels:
-        app: bitsenbytes-backend-prod
+        app: bitsenbytes-backend-acc
     spec:
       containers:
-        - name: bitsenbytes-backend-prod
-          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesbackendPROD_0.0.2
+        - name: bitsenbytes-backend-acc
+          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesbackendACC_0.0.2
           imagePullPolicy: Always
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: bitsenbytes-backend-prod
+  name: bitsenbytes-backend-acc
   namespace: bitsenbytes-management-platform
 spec:
   selector:
-    app: bitsenbytes-backend-prod
+    app: bitsenbytes-backend-acc
   ports:
     - port: 3000
       targetPort: 3000
