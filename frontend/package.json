@@ -10,7 +10,7 @@
         "preview": "vite preview",
         "prettier": "prettier . --write",
         "prettier:check": "prettier . --check",
-        "prepare": "git config --local core.hooksPath ./.githooks"
+        "prepare": "node -e \"require('fs').chmodSync('../.githooks/pre-commit', '755')\" && git config --local core.hooksPath ./.githooks"
     },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^7.2.0",
