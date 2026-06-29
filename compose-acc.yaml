@@ -4,7 +4,7 @@ services:
   bitsenbytesfrontendACC:
     mem_limit: 512m
     memswap_limit: 512m
-    image: 10.10.1.110:32000/managementplatform:bitsenbytesfrontendACC__0.0.4
+    image: 10.10.1.110:32000/managementplatform:bitsenbytesfrontendACC_0.0.4
     container_name: bitsenbytesfrontendACC
     build:
       context: .
@@ -15,7 +15,7 @@ services:
   bitsenbytesbackendACC:
     mem_limit: 512m
     memswap_limit: 512m
-    image: 10.10.1.110:32000/managementplatform:bitsenbytesbackendACC__0.0.4
+    image: 10.10.1.110:32000/managementplatform:bitsenbytesbackendACC_0.0.4
     container_name: bitsenbytesbackendACC
     build:
       context: .
