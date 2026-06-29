@@ -24,8 +24,10 @@ COPY ./frontend/dist /usr/share/nginx/html
 FROM node:22-bookworm AS bitsenbytesbackendACC
 COPY ./backend/dist /usr/backend
 COPY ./backend/package.json /usr/backend/package.json
+COPY ./backend/package-lock.json ./backend/package-lock.json
 WORKDIR /usr/backend
 RUN npm i --ignore-scripts
+RUN npm rebuild better-sqlite3
 CMD ["node", "/usr/backend/src/index.js"]
 
 # prod
@@ -35,6 +37,8 @@ COPY ./frontend/dist /usr/share/nginx/html
 FROM node:22-bookworm AS bitsenbytesbackendPROD
 COPY ./backend/dist /usr/backend
 COPY ./backend/package.json /usr/backend/package.json
+COPY ./backend/package-lock.json ./backend/package-lock.json
 WORKDIR /usr/backend
 RUN npm i --ignore-scripts
+RUN npm rebuild better-sqlite3
 CMD ["node", "/usr/backend/src/index.js"]
