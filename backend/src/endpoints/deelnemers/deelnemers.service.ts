@@ -11,30 +11,30 @@ export default class DeelnemerService implements serviceBase<IDeelnemer> {
         this.dao = new DeelnemerDao();
     }
 
-    findOne(...args: KeyValuePair<IDeelnemer>[]): IDeelnemer {
-        return this.dao.findOne(...args);
+    async findOne(...where: KeyValuePair<IDeelnemer>[]): Promise<IDeelnemer> {
+        return await this.dao.findOne(...where);
     }
 
-    create(...args: any[]): void {
+    async create(...args: any[]) {
         throw new Error("Method not implemented.");
     }
 
-    update(where: KeyValuePair<IDeelnemer>, ...args: KeyValuePair<IDeelnemer>[]): void {
-        const validatorFunctors = args.map((item) => 
+    async update(where: KeyValuePair<IDeelnemer>, ...values: KeyValuePair<IDeelnemer>[]) {
+        const validatorFunctors = values.map((item) => 
             [item[0], deelnemerValidatorFunctors[item[0]][0], deelnemerValidatorFunctors[item[0]][1]] as ValidatorTuple<IDeelnemer>);
 
-        const validationResult = partialDeelnemerValidator(Object.fromEntries(args), validatorFunctors);
+        const validationResult = partialDeelnemerValidator(Object.fromEntries(values), validatorFunctors);
         const errors = validationResult.filter((r) => r.kind === "error").map((r) => r.errorMSG);
         if (errors.length > 0) throw errors;
 
-        this.dao.update(where, ...args);
+        await this.dao.update(where, ...values);
     }
     
     delete(...args: any[]): void {
         throw new Error("Method not implemented.");
     }
 
-    list(...args: any[]): IDeelnemer[] {
+    async list(...args: any[]): Promise<IDeelnemer[]> {
         throw new Error("Method not implemented.");
     }
 }

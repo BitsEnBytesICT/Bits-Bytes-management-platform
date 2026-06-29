@@ -1,4 +1,3 @@
-import {useState} from "react";
 import {NavLink} from "react-router-dom";
 
 import {navigationItemsMenu, navigationItemsIT, navigationItemsAccount} from "./Navigation.config";
@@ -8,7 +7,8 @@ import type {INavigationItem} from "../../types/navigation/INavigation";
 import {ShapeLeft, ShapeRight, ButtonMenu, LogoWhite} from "../../assets";
 
 export default function Navigation({isOpen, setIsOpen}) {
-    const [versionNumber, setVersionNumber] = useState("0.0.0");
+    //const [versionNumber, setVersionNumber] = useState("0.0.0");
+    const versionNumber = "0.0.3"; //temp voor nu
 
     const navMenuItem = (item: INavigationItem) => (
         <div key={item.path} className="flex items-center gap-2.5 cursor-pointer">

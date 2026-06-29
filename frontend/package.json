@@ -4,11 +4,13 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "vite",
+        "dev": "env-cmd -f ./.env.local vite",
         "build": "tsc -b && vite build",
         "lint": "eslint .",
         "preview": "vite preview",
-        "prettier": "prettier . --write"
+        "prettier": "prettier . --write",
+        "prettier:check": "prettier . --check",
+        "prepare": "node -e \"require('fs').chmodSync('../.githooks/pre-commit', '755')\" && git config --local core.hooksPath ./.githooks"
     },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^7.2.0",
@@ -17,6 +19,7 @@
         "@fortawesome/free-solid-svg-icons": "^7.2.0",
         "@fortawesome/react-fontawesome": "^3.3.1",
         "@tailwindcss/vite": "^4.3.0",
+        "env-cmd": "^11.0.0",
         "react": "^19.2.6",
         "react-dom": "^19.2.6",
         "react-router-dom": "^7.15.1",
@@ -24,7 +27,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
-        "@types/node": "^24.12.3",
+        "@types/node": "^24.13.2",
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
         "@vitejs/plugin-react": "^6.0.1",

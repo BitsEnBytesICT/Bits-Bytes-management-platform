@@ -405,6 +405,7 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 **/.ionide/
+*/dist
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
@@ -429,3 +430,5 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+.DS_Store
+backend/.env.local

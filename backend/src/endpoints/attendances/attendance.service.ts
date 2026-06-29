@@ -25,34 +25,34 @@ export default class AttendanceService implements serviceBase<IAttendance> {
         throw new Error('Method not implemented.');
     }
 
-    update(where: KeyValuePair<IAttendance>, ...args: KeyValuePair<IAttendance>[]): void {
-        const validatorFunctors = args.map((item) => 
+    update(where: KeyValuePair<IAttendance>, ...values: KeyValuePair<IAttendance>[]): void {
+        const validatorFunctors = values.map((item) => 
                     [item[0], attendanceValidatorFunctors[item[0]][0], attendanceValidatorFunctors[item[0]][1]] as ValidatorTuple<IAttendance>);
         
-        const validationResult = partialAttendanceValidator(Object.fromEntries(args), validatorFunctors);
+        const validationResult = partialAttendanceValidator(Object.fromEntries(values), validatorFunctors);
         const errors = validationResult.filter((r) => r.kind === "error").map((r) => r.errorMSG);
         if (errors.length > 0) throw errors;
 
-        this.dao.update(where, ...args);
+        this.dao.update(where, ...values);
     }
 
     delete(...args: any[]): void {
         throw new Error('Method not implemented.');
     }
     
-    list(...args: any[]): IAttendance[] {
+    async list(...args: any[]): Promise<IAttendance[]> {
         throw new Error('Method not implemented.');
     }
 
-    findOne(...args: KeyValuePair<IAttendance>[]): IAttendance {
+    async findOne(...where: KeyValuePair<IAttendance>[]): Promise<IAttendance> {
         throw new Error('Method not implemented.');
     }
         
-    scan = (rfid_uid: string): IScanResult => {
+    scan = async(rfid_uid: string): Promise<IScanResult> => {
         
         this.validateRfid(rfid_uid);
 
-        const deelnemer = this.deelnemerService.findOne(["rfid", rfid_uid], ["active", 1]);
+        const deelnemer = await this.deelnemerService.findOne(["rfid", rfid_uid], ["active", 1]);
 
         if (!deelnemer) {
             return {
@@ -62,7 +62,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
             };
         }
 
-        const openAttendance = this.dao.findOne(["deelnemerID", deelnemer.id!], ["clockoutDate", undefined]);
+        const openAttendance = await this.dao.findOne(["deelnemerID", deelnemer.id!], ["clockoutDate", undefined]);
 
         if (openAttendance) {
             const now = new Date().toISOString();
@@ -79,8 +79,8 @@ export default class AttendanceService implements serviceBase<IAttendance> {
 
             const validationResult = attendanceValidator(attendanceUpdate);
             if (validationResult.find((r) => r.kind === 'error') === undefined) {
-                this.dao.update(["id", openAttendance.id], ...Object.entries(attendanceUpdate) as KeyValuePair<IAttendance>[]);
-                this.deelnemerService.update(["id", deelnemer.id!], ["clockedin", 0]);
+                await this.dao.update(["id", openAttendance.id], ...Object.entries(attendanceUpdate) as KeyValuePair<IAttendance>[]);
+                await this.deelnemerService.update(["id", deelnemer.id!], ["clockedin", 0]);
             } else {
                 const errors = validationResult
                     .filter((r) => r.kind === 'error')
@@ -130,11 +130,11 @@ export default class AttendanceService implements serviceBase<IAttendance> {
         }
     }
 
-    processClockInWithSignature(rfid_uid: string, signature: string): void {
+    async processClockInWithSignature(rfid_uid: string, signature: string) {
         this.validateRfid(rfid_uid);
         this.validateSignature(signature);
 
-        const deelnemer = this.deelnemerService.findOne(["rfid", rfid_uid], ["active", 1]);
+        const deelnemer = await this.deelnemerService.findOne(["rfid", rfid_uid], ["active", 1]);
 
         if (!deelnemer) {
             throw {
@@ -158,8 +158,8 @@ export default class AttendanceService implements serviceBase<IAttendance> {
             throw errors;
         }
 
-        this.dao.create(attendance);
-        this.deelnemerService.update(["id", deelnemer.id!], ["clockedin", 1]);
+        await this.dao.create(attendance);
+        await this.deelnemerService.update(["id", deelnemer.id!], ["clockedin", 1]);
 
         const sig: ISignature = {
             deelnemerID: deelnemer.id!,
@@ -167,16 +167,16 @@ export default class AttendanceService implements serviceBase<IAttendance> {
             signature,
         };
 
-        this.signatureService.create(sig);
+        await this.signatureService.create(sig);
     }
 
-    fetchLast30Days(rfid_uid: string): string[] {
+    async fetchLast30Days(rfid_uid: string): Promise<string[]> {
         this.validateRfid(rfid_uid);
 
-        const deelnemer = this.deelnemerService.findOne(["rfid", rfid_uid], ["active", 1]);
+        const deelnemer = await this.deelnemerService.findOne(["rfid", rfid_uid], ["active", 1]);
         
         if (!deelnemer) return [];
 
-        return this.dao.getAttendanceLast30Days(deelnemer.id!);
+        return await this.dao.getAttendanceLast30Days(deelnemer.id!);
     }
 }

@@ -11,11 +11,11 @@ export default class PermissionsService implements serviceBase<object> {
         this.dao = new PermissionsDAO();
     }
 
-    findOne(...args: never[]): object {
+    async findOne(...args: never[]): Promise<object> {
         throw new Error("Method not implemented.");
     }
 
-    create(permissions: IPermissions): void {
+    async create(permissions: IPermissions) {
         const validationResult = permissionsValidator(permissions);
         const errors = validationResult.filter((r) => r.kind === "error").map((error) => error.errorMSG);
         if (errors.length > 0) throw errors;
@@ -24,19 +24,19 @@ export default class PermissionsService implements serviceBase<object> {
             role: permissions.role,
             permissions: permissions.permissions.join(";")
         }
-        this.dao.create(PermissionsDB);
+        await this.dao.create(PermissionsDB);
     }
 
-    update(...args: any[]): void {
+    async update(...args: any[]) {
         throw new Error("Method not implemented.");
     }
 
-    delete(...args: any[]): void {
+    async delete(...args: any[]) {
         throw new Error("Method not implemented.");
     }
 
-    list(): IPermissions[] {
-        return this.dao.list().map((item) => 
+    async list(): Promise<IPermissions[]> {
+        return (await this.dao.list()).map((item) => 
             ({role: item.role, permissions: item.permissions.split(";").map((permission) => 
                 permission)} as IPermissions));
     }

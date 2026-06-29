@@ -11,7 +11,7 @@ export default class SignatureService implements serviceBase<ISignature> {
         this.dao = new SignatureDao();
     }
 
-    create(signature: ISignature): void {
+    async create(signature: ISignature) {
         const result = signatureValidator(signature);
 
         if (result.find((r) => r.kind === 'error') !== undefined) {
@@ -21,10 +21,10 @@ export default class SignatureService implements serviceBase<ISignature> {
             throw errors;
         }
 
-        this.dao.create(signature);
+        await this.dao.create(signature);
     }
 
-    update(where: KeyValuePair<ISignature>, ...args: KeyValuePair<ISignature>[]): void {
+    async update(where: KeyValuePair<ISignature>, ...args: KeyValuePair<ISignature>[]) {
         const validatorFunctors = args.map((item) => 
                     [item[0], signatureValidatorFunctors[item[0]][0], signatureValidatorFunctors[item[0]][1]] as ValidatorTuple<ISignature>);
         
@@ -32,18 +32,18 @@ export default class SignatureService implements serviceBase<ISignature> {
         const errors = validationResult.filter((r) => r.kind === "error").map((r) => r.errorMSG);
         if (errors.length > 0) throw errors;
 
-        this.dao.update(where, ...args);
+        await this.dao.update(where, ...args);
     }
 
-    delete(...args: any[]): void {
+    async delete(...args: any[]) {
         throw new Error("Method not implemented.");
     }
 
-    list(...args: any[]): ISignature[] {
+    async list(...args: any[]): Promise<ISignature[]> {
         throw new Error("Method not implemented.");
     }
 
-    findOne(...args: KeyValuePair<ISignature>[]): ISignature {
-        return this.dao.findOne(...args);
+    async findOne(...args: KeyValuePair<ISignature>[]): Promise<ISignature> {
+        return await this.dao.findOne(...args);
     }
 }

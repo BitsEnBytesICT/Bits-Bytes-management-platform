@@ -2,6 +2,7 @@
 
 entity Account {
     * id: number <<primary key>>
+    * type: string
     * firstname: string
     * lastname: string
     * role: <<foreign key Permission.role>>
