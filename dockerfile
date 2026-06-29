@@ -26,7 +26,7 @@ COPY ./backend/dist /usr/backend
 COPY ./backend/package.json /usr/backend/package.json
 WORKDIR /usr/backend
 RUN npm i --ignore-scripts
-CMD ["node", "/usr/backend/index.js"]
+CMD ["node", "/usr/backend/src/index.js"]
 
 # prod
 FROM nginx:stable-alpine-perl as bitsenbytesfrontendPROD
