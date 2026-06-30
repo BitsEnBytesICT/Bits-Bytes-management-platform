@@ -25,7 +25,9 @@ class MySqlMigrationStore {
                 WHERE id = 1
             `);
 
-            if (!rows || !rows[0].last_run || rows.length === 0) {
+            const row = rows?.[0];
+
+            if (!row) {
                 callback(null, {
                     lastRun: null,
                     migrations: [],
@@ -35,7 +37,7 @@ class MySqlMigrationStore {
             }
 
             callback(null, {
-                lastRun: rows[0].last_run,
+                lastRun: row.last_run ?? null,
                 migrations: JSON.parse(
                     rows[0].migrations,
                 ),
