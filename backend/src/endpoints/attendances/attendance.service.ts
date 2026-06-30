@@ -4,7 +4,7 @@ import IAttendance from '../../types/attendance/IAttendance';
 import ISignature from '../../types/signature/ISignature';
 import IScanResult from '../../types/scan/IScanResult';
 import ScanDao from './attendance.dao';
-import DeelnemerService from '../deelnemers/deelnemers.service';
+import ParticipantService from '../participants/participants.service';
 import { KeyValuePair, ValidatorTuple } from '../../common/Validator';
 import SignatureService from '../Signatures/signatures.service';
 import serviceBase from '../../common/serviceBase';
@@ -12,12 +12,12 @@ import { attendanceValidator, attendanceValidatorFunctors, partialAttendanceVali
 
 export default class AttendanceService implements serviceBase<IAttendance> {
     dao: ScanDao;
-    private deelnemerService: DeelnemerService;
+    private participantService: ParticipantService;
     private signatureService: SignatureService;
 
     constructor() {
         this.dao = new ScanDao();
-        this.deelnemerService = new DeelnemerService();
+        this.participantService = new ParticipantService();
         this.signatureService = new SignatureService();
     }
 
@@ -52,9 +52,9 @@ export default class AttendanceService implements serviceBase<IAttendance> {
         
         this.validateRfid(rfid_uid);
 
-        const deelnemer = await this.deelnemerService.findOne(["rfid", rfid_uid], ["active", 1]);
+        const participant = await this.participantService.findOne(["rfid", rfid_uid], ["active", 1]);
 
-        if (!deelnemer) {
+        if (!participant) {
             return {
                 success: false,
                 action: 'clock_in',
@@ -62,7 +62,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
             };
         }
 
-        const openAttendance = await this.dao.findOne(["deelnemerID", deelnemer.id!], ["clockoutDate", undefined]);
+        const openAttendance = await this.dao.findOne(["participantID", participant.id!], ["clockoutDate", undefined]);
 
         if (openAttendance) {
             const now = new Date().toISOString();
@@ -71,7 +71,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
             const durationMinutes = Math.round((clockout - clockin) / 60000);
 
             const attendanceUpdate: IAttendance = {
-                deelnemerID: deelnemer.id!,
+                participantID: participant.id!,
                 clockinDate: openAttendance.clockinDate,
                 clockoutDate: now,
                 workDuration: durationMinutes,
@@ -80,7 +80,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
             const validationResult = attendanceValidator(attendanceUpdate);
             if (validationResult.find((r) => r.kind === 'error') === undefined) {
                 await this.dao.update(["id", openAttendance.id], ...Object.entries(attendanceUpdate) as KeyValuePair<IAttendance>[]);
-                await this.deelnemerService.update(["id", deelnemer.id!], ["clockedin", 0]);
+                await this.participantService.update(["id", participant.id!], ["clockedin", 0]);
             } else {
                 const errors = validationResult
                     .filter((r) => r.kind === 'error')
@@ -91,10 +91,10 @@ export default class AttendanceService implements serviceBase<IAttendance> {
             return {
                 success: true,
                 action: 'clock_out',
-                message: 'Tot ziens, ' + deelnemer.firstname + '!',
+                message: 'Tot ziens, ' + participant.firstname + '!',
                 user: {
-                    name: deelnemer.firstname + ' ' + deelnemer.lastname,
-                    department: deelnemer.organisation,
+                    name: participant.firstname + ' ' + participant.lastname,
+                    department: participant.organisation,
                 },
             };
         }
@@ -102,10 +102,10 @@ export default class AttendanceService implements serviceBase<IAttendance> {
         return {
             success: true,
             action: 'clock_in',
-            message: 'Welkom, ' + deelnemer.firstname + '!',
+            message: 'Welkom, ' + participant.firstname + '!',
             user: {
-                name: deelnemer.firstname + ' ' + deelnemer.lastname,
-                department: deelnemer.organisation,
+                name: participant.firstname + ' ' + participant.lastname,
+                department: participant.organisation,
             },
         };
     }
@@ -134,9 +134,9 @@ export default class AttendanceService implements serviceBase<IAttendance> {
         this.validateRfid(rfid_uid);
         this.validateSignature(signature);
 
-        const deelnemer = await this.deelnemerService.findOne(["rfid", rfid_uid], ["active", 1]);
+        const participant = await this.participantService.findOne(["rfid", rfid_uid], ["active", 1]);
 
-        if (!deelnemer) {
+        if (!participant) {
             throw {
                 date: new Date(),
                 errorMSG: new Error('Kaart niet geregistreerd'),
@@ -146,7 +146,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
 
         const now = new Date().toISOString();
         const attendance: IAttendance = {
-            deelnemerID: deelnemer.id!,
+            participantID: participant.id!,
             clockinDate: now,
         };
 
@@ -159,10 +159,10 @@ export default class AttendanceService implements serviceBase<IAttendance> {
         }
 
         await this.dao.create(attendance);
-        await this.deelnemerService.update(["id", deelnemer.id!], ["clockedin", 1]);
+        await this.participantService.update(["id", participant.id!], ["clockedin", 1]);
 
         const sig: ISignature = {
-            deelnemerID: deelnemer.id!,
+            participantID: participant.id!,
             date: now,
             signature,
         };
@@ -173,10 +173,10 @@ export default class AttendanceService implements serviceBase<IAttendance> {
     async fetchLast30Days(rfid_uid: string): Promise<string[]> {
         this.validateRfid(rfid_uid);
 
-        const deelnemer = await this.deelnemerService.findOne(["rfid", rfid_uid], ["active", 1]);
+        const participant = await this.participantService.findOne(["rfid", rfid_uid], ["active", 1]);
         
-        if (!deelnemer) return [];
+        if (!participant) return [];
 
-        return await this.dao.getAttendanceLast30Days(deelnemer.id!);
+        return await this.dao.getAttendanceLast30Days(participant.id!);
     }
 }

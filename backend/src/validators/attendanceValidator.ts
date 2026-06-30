@@ -10,7 +10,7 @@ const validateDateOrUndefined = Fun<string | undefined, boolean>(s => s === unde
 
 export const attendanceValidatorFunctors: ValidatorMap<IAttendance> = {
     id: [validateNumberOrUndefined, "id is not valid"],
-    deelnemerID: [validateNumber, "deelnemerID is required"],
+    participantID: [validateNumber, "participantID is required"],
     clockinDate: [validateDate, "clockinDate is not a valid date"],
     clockoutDate: [validateDateOrUndefined, "clockoutDate is not a valid date"],
     workDuration: [validateNumberOrZero, "workDuration is not valid"]

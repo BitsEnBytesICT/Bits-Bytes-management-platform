@@ -1,6 +1,6 @@
 export default interface IAttendance {
     id?: number;
-    deelnemerID: number;
+    participantID: number;
     clockinDate: string;
     clockoutDate?: string;
     workDuration?: number;

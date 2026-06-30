@@ -9,7 +9,7 @@ entity Account {
     * password: string
 }
 
-entity Deelnemer {
+entity Participant {
     * id: number <<primary key>>
     * firstname: string
     * lastname: string
@@ -25,14 +25,14 @@ entity Deelnemer {
 
 entity Signatures {
     * id: number <<primary key>>
-    * deelnemerID: number <<foreign key Deelnemer.id>>
+    * participantID: number <<foreign key Participant.id>>
     * date: Date
     * signature: string
 }
 
 entity Attendance {
     * id: number <<primary key>>
-    * deelnemerID: number <<foreign key Deelnemer.id>>
+    * participantID: number <<foreign key Participant.id>>
     * clockinDate: Date
     --
     clockoutDate: Date
@@ -70,7 +70,7 @@ entity Workplace {
     extraInfo: blob
 }
 
-entity Scedule {
+entity Schedule {
     * id: number <<primary key>>
     * name: string
     * startDate: Date
@@ -78,18 +78,18 @@ entity Scedule {
     endDate: Date
 }
 
-entity SceduleDeelnemer {
+entity ScheduleParticipant {
     * id: number <<primary key>>
-    * sceduleId: number <<foreign key Scedule.id>>
-    * deelnemerId: number <<foreign key Deelnemer.id>>
+    * scheduleId: number <<foreign key Schedule.id>>
+    * participantId: number <<foreign key Participant.id>>
 }
 
 Account ||--|| Permission
-Account ||--|| Deelnemer
-Deelnemer ||--o{ Signatures
-Deelnemer ||--o{ Attendance
-Deelnemer ||--o{ SceduleDeelnemer
-Scedule ||--o{ SceduleDeelnemer
+Account ||--|| Participant
+Participant ||--o{ Signatures
+Participant ||--o{ Attendance
+Participant ||--o{ ScheduleParticipant
+Schedule ||--o{ ScheduleParticipant
 Room ||--o{ Wall
 Room ||--o{ Workplace
 @enduml
