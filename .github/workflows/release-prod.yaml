@@ -36,10 +36,10 @@ jobs:
         run: npm run build
 
       - name: Build Docker images
-        run: docker-compose -f compose-prod.yaml build
+        run: docker compose -f compose-prod.yaml build
 
       - name: Push Docker images
-        run: docker-compose -f compose-prod.yaml push
+        run: docker compose -f compose-prod.yaml push
 
       - name: Deploy to Kubernetes
         run: kubectl apply -f ./deployment-PROD.yaml

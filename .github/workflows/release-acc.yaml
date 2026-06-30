@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout merged commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.merge_commit_sha }}
 
@@ -21,7 +21,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Install frontend dependencies
         working-directory: ./frontend
@@ -40,10 +39,10 @@ jobs:
         run: npm run build
 
       - name: Build Docker images
-        run: docker-compose -f compose-acc.yaml build
+        run: docker compose -f compose-acc.yaml build
 
       - name: Push Docker images
-        run: docker-compose -f compose-acc.yaml push
+        run: docker compose -f compose-acc.yaml push
 
       - name: Deploy to Kubernetes
         run: kubectl apply -f ./deployment-ACC.yaml

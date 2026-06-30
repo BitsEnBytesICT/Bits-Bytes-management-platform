@@ -2,7 +2,7 @@
   "scripts": {
     "start": "env-cmd -f ./.env.local nodemon ./src/index.ts",
     "build": "tsc -b",
-    "prepare": "node -e \"require('fs').chmodSync('../.githooks/pre-commit', '755')\" && git config --local core.hooksPath .githooks"
+    "prepare": "node -e \"require('fs').chmodSync('../.githooks/pre-commit', '755')\" && git config --local core.hooksPath ./.githooks"
   },
   "main": "index.ts",
   "dependencies": {
