@@ -65,6 +65,7 @@ jobs:
           ref: main
           fetch-depth: 0
           ssh-key: ${{ secrets.VERSION_BUMP_DEPLOY_KEY }}
+          persist-credentials: true
 
       - name: Bump snapshot versions and push
         if: >
