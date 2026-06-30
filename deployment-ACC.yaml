@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: bitsenbytes-frontend-acc
-          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesfrontendACC_0.0.6
+          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesfrontendACC_${FRONTEND_VERSION}_snapshot_${FRONTEND_SNAPSHOT_VERSION}
           imagePullPolicy: Always
 ---
 apiVersion: v1
@@ -76,7 +76,7 @@ spec:
     spec:
       containers:
         - name: bitsenbytes-backend-acc
-          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesbackendACC_0.0.7
+          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesbackendACC_${BACKEND_VERSION}_snapshot_${BACKEND_SNAPSHOT_VERSION}
           imagePullPolicy: Always
           env:
             - name: NODE_ENV

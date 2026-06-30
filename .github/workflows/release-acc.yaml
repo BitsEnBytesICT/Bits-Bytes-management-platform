@@ -1,10 +1,11 @@
 name: Release ACC
 
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - main
+  workflow_run:
+    workflows:
+      - Bump snapshot versions
+    types:
+      - completed
 
 jobs:
   build-and-deploy-acc:
@@ -39,10 +40,19 @@ jobs:
         run: npm run build
 
       - name: Build Docker images
-        run: docker compose -f compose-acc.yaml build
+        run: docker compose --env-file .env.versions -f compose-acc.yaml build
 
       - name: Push Docker images
-        run: docker compose -f compose-acc.yaml push
+        run: docker compose --env-file .env.versions -f compose-acc.yaml push
 
       - name: Deploy to Kubernetes
-        run: kubectl apply -f ./deployment-ACC.yaml
+        run: |
+          set -euo pipefail
+          set -a
+          source .env.versions
+          set +a
+
+          envsubst \
+          '${FRONTEND_SNAPSHOT_VERSION} ${BACKEND_SNAPSHOT_VERSION} ${BACKEND_VERSION} ${FRONTEND_VERSION}' \
+          < deployment-ACC.yaml \
+          | kubectl apply -f -
