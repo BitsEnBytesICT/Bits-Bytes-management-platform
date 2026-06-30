@@ -31,7 +31,7 @@ export async function BuildEnforcerPolicies() {
             await enforcerInstance.addRoleForUser(`${account.firstname} ${account.lastname}`, account.role);
         }
     } catch (e) {
-        console.log(e + "\nCannot make enforcer policies!!!. Retrying in 5 seconds...");
+        console.log(e + "\nCannot make enforcer policies! Retrying in 5 seconds...");
         await sleep(5000);
         BuildEnforcerPolicies();
     }

@@ -1,6 +1,6 @@
 import { Fun } from "../common/functor";
 import { ValidatorMap, validatorPipe, validatorPipePartial, ValidatorTuple } from "../common/Validator";
-import IDeelnemer from "../types/deelnemer/IDeelnemer";
+import IParticipant from "../types/participant/IParticipant";
 
 const validateStringNotEmpty = Fun<string | undefined, boolean>(str => str === undefined ? true : str.length > 0);
 const validateAbove0 = Fun<number, boolean>(id => id > 0);
@@ -9,7 +9,7 @@ const validateDate = Fun<string, boolean>(s => !isNaN(Date.parse(s)));
 const validateOneorZero = Fun<number, boolean>(id => id === 0 || id === 1);
 const validateOneorZeroUndefined = Fun<number | undefined, boolean>(id => id === undefined ? true : id === 0 || id === 1);
 
-export const deelnemerValidatorFunctors: ValidatorMap<IDeelnemer> = {
+export const participantValidatorFunctors: ValidatorMap<IParticipant> = {
     id: [validateAbove0OrUndefined, "id is not valid"],
     firstname: [validateStringNotEmpty, "name cannot be empty"],
     lastname: [validateStringNotEmpty, "lastname cannot be empty"],
@@ -22,12 +22,12 @@ export const deelnemerValidatorFunctors: ValidatorMap<IDeelnemer> = {
     product: [validateStringNotEmpty, "product cannot be empty"]
 }
 
-export function deelnemerValidator(deelnemer: IDeelnemer) {
-    const mappedValidators = (Object.keys(deelnemerValidatorFunctors) as Array<keyof IDeelnemer>).map((key) => 
-        [key, deelnemerValidatorFunctors[key][0], deelnemerValidatorFunctors[key][1]] as ValidatorTuple<IDeelnemer>);
-    return validatorPipe(deelnemer, ...mappedValidators);
+export function ParticipantValidator(participant: IParticipant) {
+    const mappedValidators = (Object.keys(participantValidatorFunctors) as Array<keyof IParticipant>).map((key) => 
+        [key, participantValidatorFunctors[key][0], participantValidatorFunctors[key][1]] as ValidatorTuple<IParticipant>);
+    return validatorPipe(participant, ...mappedValidators);
 }
 
-export function partialDeelnemerValidator(deelnemer: Partial<IDeelnemer>, mappedValidators: ValidatorTuple<IDeelnemer>[]) {
-    return validatorPipePartial(deelnemer, ...mappedValidators);
+export function partialParticipantValidator(participant: Partial<IParticipant>, mappedValidators: ValidatorTuple<IParticipant>[]) {
+    return validatorPipePartial(participant, ...mappedValidators);
 }

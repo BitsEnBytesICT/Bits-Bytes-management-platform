@@ -1,6 +1,6 @@
 export default interface ISignature {
     id?: number;
-    deelnemerID: number;
+    participantID: number;
     date: string;
     signature: string;
 }

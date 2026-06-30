@@ -1,4 +1,4 @@
-export default interface IDeelnemer {
+export default interface IParticipant {
     id?: number;
     firstname: string;
     lastname: string;
