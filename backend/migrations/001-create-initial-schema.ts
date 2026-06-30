@@ -64,7 +64,7 @@ const upStatements: string[] = [
         KEY idx_signatures_participant (participantID),
         CONSTRAINT fk_signatures_participant
             FOREIGN KEY (participantID)
-            REFERENCES Participantss(id)
+            REFERENCES Participants(id)
     ) ENGINE=InnoDB
       DEFAULT CHARSET=utf8mb4
       COLLATE=utf8mb4_unicode_ci
