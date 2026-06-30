@@ -2,6 +2,7 @@ import { daoBase, daoBaseType } from "../../common/daoBase";
 import { dbGet, dbQuery } from "../../common/db";
 import { KeyValuePair } from "../../common/Validator";
 import ISignature from "../../types/signature/ISignature";
+import { Tables } from "../../types/tables/tablesList";
 
 export default class SignatureDao extends daoBase<ISignature> implements daoBaseType<ISignature> {
     async create(signature: ISignature) {
@@ -9,7 +10,7 @@ export default class SignatureDao extends daoBase<ISignature> implements daoBase
     }
 
     async update(where: KeyValuePair<ISignature>, ...args: KeyValuePair<ISignature>[]) {
-        await this.updateFunc("Signatures", where, ...args);
+        await this.updateFunc(Tables.Signatures, where, ...args);
     }
 
     delete(...args: any[]): void {
@@ -21,6 +22,6 @@ export default class SignatureDao extends daoBase<ISignature> implements daoBase
     }
 
     async findOne(...args: KeyValuePair<ISignature>[]): Promise<ISignature> {
-        return await this.findOneFunc("Signatures", ...args);
+        return await this.findOneFunc(Tables.Signatures, ...args);
     }
 }

@@ -2,6 +2,7 @@ import { dbQuery, dbAll } from '../../common/db';
 import IAttendance from '../../types/attendance/IAttendance';
 import { KeyValuePair } from '../../common/Validator';
 import { daoBase, daoBaseType } from '../../common/daoBase';
+import { Tables } from '../../types/tables/tablesList';
 
 export default class AttendanceDao extends daoBase<IAttendance> implements daoBaseType<IAttendance> {
     async create(attendance: IAttendance) {
@@ -9,7 +10,7 @@ export default class AttendanceDao extends daoBase<IAttendance> implements daoBa
     }
 
     async update(where: KeyValuePair<IAttendance>, ...values: KeyValuePair<IAttendance>[]) {
-        await this.updateFunc("Attendances", where, ...values);
+        await this.updateFunc(Tables.Attendances, where, ...values);
     }
     
     delete(...args: any[]): void {
@@ -21,7 +22,7 @@ export default class AttendanceDao extends daoBase<IAttendance> implements daoBa
     }
     
     async findOne(...where: KeyValuePair<IAttendance>[]): Promise<IAttendance> {
-        return await this.findOneFunc("Attendances", ...where);
+        return await this.findOneFunc(Tables.Attendances, ...where);
     }
 
     async getAttendanceLast30Days(participantID: number): Promise<string[]> {

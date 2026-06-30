@@ -1,6 +1,7 @@
 import { daoBaseType, daoBase } from "../../common/daoBase";
 import { KeyValuePair } from "../../common/Validator";
 import IParticipant from "../../types/participant/IParticipant";
+import { Tables } from "../../types/tables/tablesList";
 
 export default class ParticipantDao extends daoBase<IParticipant> implements daoBaseType<IParticipant> {
     create(...args: any[]): void {
@@ -8,7 +9,7 @@ export default class ParticipantDao extends daoBase<IParticipant> implements dao
     }
 
     async update(where: KeyValuePair<IParticipant>, ...values: KeyValuePair<IParticipant>[]) {
-        await this.updateFunc("Participants", where, ...values);
+        await this.updateFunc(Tables.Participants, where, ...values);
     }
 
     delete(...args: any[]): void {
@@ -20,6 +21,6 @@ export default class ParticipantDao extends daoBase<IParticipant> implements dao
     }
 
     async findOne(...where: KeyValuePair<IParticipant>[]): Promise<IParticipant> {
-        return await this.findOneFunc("Participants", ...where);
+        return await this.findOneFunc(Tables.Participants, ...where);
     }
 }
