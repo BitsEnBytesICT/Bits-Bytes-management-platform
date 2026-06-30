@@ -26,8 +26,8 @@ export const setupDatabase = () => {
         )`
     ).run();
 
-    db.prepare(`DROP TABLE IF EXISTS Deelnemers`).run();
-    db.prepare(`CREATE TABLE IF NOT EXISTS Deelnemers (
+    db.prepare(`DROP TABLE IF EXISTS Participants`).run();
+    db.prepare(`CREATE TABLE IF NOT EXISTS Participants (
         id INTEGER PRIMARY KEY,
         firstname TEXT NOT NULL,
         lastname TEXT NOT NULL,
@@ -45,26 +45,26 @@ export const setupDatabase = () => {
     db.prepare(`DROP TABLE IF EXISTS Signatures`).run();
     db.prepare(`CREATE TABLE IF NOT EXISTS Signatures (
         id INTEGER PRIMARY KEY,
-        deelnemerID INTEGER NOT NULL,
+        participantID INTEGER NOT NULL,
         date TEXT NOT NULL,
         signature TEXT NOT NULL,
-        FOREIGN KEY(deelnemerID) REFERENCES Deelnemers(id)
+        FOREIGN KEY(participantID) REFERENCES Participants(id)
         )`
     ).run();
 
     db.prepare(`DROP TABLE IF EXISTS Attendances`).run();
     db.prepare(`CREATE TABLE IF NOT EXISTS Attendances (
         id INTEGER PRIMARY KEY,
-        deelnemerID INTEGER NOT NULL,
+        participantID INTEGER NOT NULL,
         clockinDate TEXT NOT NULL,
         clockoutDate TEXT,
         workDuration INTEGER,
-        FOREIGN KEY(deelnemerID) REFERENCES Deelnemers(id)
+        FOREIGN KEY(participantID) REFERENCES Participants(id)
         )`
     ).run();
 
     db.prepare(`CREATE UNIQUE INDEX unique_one_null_clockout
-        ON Attendances(deelnemerID)
+        ON Attendances(participantID)
         WHERE clockoutDate IS NULL;`).run();
 
     db.prepare(`DROP TABLE IF EXISTS Rooms`).run();
@@ -88,8 +88,8 @@ export const setupDatabase = () => {
         )`
     ).run();
 
-    db.prepare(`DROP TABLE IF EXISTS Scedules`).run();
-    db.prepare(`CREATE TABLE IF NOT EXISTS Scedules (
+    db.prepare(`DROP TABLE IF EXISTS Schedules`).run();
+    db.prepare(`CREATE TABLE IF NOT EXISTS Schedules (
         id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
         startDate TEXT NOT NULL,
@@ -97,13 +97,13 @@ export const setupDatabase = () => {
         )`
     ).run();
 
-    db.prepare(`DROP TABLE IF EXISTS ScedulesDeelnemers`).run();
-    db.prepare(`CREATE TABLE IF NOT EXISTS ScedulesDeelnemers (
+    db.prepare(`DROP TABLE IF EXISTS SchedulesParticipants`).run();
+    db.prepare(`CREATE TABLE IF NOT EXISTS SchedulesParticipants (
         id INTEGER PRIMARY KEY,
-        sceduleId INTEGER NOT NULL,
-        deelnemerId INTEGER NOT NULL,
-        FOREIGN KEY(sceduleId) REFERENCES Scedules(id),
-        FOREIGN KEY(deelnemerId) REFERENCES Deelnemers(id)
+        scheduleId INTEGER NOT NULL,
+        participantId INTEGER NOT NULL,
+        FOREIGN KEY(scheduleId) REFERENCES Schedules(id),
+        FOREIGN KEY(participantId) REFERENCES Participants(id)
         )`
     ).run();
 
@@ -117,14 +117,14 @@ export const setupDatabase = () => {
     db.pragma('foreign_keys = ON');
 
     db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('admin', 'all');
-    db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('medewerker', 'clockin');
+    db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('support', 'clockin');
 
     db.prepare("INSERT INTO Accounts (type, firstname, lastname, role, password) VALUES (?, ?, ?, ?, ?)").run('superAdmin', 'Systeem', 'Admin', 'admin', 'changeme');
 
     const now = new Date().toISOString();
-    db.prepare("INSERT INTO Deelnemers (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, product) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Jan', 'de Vries', 'IT Afdeling', 1, '11F3EF12', now, 1, 0, 'Develop');
-    db.prepare("INSERT INTO Deelnemers (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, product) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Maria', 'Jansen', 'HR', 1, '4D6108F9', now, 1, 1, 'Zorg');
-    db.prepare("INSERT INTO Deelnemers (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, product) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Peter', 'Bakker', 'Facilitair', 1, '98765432', now, 1, 0, 'Dagbesteding');
+    db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, product) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Jan', 'de Vries', 'IT Afdeling', 1, '11F3EF12', now, 1, 0, 'Develop');
+    db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, product) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Maria', 'Jansen', 'HR', 1, '4D6108F9', now, 1, 1, 'Zorg');
+    db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, product) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Peter', 'Bakker', 'Facilitair', 1, '98765432', now, 1, 0, 'Dagbesteding');
 
     console.log('Seed data inserted');
 }

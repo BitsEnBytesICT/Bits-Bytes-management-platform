@@ -68,5 +68,3 @@ app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
 const server = app.listen(app.get('port'), function () {
     console.log(`Express server listening on port ${(server.address() as AddressInfo).port}`);
 });
-
-// githook test

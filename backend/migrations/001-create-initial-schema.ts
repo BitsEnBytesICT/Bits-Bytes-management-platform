@@ -32,7 +32,7 @@ const upStatements: string[] = [
     `,
 
     `
-    CREATE TABLE IF NOT EXISTS Deelnemers (
+    CREATE TABLE IF NOT EXISTS Participants (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         firstname VARCHAR(255) NOT NULL,
         lastname VARCHAR(255) NOT NULL,
@@ -44,9 +44,9 @@ const upStatements: string[] = [
         clockedin INT NULL,
         product VARCHAR(255) NULL,
         PRIMARY KEY (id),
-        UNIQUE KEY uq_deelnemers_rfid (rfid),
-        KEY idx_deelnemers_account (account),
-        CONSTRAINT fk_deelnemers_account
+        UNIQUE KEY uq_participants_rfid (rfid),
+        KEY idx_participants_account (account),
+        CONSTRAINT fk_participants_account
             FOREIGN KEY (account)
             REFERENCES Accounts(id)
     ) ENGINE=InnoDB
@@ -57,14 +57,14 @@ const upStatements: string[] = [
     `
     CREATE TABLE IF NOT EXISTS Signatures (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-        deelnemerID INT UNSIGNED NOT NULL,
+        participantID INT UNSIGNED NOT NULL,
         date DATETIME(3) NOT NULL,
         signature TEXT NOT NULL,
         PRIMARY KEY (id),
-        KEY idx_signatures_deelnemer (deelnemerID),
-        CONSTRAINT fk_signatures_deelnemer
-            FOREIGN KEY (deelnemerID)
-            REFERENCES Deelnemers(id)
+        KEY idx_signatures_participant (participantID),
+        CONSTRAINT fk_signatures_participant
+            FOREIGN KEY (participantID)
+            REFERENCES Participantss(id)
     ) ENGINE=InnoDB
       DEFAULT CHARSET=utf8mb4
       COLLATE=utf8mb4_unicode_ci
@@ -73,21 +73,21 @@ const upStatements: string[] = [
     `
     CREATE TABLE IF NOT EXISTS Attendances (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-        deelnemerID INT UNSIGNED NOT NULL,
+        participantsID INT UNSIGNED NOT NULL,
         clockinDate DATETIME(3) NOT NULL,
         clockoutDate DATETIME(3) NULL,
         workDuration INT NULL,
 
         PRIMARY KEY (id),
-        KEY idx_attendances_deelnemer (deelnemerID),
+        KEY idx_attendances_participant (participantID),
 
         UNIQUE KEY unique_one_null_clockout (
-            (IF(clockoutDate IS NULL, deelnemerID, NULL))
+            (IF(clockoutDate IS NULL, participantID, NULL))
         ),
 
-        CONSTRAINT fk_attendances_deelnemer
-            FOREIGN KEY (deelnemerID)
-            REFERENCES Deelnemers(id)
+        CONSTRAINT fk_attendances_participant
+            FOREIGN KEY (participantsID)
+            REFERENCES Participants(id)
     ) ENGINE=InnoDB
     DEFAULT CHARSET=utf8mb4
     COLLATE=utf8mb4_unicode_ci;
@@ -124,7 +124,7 @@ const upStatements: string[] = [
     `,
 
     `
-    CREATE TABLE IF NOT EXISTS Scedules (
+    CREATE TABLE IF NOT EXISTS Schedules (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         name VARCHAR(255) NOT NULL,
         startDate DATETIME(3) NOT NULL,
@@ -136,19 +136,19 @@ const upStatements: string[] = [
     `,
 
     `
-    CREATE TABLE IF NOT EXISTS ScedulesDeelnemers (
+    CREATE TABLE IF NOT EXISTS SchedulesParticipants (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-        sceduleId INT UNSIGNED NOT NULL,
-        deelnemerId INT UNSIGNED NOT NULL,
+        scheduleId INT UNSIGNED NOT NULL,
+        participantId INT UNSIGNED NOT NULL,
         PRIMARY KEY (id),
-        KEY idx_scedules_deelnemers_scedule (sceduleId),
-        KEY idx_scedules_deelnemers_deelnemer (deelnemerId),
-        CONSTRAINT fk_scedules_deelnemers_scedule
-            FOREIGN KEY (sceduleId)
-            REFERENCES Scedules(id),
-        CONSTRAINT fk_scedules_deelnemers_deelnemer
-            FOREIGN KEY (deelnemerId)
-            REFERENCES Deelnemers(id)
+        KEY idx_schedules_participant_schedule (scheduleId),
+        KEY idx_schedules_participants_participant (participantId),
+        CONSTRAINT fk_schedules_participants_schedule
+            FOREIGN KEY (scheduleId)
+            REFERENCES Schedules(id),
+        CONSTRAINT fk_schedules_participants_participant
+            FOREIGN KEY (participantId)
+            REFERENCES Participants(id)
     ) ENGINE=InnoDB
       DEFAULT CHARSET=utf8mb4
       COLLATE=utf8mb4_unicode_ci
@@ -156,13 +156,13 @@ const upStatements: string[] = [
 ];
 
 const downStatements: string[] = [
-    "DROP TABLE IF EXISTS ScedulesDeelnemers",
+    "DROP TABLE IF EXISTS SchedulesParticipants",
     "DROP TABLE IF EXISTS Workplaces",
     "DROP TABLE IF EXISTS Attendances",
     "DROP TABLE IF EXISTS Signatures",
-    "DROP TABLE IF EXISTS Scedules",
+    "DROP TABLE IF EXISTS Schedules",
     "DROP TABLE IF EXISTS Rooms",
-    "DROP TABLE IF EXISTS Deelnemers",
+    "DROP TABLE IF EXISTS Participants",
     "DROP TABLE IF EXISTS Accounts",
     "DROP TABLE IF EXISTS Permissions",
 ];

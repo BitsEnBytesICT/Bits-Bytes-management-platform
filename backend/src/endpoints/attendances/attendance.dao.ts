@@ -5,7 +5,7 @@ import { daoBase, daoBaseType } from '../../common/daoBase';
 
 export default class AttendanceDao extends daoBase<IAttendance> implements daoBaseType<IAttendance> {
     async create(attendance: IAttendance) {
-        await dbQuery('INSERT INTO Attendances (deelnemerID, clockinDate) VALUES (?, ?)', [attendance.deelnemerID, attendance.clockinDate]);
+        await dbQuery('INSERT INTO Attendances (participantID, clockinDate) VALUES (?, ?)', [attendance.participantID, attendance.clockinDate]);
     }
 
     async update(where: KeyValuePair<IAttendance>, ...values: KeyValuePair<IAttendance>[]) {
@@ -24,13 +24,13 @@ export default class AttendanceDao extends daoBase<IAttendance> implements daoBa
         return await this.findOneFunc("Attendances", ...where);
     }
 
-    async getAttendanceLast30Days(deelnemerID: number): Promise<string[]> {
+    async getAttendanceLast30Days(participantID: number): Promise<string[]> {
         const rows = await dbAll(
             `SELECT DISTINCT date(clockinDate) as date
              FROM Attendances
-             WHERE deelnemerID = ? AND clockinDate >= date('now', '-30 days')
+             WHERE participantID = ? AND clockinDate >= date('now', '-30 days')
              ORDER BY date DESC`,
-            [deelnemerID]
+            [participantID]
         ) as { date: string }[];
         return rows.map(r => r.date);
     }

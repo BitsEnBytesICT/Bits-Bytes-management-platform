@@ -5,7 +5,7 @@ import ISignature from "../../types/signature/ISignature";
 
 export default class SignatureDao extends daoBase<ISignature> implements daoBaseType<ISignature> {
     async create(signature: ISignature) {
-         await dbQuery('INSERT INTO Signatures (deelnemerID, date, signature) VALUES (?, ?, ?)', [signature.deelnemerID, signature.date, signature.signature]);
+         await dbQuery('INSERT INTO Signatures (participantID, date, signature) VALUES (?, ?, ?)', [signature.participantID, signature.date, signature.signature]);
     }
 
     async update(where: KeyValuePair<ISignature>, ...args: KeyValuePair<ISignature>[]) {

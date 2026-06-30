@@ -31,7 +31,7 @@ export const createConnection = async () => {
     await runMigrations();
     console.log("finished migrations");
     } catch (error) {
-        console.log("cannot create db connection or run migrations!!!");
+        console.log("cannot create db connection or run migrations!");
         console.log(`error: ${error}`);
         await sleep(5000);
         createConnection();
