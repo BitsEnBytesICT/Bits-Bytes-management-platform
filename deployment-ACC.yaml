@@ -119,6 +119,16 @@ spec:
                 secretKeyRef:
                   name: bitsenbytes-backend-secret
                   key: DATABASE_URL
+            - name: BACKEND_VERSION
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: BACKEND_VERSION
+            - name: BACKEND_SNAPSHOT_VERSION
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: BACKEND_SNAPSHOT_VERSION
 ---
 apiVersion: v1
 kind: Service
@@ -148,6 +158,8 @@ stringData:
   DATABASE_NAME: "managementDB"
   INVENTORYDB_NAME: "managementDB"
   DATABASE_PORT: "3306"
+  BACKEND_SNAPSHOT_VERSION: ${BACKEND_SNAPSHOT_VERSION}
+  BACKEND_VERSION: ${BACKEND_VERSION}
 ---
 
 #Mysql

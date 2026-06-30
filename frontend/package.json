@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "env-cmd -f ../.env.versions -- env-cmd -f ./.env.local vite",
-        "build": "tsc -b && vite build",
+        "build": "env-cmd -f ../.env.versions -- env-cmd --no-override -f ./.env.prod -- sh -c \"tsc -b && vite build\"",
         "lint": "eslint .",
         "preview": "vite preview",
         "prettier": "prettier . --write",
