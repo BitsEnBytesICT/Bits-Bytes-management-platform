@@ -33,6 +33,12 @@ export const createConnection = async () => {
     } catch (error) {
         console.log("cannot create db connection or run migrations!");
         console.log(`error: ${error}`);
+        try {
+            managementDB.end();
+            inventoryDB.end();
+        } catch (error) {
+            
+        }
         await sleep(5000);
         createConnection();
     }

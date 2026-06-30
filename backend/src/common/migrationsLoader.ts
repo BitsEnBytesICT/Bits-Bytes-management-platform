@@ -25,7 +25,7 @@ class MySqlMigrationStore {
                 WHERE id = 1
             `);
 
-            if (!rows || rows.length === 0) {
+            if (!rows || !rows[0].last_run || rows.length === 0) {
                 callback(null, {
                     lastRun: null,
                     migrations: [],
