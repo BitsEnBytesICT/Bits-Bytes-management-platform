@@ -114,7 +114,7 @@ jobs:
           sed -i 's/\r$//' "$VERSION_FILE"
 
           if [[ "$FRONTEND_CHANGED" == "true" ]]; then
-              increment_version "FRONTEND_SNAPSHOT_VERSION"
+              increment_version "VITE_FRONTEND_SNAPSHOT_VERSION"
           fi
 
           if [[ "$BACKEND_CHANGED" == "true" ]]; then
@@ -124,7 +124,7 @@ jobs:
           git add "$VERSION_FILE"
 
           if git diff --cached --quiet; then
-              echo "There are no version changed to commit"
+              echo "There are no version changes to commit"
               exit 0
           fi
 

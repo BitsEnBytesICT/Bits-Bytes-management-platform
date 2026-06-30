@@ -7,8 +7,10 @@ import type {INavigationItem} from "../../types/navigation/INavigation";
 import {ShapeLeft, ShapeRight, ButtonMenu, LogoWhite} from "../../assets";
 
 export default function Navigation({isOpen, setIsOpen}) {
-    //const [versionNumber, setVersionNumber] = useState("0.0.0");
-    const versionNumber = "0.0.3"; //temp voor nu
+    const versionNumber =
+        import.meta.env.VITE_FRONTEND_SNAPSHOT_VERSION && Number(import.meta.env.VITE_FRONTEND_SNAPSHOT_VERSION) > 0
+            ? `${import.meta.env.VITE_FRONTEND_VERSION}-snapshot-${import.meta.env.VITE_FRONTEND_SNAPSHOT_VERSION}`
+            : import.meta.env.VITE_FRONTEND_VERSION;
 
     const navMenuItem = (item: INavigationItem) => (
         <div key={item.path} className="flex items-center gap-2.5 cursor-pointer">

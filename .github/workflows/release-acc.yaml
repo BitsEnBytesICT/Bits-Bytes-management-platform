@@ -53,6 +53,6 @@ jobs:
           set +a
 
           envsubst \
-          '${FRONTEND_SNAPSHOT_VERSION} ${BACKEND_SNAPSHOT_VERSION} ${BACKEND_VERSION} ${FRONTEND_VERSION}' \
+          '${VITE_FRONTEND_SNAPSHOT_VERSION} ${BACKEND_SNAPSHOT_VERSION} ${BACKEND_VERSION} ${VITE_FRONTEND_VERSION}' \
           < deployment-ACC.yaml \
           | kubectl apply -f -
