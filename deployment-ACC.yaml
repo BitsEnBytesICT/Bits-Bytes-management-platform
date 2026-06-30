@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: bitsenbytes-frontend-acc
-          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesfrontendACC_${FRONTEND_VERSION}_snapshot_${FRONTEND_SNAPSHOT_VERSION}
+          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesfrontendACC_${VITE_FRONTEND_VERSION}_snapshot_${VITE_FRONTEND_SNAPSHOT_VERSION}
           imagePullPolicy: Always
 ---
 apiVersion: v1

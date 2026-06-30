@@ -15,6 +15,7 @@ environmentFileChecker();
 if (process.env.DATABASE_TYPE === "sqllite") setupDatabase();
 else if (process.env.DATABASE_TYPE === "mysql") createConnection();
 
+console.log(process.env.BACKEND_SNAPSHOT_VERSION)
 
 const app: Express = express();
 
@@ -66,5 +67,8 @@ app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
 });
 
 const server = app.listen(app.get('port'), function () {
-    console.log(`Express server listening on port ${(server.address() as AddressInfo).port}`);
+    console.log(`Express server version ${
+        process.env.BACKEND_SNAPSHOT_VERSION && Number(process.env.BACKEND_SNAPSHOT_VERSION) > 0 ? 
+        `${process.env.BACKEND_VERSION}-snapshot-${process.env.BACKEND_SNAPSHOT_VERSION}` : 
+        process.env.BACKEND_VERSION} listening on port ${(server.address() as AddressInfo).port}`);
 });

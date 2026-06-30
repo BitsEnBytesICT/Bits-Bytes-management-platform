@@ -4,7 +4,7 @@ services:
   bitsenbytesfrontendACC:
     mem_limit: 512m
     memswap_limit: 512m
-    image: 10.10.1.110:32000/managementplatform:bitsenbytesfrontendACC_${FRONTEND_VERSION}_snapshot_${FRONTEND_SNAPSHOT_VERSION}
+    image: 10.10.1.110:32000/managementplatform:bitsenbytesfrontendACC_${VITE_FRONTEND_VERSION}_snapshot_${VITE_FRONTEND_SNAPSHOT_VERSION}
     container_name: bitsenbytesfrontendACC
     build:
       context: .
