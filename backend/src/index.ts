@@ -72,3 +72,5 @@ const server = app.listen(app.get('port'), function () {
         `${process.env.BACKEND_VERSION}-snapshot-${process.env.BACKEND_SNAPSHOT_VERSION}` : 
         process.env.BACKEND_VERSION} listening on port ${(server.address() as AddressInfo).port}`);
 });
+
+//small change to test the bump version
