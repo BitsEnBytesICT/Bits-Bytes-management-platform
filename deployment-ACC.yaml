@@ -6,6 +6,7 @@ metadata:
   namespace: bitsenbytes-management-platform
 spec:
   replicas: 3
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: bitsenbytes-frontend-acc
@@ -66,6 +67,7 @@ metadata:
   namespace: bitsenbytes-management-platform
 spec:
   replicas: 3
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: bitsenbytes-backend-acc

@@ -73,7 +73,7 @@ const upStatements: string[] = [
     `
     CREATE TABLE IF NOT EXISTS Attendances (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-        participantsID INT UNSIGNED NOT NULL,
+        participantID INT UNSIGNED NOT NULL,
         clockinDate DATETIME(3) NOT NULL,
         clockoutDate DATETIME(3) NULL,
         workDuration INT NULL,
@@ -86,7 +86,7 @@ const upStatements: string[] = [
         ),
 
         CONSTRAINT fk_attendances_participant
-            FOREIGN KEY (participantsID)
+            FOREIGN KEY (participantID)
             REFERENCES Participants(id)
     ) ENGINE=InnoDB
     DEFAULT CHARSET=utf8mb4
