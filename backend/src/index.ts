@@ -6,6 +6,7 @@ import IError from './types/error/IError';
 import { assertNever } from './common/Validator';
 import HealthRouter from './endpoints/health/health.routes';
 import attendanceRouter from './endpoints/attendances/attendance.routes';
+import participantRouter from './endpoints/participants/participants.routes';
 import { setupDatabase } from './setupDatabases';
 import { createConnection } from './common/db';
 import { environmentFileChecker } from './common/environmentFileChecker';
@@ -21,7 +22,13 @@ const app: Express = express();
 
 app.use(cors({
     origin: function (origin, callback) {
-        const allowedOrigins = [`http://localhost:5173`];
+        if (process.env.NODE_ENV === "DEVELOPMENT") {
+            console.log(`allowed connection from origin: ${origin}`);
+            callback(null, true);
+            return;
+        }
+
+        const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "").split(",").map((o) => o.trim()).filter(Boolean);
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
             console.log(`allowed connection from origin: ${origin}`);
             callback(null, true);
@@ -39,6 +46,7 @@ app.set('port', process.env.PORT || 3000);
 
 app.use(HealthRouter);
 app.use(attendanceRouter);
+app.use(participantRouter);
 
 app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
     console.log(err)
@@ -73,4 +81,4 @@ const server = app.listen(app.get('port'), function () {
         process.env.BACKEND_VERSION} listening on port ${(server.address() as AddressInfo).port}`);
 });
 
-//small change to test the bump version test5
+// small change to test the bump version test5
