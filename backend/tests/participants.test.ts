@@ -31,7 +31,7 @@ describe("ParticipantService", () => {
 
     it("update rejects an empty firstname", async () => {
         await assert.rejects(
-            () => service.update(["id", 1], ["firstname", "Jan"]),
+            () => service.update(["id", 1], ["firstname", ""]),
             (err: any) => {
                 assert.ok(Array.isArray(err), "expected an array of validation errors");
                 assert.equal(err[0].errorMSG.message, "name cannot be empty");
@@ -40,19 +40,25 @@ describe("ParticipantService", () => {
         );
     });
 
-    it("FAILS ON PURPOSE: count expects the wrong total", async () => {
-        const count = await service.count();
-        assert.equal(count, 999);
-    });
-
-    it("FAILS ON PURPOSE: countPresent expects the wrong number", async () => {
-        const count = await service.countPresent();
-        assert.equal(count, 42);
-    });
-
-    it("FAILS ON PURPOSE: update expects a rejection for valid input", async () => {
+    it("update rejects an empty lastname", async () => {
         await assert.rejects(
-            () => service.update(["id", 1], ["firstname", "Jan"]),
+            () => service.update(["id", 1], ["lastname", ""]),
+            (err: any) => {
+                assert.ok(Array.isArray(err), "expected an array of validation errors");
+                assert.equal(err[0].errorMSG.message, "lastname cannot be empty");
+                return true;
+            },
+        );
+    });
+
+    it("update rejects an invalid active value", async () => {
+        await assert.rejects(
+            () => service.update(["id", 1], ["active", 2]),
+            (err: any) => {
+                assert.ok(Array.isArray(err), "expected an array of validation errors");
+                assert.equal(err[0].errorMSG.message, "active can only be a one or a zero");
+                return true;
+            },
         );
     });
 });

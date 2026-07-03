@@ -28,8 +28,8 @@ app.use(cors({
             return;
         }
 
-        const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "").split(",").map((o) => o.trim()).filter(Boolean);
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        const allowedOrigin = process.env.ALLOWED_ORIGIN;
+        if (!origin || allowedOrigin === "*" || origin === allowedOrigin) {
             console.log(`allowed connection from origin: ${origin}`);
             callback(null, true);
         } else {
@@ -80,5 +80,3 @@ const server = app.listen(app.get('port'), function () {
         `${process.env.BACKEND_VERSION}-snapshot-${process.env.BACKEND_SNAPSHOT_VERSION}` : 
         process.env.BACKEND_VERSION} listening on port ${(server.address() as AddressInfo).port}`);
 });
-
-// small change to test the bump version test5
