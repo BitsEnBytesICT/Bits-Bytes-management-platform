@@ -1,9 +1,9 @@
-process.env.DATABASE_TYPE = "sqllite";
-
 import { describe, it, before } from "node:test";
 import assert from "node:assert/strict";
 import { setupDatabase } from "../src/setupDatabases";
 import ParticipantService from "../src/endpoints/participants/participants.service";
+import { ParticipantValidator } from "../src/validators/participantValidator";
+import IParticipant from "../src/types/participant/IParticipant";
 
 describe("ParticipantService", () => {
     const service = new ParticipantService();
@@ -29,36 +29,64 @@ describe("ParticipantService", () => {
         assert.ok(participants.some((p) => p.firstname === "Maria" && p.clockedin === 1));
     });
 
-    it("update rejects an empty firstname", async () => {
-        await assert.rejects(
-            () => service.update(["id", 1], ["firstname", ""]),
-            (err: any) => {
-                assert.ok(Array.isArray(err), "expected an array of validation errors");
-                assert.equal(err[0].errorMSG.message, "name cannot be empty");
-                return true;
-            },
-        );
+});
+
+describe("ParticipantValidator", () => {
+    const validParticipant: IParticipant = {
+        id: 1,
+        firstname: "Jan",
+        lastname: "de Vries",
+        organisation: "IT Afdeling",
+        account: 1,
+        rfid: "11F3EF12",
+        createdAt: new Date().toISOString(),
+        active: 1,
+        clockedin: 0,
+        product: "Develop",
+    };
+
+    it("accepts a fully valid participant", () => {
+        const results = ParticipantValidator(validParticipant);
+        assert.ok(results.every((r) => r.kind === "success"));
     });
 
-    it("update rejects an empty lastname", async () => {
-        await assert.rejects(
-            () => service.update(["id", 1], ["lastname", ""]),
-            (err: any) => {
-                assert.ok(Array.isArray(err), "expected an array of validation errors");
-                assert.equal(err[0].errorMSG.message, "lastname cannot be empty");
-                return true;
-            },
-        );
+    it("rejects empty and out-of-range values", () => {
+        const results = ParticipantValidator({
+            id: -1,
+            firstname: "",
+            lastname: "",
+            organisation: "",
+            account: -1,
+            rfid: "",
+            createdAt: "",
+            active: -1,
+            clockedin: -1,
+            product: "",
+        });
+
+        assert.ok(results.every((r) => r.kind === "error"));
     });
 
-    it("update rejects an invalid active value", async () => {
-        await assert.rejects(
-            () => service.update(["id", 1], ["active", 2]),
-            (err: any) => {
-                assert.ok(Array.isArray(err), "expected an array of validation errors");
-                assert.equal(err[0].errorMSG.message, "active can only be a one or a zero");
-                return true;
-            },
-        );
+    it("rejects an invalid date format", () => {
+        const results = ParticipantValidator({ ...validParticipant, createdAt: "35-16-2020" });
+        assert.equal(results.find((r) => r.key === "createdAt")?.kind, "error");
+    });
+
+    it("accepts a participant without the optional id and clockedin fields", () => {
+        const { id, clockedin, ...rest } = validParticipant;
+        const results = ParticipantValidator(rest as IParticipant);
+        assert.ok(results.every((r) => r.kind === "success"));
+    });
+
+    it("rejects id and account when they are exactly 0", () => {
+        const results = ParticipantValidator({ ...validParticipant, id: 0, account: 0 });
+        assert.equal(results.find((r) => r.key === "id")?.kind, "error");
+        assert.equal(results.find((r) => r.key === "account")?.kind, "error");
+    });
+
+    it("rejects a non-integer active/clockedin value", () => {
+        const results = ParticipantValidator({ ...validParticipant, active: 0.5, clockedin: 0.5 });
+        assert.equal(results.find((r) => r.key === "active")?.kind, "error");
+        assert.equal(results.find((r) => r.key === "clockedin")?.kind, "error");
     });
 });

@@ -11,9 +11,9 @@ const validateOneorZeroUndefined = Fun<number | undefined, boolean>(id => id ===
 
 export const participantValidatorFunctors: ValidatorMap<IParticipant> = {
     id: [validateAbove0OrUndefined, "id is not valid"],
-    firstname: [validateStringNotEmpty, "name cannot be empty"],
+    firstname: [validateStringNotEmpty, "firstname cannot be empty"],
     lastname: [validateStringNotEmpty, "lastname cannot be empty"],
-    organisation: [validateStringNotEmpty, "age is not valid"],
+    organisation: [validateStringNotEmpty, "organisation cannot be empty"],
     account: [validateAbove0, "ivalid account id"],
     rfid: [validateStringNotEmpty, "rfid cannot be empty"],
     createdAt: [validateDate, "createdAt time not valid"],

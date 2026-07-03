@@ -22,12 +22,6 @@ const app: Express = express();
 
 app.use(cors({
     origin: function (origin, callback) {
-        if (process.env.NODE_ENV === "DEVELOPMENT") {
-            console.log(`allowed connection from origin: ${origin}`);
-            callback(null, true);
-            return;
-        }
-
         const allowedOrigin = process.env.ALLOWED_ORIGIN;
         if (!origin || allowedOrigin === "*" || origin === allowedOrigin) {
             console.log(`allowed connection from origin: ${origin}`);
