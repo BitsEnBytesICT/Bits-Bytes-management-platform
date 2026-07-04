@@ -15,9 +15,9 @@ environmentFileChecker();
 if (process.env.DATABASE_TYPE === "sqllite") setupDatabase();
 else if (process.env.DATABASE_TYPE === "mysql") createConnection();
 
-console.log(process.env.BACKEND_SNAPSHOT_VERSION)
-
 const app: Express = express();
+
+app.set("trust proxy", 2);
 
 app.use(cors({
     origin: function (origin, callback) {
@@ -76,5 +76,3 @@ const server = app.listen(app.get('port'), function () {
         `${process.env.BACKEND_VERSION}-snapshot-${process.env.BACKEND_SNAPSHOT_VERSION}` : 
         process.env.BACKEND_VERSION} listening on port ${(server.address() as AddressInfo).port}`);
 });
-
-//small change to test the bump version test5
