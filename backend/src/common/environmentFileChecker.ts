@@ -7,7 +7,8 @@ const requiredVariables: string[] = [
     "INVENTORYDB_NAME",
     "DATABASE_PORT",
     "BACKEND_VERSION",
-    "BACKEND_SNAPSHOT_VERSION"
+    "BACKEND_SNAPSHOT_VERSION",
+    "JWT_SECRET"
 ]
 
 export const environmentFileChecker = () => {

@@ -5,6 +5,7 @@ entity Account {
     * type: string
     * firstname: string
     * lastname: string
+    * username: string
     * role: <<foreign key Permission.role>>
     * password: string
 }

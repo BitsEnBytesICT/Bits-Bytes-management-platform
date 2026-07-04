@@ -131,6 +131,11 @@ spec:
                 secretKeyRef:
                   name: bitsenbytes-backend-secret
                   key: BACKEND_SNAPSHOT_VERSION
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: JWT_SECRET
 ---
 apiVersion: v1
 kind: Service
@@ -162,6 +167,7 @@ stringData:
   DATABASE_PORT: "3306"
   BACKEND_SNAPSHOT_VERSION: "0"
   BACKEND_VERSION: "0.0.6"
+  JWT_SECRET: DJFDG#!N4EW87R9(FHFD^F32
 ---
 
 #Mysql

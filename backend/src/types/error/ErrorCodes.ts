@@ -1,5 +1,6 @@
 export enum ErrorCodes {
     Unknown,
     InvalidData,
-    sqlError
+    sqlError,
+    invalidCredentials
 }

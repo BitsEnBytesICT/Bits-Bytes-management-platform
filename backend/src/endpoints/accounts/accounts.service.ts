@@ -11,7 +11,7 @@ export default class AccountService implements serviceBase<IAccount> {
     }
 
     async findOne(...where: KeyValuePair<IAccount>[]): Promise<IAccount> {
-        throw new Error("Method not implemented.");
+        return await this.dao.findOne(...where);
     }
 
     create(account: IAccount): void {
