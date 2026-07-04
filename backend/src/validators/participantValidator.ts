@@ -13,7 +13,7 @@ export const participantValidatorFunctors: ValidatorMap<IParticipant> = {
     id: [validateAbove0OrUndefined, "id is not valid"],
     firstname: [validateStringNotEmpty, "name cannot be empty"],
     lastname: [validateStringNotEmpty, "lastname cannot be empty"],
-    organisation: [validateStringNotEmpty, "age is not valid"],
+    organisation: [validateStringNotEmpty, "organisation is not valid"],
     account: [validateAbove0, "ivalid account id"],
     rfid: [validateStringNotEmpty, "rfid cannot be empty"],
     createdAt: [validateDate, "createdAt time not valid"],

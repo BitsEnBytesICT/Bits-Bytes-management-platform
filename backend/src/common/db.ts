@@ -48,7 +48,8 @@ const inventoryDBSQLLITE = new Database('inventoryDatabase.db', { verbose: conso
 
 export const dbQuery = async<T>(sql: string, values?: any[]): Promise<T> => {
     try {
-        if (process.env.DATABASE_TYPE === "sqllite") return db.prepare(sql).run(values) as T;
+        if (process.env.DATABASE_TYPE === "sqllite" && values) return db.prepare(sql).run(values) as T;
+        else if (process.env.DATABASE_TYPE === "sqllite" && !values) return db.prepare(sql).run() as T;
         return (await managementDB.query(sql, values))[0] as T;
     } catch (err) {
         throw {

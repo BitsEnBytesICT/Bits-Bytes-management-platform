@@ -9,11 +9,21 @@ import attendanceRouter from './endpoints/attendances/attendance.routes';
 import { setupDatabase } from './setupDatabases';
 import { createConnection } from './common/db';
 import { environmentFileChecker } from './common/environmentFileChecker';
+import { runMigrations } from './common/migrationsLoader';
 
 environmentFileChecker();
 
-if (process.env.DATABASE_TYPE === "sqllite") setupDatabase();
-else if (process.env.DATABASE_TYPE === "mysql") createConnection();
+const prepareDB = async() => {
+    if (process.env.DATABASE_TYPE === "sqllite"){
+        try {
+            await runMigrations();
+            setupDatabase();
+        } catch (error) {
+        }
+    } 
+    else if (process.env.DATABASE_TYPE === "mysql") createConnection();
+}
+prepareDB();
 
 const app: Express = express();
 

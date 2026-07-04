@@ -136,6 +136,11 @@ spec:
                 secretKeyRef:
                   name: bitsenbytes-backend-secret
                   key: JWT_SECRET
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: ENCRYPTION_KEY
 ---
 apiVersion: v1
 kind: Service
@@ -161,13 +166,14 @@ stringData:
   DATABASE_TYPE: "mysql"
   DATABASE_URL: "bitsenbytes-mysql"
   DATABASE_USERNAME: "bitsenbytes"
-  DATABASE_PASSWORD: "password"
+  DATABASE_PASSWORD: "fdD6@Ba_6*B.Fa"
   DATABASE_NAME: "managementDB"
   INVENTORYDB_NAME: "managementDB"
   DATABASE_PORT: "3306"
   BACKEND_SNAPSHOT_VERSION: "0"
   BACKEND_VERSION: "0.0.6"
   JWT_SECRET: DJFDG#!N4EW87R9(FHFD^F32
+  ENCRYPTION_KEY: b6424bcf211217cc99e17c27f1d36dafbe6ab3db75c65b3a10c3ab8162d1e2cd
 ---
 
 #Mysql
@@ -180,10 +186,10 @@ metadata:
   namespace: bitsenbytes-management-platform
 type: Opaque
 stringData:
-  MYSQL_ROOT_PASSWORD: "password"
+  MYSQL_ROOT_PASSWORD: "fdD6@Ba_6*B.Fa"
   MYSQL_DATABASE: "managementDB"
   MYSQL_USER: "bitsenbytes"
-  MYSQL_PASSWORD: "password"
+  MYSQL_PASSWORD: "fdD6@Ba_6*B.Fa"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
