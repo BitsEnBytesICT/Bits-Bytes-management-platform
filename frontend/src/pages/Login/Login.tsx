@@ -2,7 +2,7 @@ export default function Login() {
     //verder nog geen hooks of functies
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-(--color-offwhite) p-6">
+        <div className="flex min-h-screen items-center justify-center bg-(--color-offwhite) p-6 shadow-xs">
             <div className="flex w-full max-w-[28rem] flex-col gap-10 rounded-[2rem] bg-(--color-white) p-10 shadow-lg">
                 <div className="flex flex-col items-center gap-3">
                     <h1 className="text-[32px] font-bold text-(--color-darkblue)">Welkom terug</h1>
@@ -22,6 +22,7 @@ export default function Login() {
                                 focus:border-(--color-darkblue)"
                             id="username"
                             type="text"
+                            placeholder="Gebruikersnaam123"
                         />
                     </div>
 
@@ -36,6 +37,7 @@ export default function Login() {
                                 focus:border-(--color-darkblue)"
                             id="password"
                             type="password"
+                            placeholder="Wachtwoord123"
                         />
 
                         {/* <p className="text-[14px] font-medium text-(--color-red)">Foutmelding komt hier te staan..</p> */}
