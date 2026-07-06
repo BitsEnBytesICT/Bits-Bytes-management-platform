@@ -1,6 +1,7 @@
 import {Routes, Route, useLocation} from "react-router-dom";
 
 import {navigationItemsMenu, navigationItemsIT, navigationItemsAccount} from "../navigation/Navigation.config";
+import Login from "../../pages/Login/Login";
 
 export default function MainBody({setIsOpen}) {
     const routes = navigationItemsMenu.concat(navigationItemsIT).concat(navigationItemsAccount);
@@ -23,6 +24,7 @@ export default function MainBody({setIsOpen}) {
                         return <Route path={route.path} element={route.page[1]} />;
                     } else return <Route path={route.path} element={route.page} />;
                 })}
+                <Route path="/login" element={<Login />} />
             </Routes>
         </div>
     );
