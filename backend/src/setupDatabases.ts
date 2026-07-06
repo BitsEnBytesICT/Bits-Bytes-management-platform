@@ -5,10 +5,9 @@ export const setupDatabase = () => {
     const db = new Database('database.db', { verbose: console.log });
     db.pragma('foreign_keys = ON');
 
-    db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('admin', 'all');
-    db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('support', 'clockin');
+    db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('admin', '*');
 
-    db.prepare("INSERT INTO Accounts (type, firstname, lastname, role, password) VALUES (?, ?, ?, ?, ?)").run('superAdmin', 'Systeem', 'Admin', 'admin', encrypt('changeme'));
+    db.prepare("INSERT INTO Accounts (type, firstname, lastname, role, password) VALUES (?, ?, ?, ?, ?)").run('superAdmin', 'admin', 'Admin', 'superAdmin', encrypt('test'));
 
     const now = new Date().toISOString();
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, product) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Jan', 'de Vries', 'IT Afdeling', 1, '11F3EF12', now, 1, 0, 'Develop');
