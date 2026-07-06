@@ -129,6 +129,11 @@ spec:
                 secretKeyRef:
                   name: bitsenbytes-backend-secret
                   key: BACKEND_SNAPSHOT_VERSION
+            - name: ALLOWED_ORIGIN
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: ALLOWED_ORIGIN
 ---
 apiVersion: v1
 kind: Service
@@ -160,6 +165,7 @@ stringData:
   DATABASE_PORT: "3306"
   BACKEND_SNAPSHOT_VERSION: "${BACKEND_SNAPSHOT_VERSION}"
   BACKEND_VERSION: "${BACKEND_VERSION}"
+  ALLOWED_ORIGIN: "https://management-acc.bitsenbytes.net"
 ---
 
 #Mysql

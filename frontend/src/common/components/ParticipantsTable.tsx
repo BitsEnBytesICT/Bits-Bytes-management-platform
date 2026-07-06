@@ -14,106 +14,7 @@ const columnLabels: Record<keyof IParticipant, string> = {
     product: "Plaats",
 };
 
-const tempData: IParticipant[] = [
-    {
-        id: 1,
-        firstname: "John",
-        lastname: "Doe",
-        organisation: "WMO",
-        account: 1,
-        rfid: "",
-        createdAt: "",
-        active: 1,
-        clockedin: 1,
-        product: "C3",
-    },
-    {
-        id: 2,
-        firstname: "Mister",
-        lastname: "I don't know",
-        organisation: "Zeeland Zorg",
-        account: 2,
-        rfid: "",
-        createdAt: "",
-        active: 0,
-        clockedin: 0,
-        product: "F5",
-    },
-    {
-        id: 3,
-        firstname: "Misses",
-        lastname: "I don't know",
-        organisation: "Nederland Zorg",
-        account: 3,
-        rfid: "",
-        createdAt: "",
-        active: 0,
-        clockedin: 0,
-        product: "A2",
-    },
-    {
-        id: 4,
-        firstname: "Antonina",
-        lastname: "I don't know",
-        organisation: "Bits",
-        account: 4,
-        rfid: "",
-        createdAt: "",
-        active: 1,
-        clockedin: 1,
-        product: "A2",
-    },
-    {
-        id: 5,
-        firstname: "John",
-        lastname: "Doe",
-        organisation: "WMO",
-        account: 1,
-        rfid: "",
-        createdAt: "",
-        active: 1,
-        clockedin: 1,
-        product: "C3",
-    },
-    {
-        id: 6,
-        firstname: "Mister",
-        lastname: "I don't know",
-        organisation: "Zeeland Zorg",
-        account: 2,
-        rfid: "",
-        createdAt: "",
-        active: 0,
-        clockedin: 0,
-        product: "F5",
-    },
-    {
-        id: 7,
-        firstname: "Misses",
-        lastname: "I don't know",
-        organisation: "Nederland Zorg",
-        account: 3,
-        rfid: "",
-        createdAt: "",
-        active: 0,
-        clockedin: 0,
-        product: "A2",
-    },
-    {
-        id: 8,
-        firstname: "Antonina",
-        lastname: "I don't know",
-        organisation: "Bits",
-        account: 4,
-        rfid: "",
-        createdAt: "",
-        active: 1,
-        clockedin: 1,
-        product: "A2",
-    },
-];
-
-export default function DeelnemerTable({tableColumns}: IParticipantsTable) {
+export default function DeelnemerTable({tableColumns, participants}: IParticipantsTable) {
     function renderColumn(column: keyof IParticipant, row: IParticipant): React.ReactNode {
         if (column === "active") {
             const present = row.clockedin === 1;
@@ -153,7 +54,7 @@ export default function DeelnemerTable({tableColumns}: IParticipantsTable) {
                 className="-mr-[0.30rem] overflow-y-scroll max-h-64 [&::-webkit-scrollbar]:w-[0.30rem]
                     [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-(--color-black)/10
                     [&::-webkit-scrollbar-track]:bg-transparent">
-                {tempData.map(row => renderRow(row))}
+                {participants.map(row => renderRow(row))}
             </div>
         </div>
     );

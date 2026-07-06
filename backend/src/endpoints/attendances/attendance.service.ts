@@ -6,7 +6,7 @@ import IScanResult from '../../types/scan/IScanResult';
 import ScanDao from './attendance.dao';
 import ParticipantService from '../participants/participants.service';
 import { KeyValuePair, ValidatorTuple } from '../../common/Validator';
-import SignatureService from '../Signatures/signatures.service';
+import SignatureService from '../signatures/signatures.service';
 import serviceBase from '../../common/serviceBase';
 import { attendanceValidator, attendanceValidatorFunctors, partialAttendanceValidator } from '../../validators/attendanceValidator';
 
