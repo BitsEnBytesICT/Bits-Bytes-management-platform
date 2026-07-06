@@ -6,6 +6,7 @@ import IError from './types/error/IError';
 import { assertNever } from './common/Validator';
 import HealthRouter from './endpoints/health/health.routes';
 import attendanceRouter from './endpoints/attendances/attendance.routes';
+import authRouter from './endpoints/auth/auth.routes';
 import { setupDatabase } from './setupDatabases';
 import { createConnection } from './common/db';
 import { environmentFileChecker } from './common/environmentFileChecker';
@@ -49,6 +50,7 @@ app.set('port', process.env.PORT || 3000);
 
 app.use(HealthRouter);
 app.use(attendanceRouter);
+app.use(authRouter);
 
 app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
     console.log(err)

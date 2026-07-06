@@ -35,7 +35,7 @@ export default function Login() {
             setErrorShown(false)
         }, 5000)
 
-        const response = await http("/login", "POST", {
+        const response = await http("/api/login", "POST", {
             username: username,
             password: password
         })
