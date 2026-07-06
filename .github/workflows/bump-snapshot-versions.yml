@@ -1,0 +1,141 @@
+name: Bump snapshot versions
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  bump-snapshot-versions:
+    if: github.event.pull_request.merged == true
+
+    runs-on: [self-hosted]
+
+    steps:
+      - name: Detect frontend and backend changes
+        id: changes
+        uses: actions/github-script@v9
+        with:
+          retries: 3
+          script: |
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                per_page: 100
+              }
+            );
+
+            const filenames = files.map(file => file.filename);
+
+            const frontendChanged = filenames.some(
+              filename => filename.startsWith("frontend/")
+            );
+
+            const backendChanged = filenames.some(
+              filename => filename.startsWith("backend/")
+            );
+
+            core.info(`Frontend changed: ${frontendChanged}`);
+            core.info(`Backend changed: ${backendChanged}`);
+
+            core.setOutput("frontend_changed", String(frontendChanged));
+            core.setOutput("backend_changed", String(backendChanged));
+
+      - name: No version changes required
+        if: >
+          steps.changes.outputs.frontend_changed != 'true' &&
+          steps.changes.outputs.backend_changed != 'true'
+        run: echo "No changed found in frontend/ or backend/."
+
+      - name: Checkout main with deploy key
+        if: >
+          steps.changes.outputs.frontend_changed == 'true' ||
+          steps.changes.outputs.backend_changed == 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+          ssh-key: ${{ secrets.VERSION_BUMP_DEPLOY_KEY }}
+          persist-credentials: true
+
+      - name: Bump snapshot versions and push
+        if: >
+          steps.changes.outputs.frontend_changed == 'true' ||
+          steps.changes.outputs.backend_changed == 'true'
+        shell: bash
+        env:
+          FRONTEND_CHANGED: ${{ steps.changes.outputs.frontend_changed }}
+          BACKEND_CHANGED: ${{ steps.changes.outputs.backend_changed }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+
+          VERSION_FILE=".env.versions"
+
+          git config user.name "version-bump-bot"
+          git config user.email "version-bump-bot@users.noreply.github.com"
+
+          increment_version() {
+              local key="$1"
+              local current_version
+              local new_version
+
+              current_version=$(
+                  grep -E "^${key}=[0-9]+$" "$VERSION_FILE" |
+                  cut -d '=' -f 2
+              )
+
+              if [[ ! "$current_version" =~ ^[0-9]+$ ]]; then
+                  echo "No correct number found for ${key}"
+                  exit 1
+              fi
+
+              new_version=$((10#$current_version + 1))
+
+              sed -i \
+                  "s/^${key}=${current_version}$/${key}=${new_version}/" \
+                  "$VERSION_FILE"
+
+              echo "${key}: ${current_version} -> ${new_version}"
+          }
+
+          git fetch origin main
+          git checkout -B main origin/main
+
+          # Normaliseer Windows CRLF-linebreaks.
+          sed -i 's/\r$//' "$VERSION_FILE"
+
+          if [[ "$FRONTEND_CHANGED" == "true" ]]; then
+              increment_version "VITE_FRONTEND_SNAPSHOT_VERSION"
+          fi
+
+          if [[ "$BACKEND_CHANGED" == "true" ]]; then
+              increment_version "BACKEND_SNAPSHOT_VERSION"
+          fi
+
+          git add "$VERSION_FILE"
+
+          if git diff --cached --quiet; then
+              echo "There are no version changes to commit"
+              exit 0
+          fi
+
+          git commit \
+              -m "chore: bump snapshot versions after PR #${PR_NUMBER}"
+
+          if git push origin HEAD:main; then
+              echo "Succesfully updated version numbers"
+              exit 0
+          fi
+
+          echo "Push failed!"
+          exit 1

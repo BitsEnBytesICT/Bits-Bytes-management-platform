@@ -1,0 +1,56 @@
+name: Release ACC
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .env.versions
+
+jobs:
+  build-and-deploy-acc:
+    if: "${{ startsWith(github.event.head_commit.message, 'chore: bump snapshot versions after PR') }}"
+    runs-on: [self-hosted]
+
+    steps:
+      - name: Checkout merged commit
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Build backend
+        working-directory: ./backend
+        run: npm run build
+
+      - name: Build Docker images
+        run: docker compose --env-file .env.versions -f compose-acc.yaml build
+
+      - name: Push Docker images
+        run: docker compose --env-file .env.versions -f compose-acc.yaml push
+
+      - name: Deploy to Kubernetes
+        run: |
+          set -euo pipefail
+          set -a
+          source .env.versions
+          set +a
+
+          envsubst \
+          '${VITE_FRONTEND_SNAPSHOT_VERSION} ${BACKEND_SNAPSHOT_VERSION} ${BACKEND_VERSION} ${VITE_FRONTEND_VERSION}' \
+          < deployment-ACC.yaml \
+          | kubectl apply -f -

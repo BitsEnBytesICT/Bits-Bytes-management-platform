@@ -2,26 +2,26 @@ import { daoBase, daoBaseType } from "../../common/daoBase";
 import { dbGet, dbQuery } from "../../common/db";
 import { KeyValuePair } from "../../common/Validator";
 import ISignature from "../../types/signature/ISignature";
-
+import { Tables } from "../../types/tables/tablesList";
 
 export default class SignatureDao extends daoBase<ISignature> implements daoBaseType<ISignature> {
-    create(signature: ISignature): void {
-         dbQuery('INSERT INTO Signatures (deelnemerID, date, signature) VALUES (?, ?, ?)', [signature.deelnemerID, signature.date, signature.signature]);
+    async create(signature: ISignature) {
+         await dbQuery('INSERT INTO Signatures (participantID, date, signature) VALUES (?, ?, ?)', [signature.participantID, signature.date, signature.signature]);
     }
 
-    update(where: KeyValuePair<ISignature>, ...args: KeyValuePair<ISignature>[]): void {
-        this.updateFunc("Signatures", where, ...args);
+    async update(where: KeyValuePair<ISignature>, ...args: KeyValuePair<ISignature>[]) {
+        await this.updateFunc(Tables.Signatures, where, ...args);
     }
 
     delete(...args: any[]): void {
         throw new Error("Method not implemented.");
     }
 
-    list(...args: any[]): ISignature[] {
+    async list(...args: any[]): Promise<ISignature[]> {
         throw new Error("Method not implemented.");
     }
 
-    findOne(...args: KeyValuePair<ISignature>[]): ISignature {
-        return this.findOneFunc("Signatures", ...args);
+    async findOne(...args: KeyValuePair<ISignature>[]): Promise<ISignature> {
+        return await this.findOneFunc(Tables.Signatures, ...args);
     }
 }

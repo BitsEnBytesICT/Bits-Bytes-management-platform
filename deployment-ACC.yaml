@@ -1,0 +1,280 @@
+#frontend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bitsenbytes-frontend-acc
+  namespace: bitsenbytes-management-platform
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bitsenbytes-frontend-acc
+  template:
+    metadata:
+      labels:
+        app: bitsenbytes-frontend-acc
+    spec:
+      containers:
+        - name: bitsenbytes-frontend-acc
+          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesfrontendACC_${VITE_FRONTEND_VERSION}_snapshot_${VITE_FRONTEND_SNAPSHOT_VERSION}
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bitsenbytes-frontend-acc
+  namespace: bitsenbytes-management-platform
+spec:
+  selector:
+    app: bitsenbytes-frontend-acc
+  ports:
+    - port: 8080
+      targetPort: 80
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bitsenbytes-acc
+  namespace: bitsenbytes-management-platform
+spec:
+  rules:
+    - host: management-acc.bitsenbytes.net
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: bitsenbytes-backend-acc
+                port:
+                  number: 3000
+
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bitsenbytes-frontend-acc
+                port:
+                  number: 8080
+---
+#backend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bitsenbytes-backend-acc
+  namespace: bitsenbytes-management-platform
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bitsenbytes-backend-acc
+  template:
+    metadata:
+      labels:
+        app: bitsenbytes-backend-acc
+    spec:
+      containers:
+        - name: bitsenbytes-backend-acc
+          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesbackendACC_${BACKEND_VERSION}_snapshot_${BACKEND_SNAPSHOT_VERSION}
+          imagePullPolicy: Always
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: NODE_ENV
+            - name: DATABASE_TYPE
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_TYPE
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_USERNAME
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_PASSWORD
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_NAME
+            - name: INVENTORYDB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: INVENTORYDB_NAME
+            - name: DATABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_PORT
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: DATABASE_URL
+            - name: BACKEND_VERSION
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: BACKEND_VERSION
+            - name: BACKEND_SNAPSHOT_VERSION
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-secret
+                  key: BACKEND_SNAPSHOT_VERSION
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bitsenbytes-backend-acc
+  namespace: bitsenbytes-management-platform
+spec:
+  selector:
+    app: bitsenbytes-backend-acc
+  ports:
+    - port: 3000
+      targetPort: 3000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bitsenbytes-backend-secret
+  namespace: bitsenbytes-management-platform
+type: Opaque
+stringData:
+  NODE_ENV: "production"
+  DATABASE_TYPE: "mysql"
+  DATABASE_URL: "bitsenbytes-mysql"
+  DATABASE_USERNAME: "bitsenbytes"
+  DATABASE_PASSWORD: "password"
+  DATABASE_NAME: "managementDB"
+  INVENTORYDB_NAME: "managementDB"
+  DATABASE_PORT: "3306"
+  BACKEND_SNAPSHOT_VERSION: "${BACKEND_SNAPSHOT_VERSION}"
+  BACKEND_VERSION: "${BACKEND_VERSION}"
+---
+
+#Mysql
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bitsenbytes-mysql-secret
+  namespace: bitsenbytes-management-platform
+type: Opaque
+stringData:
+  MYSQL_ROOT_PASSWORD: "password"
+  MYSQL_DATABASE: "managementDB"
+  MYSQL_USER: "bitsenbytes"
+  MYSQL_PASSWORD: "password"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bitsenbytes-mysql-pvc
+  namespace: bitsenbytes-management-platform
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bitsenbytes-mysql
+  namespace: bitsenbytes-management-platform
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: bitsenbytes-mysql
+  template:
+    metadata:
+      labels:
+        app: bitsenbytes-mysql
+    spec:
+      containers:
+        - name: bitsenbytes-mysql
+          image: mysql:8.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-mysql-secret
+                  key: MYSQL_ROOT_PASSWORD
+
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-mysql-secret
+                  key: MYSQL_DATABASE
+
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-mysql-secret
+                  key: MYSQL_USER
+
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-mysql-secret
+                  key: MYSQL_PASSWORD
+
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+
+      volumes:
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: bitsenbytes-mysql-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bitsenbytes-mysql
+  namespace: bitsenbytes-management-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: bitsenbytes-mysql
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bitsenbytes-mysql-nodeport
+  namespace: bitsenbytes-management-platform
+spec:
+  type: NodePort
+  selector:
+    app: bitsenbytes-mysql
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+      nodePort: 30306

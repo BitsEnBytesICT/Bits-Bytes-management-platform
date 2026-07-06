@@ -5,8 +5,17 @@ import { ErrorCodes } from './types/error/ErrorCodes';
 import IError from './types/error/IError';
 import { assertNever } from './common/Validator';
 import HealthRouter from './endpoints/health/health.routes';
-import ScanRouter from './endpoints/attendances/attendance.routes';
-import './setupDatabases';
+import attendanceRouter from './endpoints/attendances/attendance.routes';
+import { setupDatabase } from './setupDatabases';
+import { createConnection } from './common/db';
+import { environmentFileChecker } from './common/environmentFileChecker';
+
+environmentFileChecker();
+
+if (process.env.DATABASE_TYPE === "sqllite") setupDatabase();
+else if (process.env.DATABASE_TYPE === "mysql") createConnection();
+
+console.log(process.env.BACKEND_SNAPSHOT_VERSION)
 
 const app: Express = express();
 
@@ -29,7 +38,7 @@ app.use(express.urlencoded({ extended: true, limit: "20kb" }));
 app.set('port', process.env.PORT || 3000);
 
 app.use(HealthRouter);
-app.use(ScanRouter);
+app.use(attendanceRouter);
 
 app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
     console.log(err)
@@ -58,5 +67,10 @@ app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
 });
 
 const server = app.listen(app.get('port'), function () {
-    console.log(`Express server listening on port ${(server.address() as AddressInfo).port}`);
+    console.log(`Express server version ${
+        process.env.BACKEND_SNAPSHOT_VERSION && Number(process.env.BACKEND_SNAPSHOT_VERSION) > 0 ? 
+        `${process.env.BACKEND_VERSION}-snapshot-${process.env.BACKEND_SNAPSHOT_VERSION}` : 
+        process.env.BACKEND_VERSION} listening on port ${(server.address() as AddressInfo).port}`);
 });
+
+//small change to test the bump version test5

@@ -23,6 +23,7 @@ mono_crash.*
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
+backend/dist/
 
 [Dd]ebug/x64/
 [Dd]ebugPublic/x64/
@@ -404,6 +405,7 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 **/.ionide/
+*/dist
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
@@ -428,3 +430,5 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+.DS_Store
+backend/.env.local
