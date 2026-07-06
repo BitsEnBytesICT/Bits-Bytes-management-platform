@@ -78,8 +78,14 @@ describe("ParticipantValidator", () => {
         assert.ok(results.every((r) => r.kind === "success"));
     });
 
-    it("rejects id and account when they are exactly 0", () => {
+    it("accepts id and account when they are exactly 0", () => {
         const results = ParticipantValidator({ ...validParticipant, id: 0, account: 0 });
+        assert.equal(results.find((r) => r.key === "id")?.kind, "success");
+        assert.equal(results.find((r) => r.key === "account")?.kind, "success");
+    });
+
+    it("rejects a negative id and account", () => {
+        const results = ParticipantValidator({ ...validParticipant, id: -1, account: -1 });
         assert.equal(results.find((r) => r.key === "id")?.kind, "error");
         assert.equal(results.find((r) => r.key === "account")?.kind, "error");
     });
@@ -88,5 +94,22 @@ describe("ParticipantValidator", () => {
         const results = ParticipantValidator({ ...validParticipant, active: 0.5, clockedin: 0.5 });
         assert.equal(results.find((r) => r.key === "active")?.kind, "error");
         assert.equal(results.find((r) => r.key === "clockedin")?.kind, "error");
+    });
+
+    it("accepts a string of exactly 50 characters but rejects 51", () => {
+        const fiftyChars = "a".repeat(50);
+        const fiftyOneChars = "a".repeat(51);
+
+        const okResults = ParticipantValidator({ ...validParticipant, firstname: fiftyChars });
+        const tooLongResults = ParticipantValidator({ ...validParticipant, firstname: fiftyOneChars });
+
+        assert.equal(okResults.find((r) => r.key === "firstname")?.kind, "success");
+        assert.equal(tooLongResults.find((r) => r.key === "firstname")?.kind, "error");
+    });
+
+    it("rejects a participant with product left undefined", () => {
+        const { product, ...rest } = validParticipant;
+        const results = ParticipantValidator(rest as IParticipant);
+        assert.equal(results.find((r) => r.key === "product")?.kind, "error");
     });
 });
