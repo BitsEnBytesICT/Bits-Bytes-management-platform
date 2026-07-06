@@ -16,8 +16,8 @@ const upStatements: string[] = [
         id INTEGER PRIMARY KEY,
         type TEXT NOT NULL,
         firstname TEXT NOT NULL,
-        username TEXT NOT NULL UNIQUE,
         lastname TEXT NOT NULL,
+        username TEXT NOT NULL UNIQUE,
         role TEXT NOT NULL,
         password TEXT NOT NULL,
         FOREIGN KEY(role) REFERENCES Permissions(role)
