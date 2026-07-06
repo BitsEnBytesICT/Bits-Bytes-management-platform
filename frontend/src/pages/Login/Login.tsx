@@ -1,4 +1,5 @@
 import React from "react";
+import http from "../../common/http";
 
 export default function Login() {
     const [errorMessage, setErrorMessage] = React.useState("");
@@ -7,7 +8,7 @@ export default function Login() {
     const usernameRef = React.createRef<HTMLInputElement>();
     const passwordRef = React.createRef<HTMLInputElement>();
 
-    const onSubmitClick = (_event: React.MouseEvent<HTMLButtonElement>) => {
+    const onSubmitClick = async (_event: React.MouseEvent<HTMLButtonElement>) => {
         let username = usernameRef.current.value;
         let password = passwordRef.current.value;
 
@@ -29,7 +30,18 @@ export default function Login() {
             return;
         }
 
-        //Initiate http request to login endpoint
+        setTimeout(() => {
+            setErrorMessage("")
+            setErrorShown(false)
+        }, 5000)
+
+        const response = await http("/login", "POST", {
+            username: username,
+            password: password
+        })
+
+        alert(response.status)
+        
     };
 
     return (
