@@ -1,3 +1,1 @@
-export default function Input() {
-    
-}
+export default function Input() {}
