@@ -3,16 +3,23 @@ import http from "../../common/http";
 
 export default function Login() {
     const [errorMessage, setErrorMessage] = React.useState<{
-        color: string
-        message: string
+        color: string;
+        message: string;
     }>();
-
     const [errorShown, setErrorShown] = React.useState(false);
 
     const usernameRef = React.createRef<HTMLInputElement>();
     const passwordRef = React.createRef<HTMLInputElement>();
 
-    const onSubmitClick = async (_event: React.MouseEvent<HTMLButtonElement>) => {
+    const setErrorText = (message: string, color: string): void => {
+        setErrorMessage({
+            color: color,
+            message: message,
+        });
+        setErrorShown(true);
+    };
+
+    const onSubmitClick = async (_event: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
         let username = usernameRef.current.value;
         let password = passwordRef.current.value;
 
@@ -22,22 +29,11 @@ export default function Login() {
         });
 
         if (response.status == 401) {
-             setErrorMessage({
-                color: "--color-red",
-                message: "Invalid username or password"
-             });
-             setErrorShown(true);
+            setErrorText("Invalid username or password", "--color-red");
         } else if (response.status == 200) {
-            setErrorMessage({
-                color: "--color-green",
-                message: "You have logged in, moving you to dashboard"
-            })
-            setErrorShown(true);
+            setErrorText("You have logged in, moving you to dashboard", "--color-green");
         } else {
-            setErrorMessage({
-                color: "--color-red",
-                message: "Something went wrong, ask system admin"
-            })
+            setErrorText("Something went wrong, ask system admin", "--color-red");
         }
     };
 
@@ -82,7 +78,9 @@ export default function Login() {
                             ref={passwordRef}
                         />
                         {errorShown ? (
-                            <p className={`text-[14px] font-medium text-(${errorMessage.color})`}>{errorMessage.message}</p>
+                            <p className={`text-[14px] font-medium text-(${errorMessage.color})`}>
+                                {errorMessage.message}
+                            </p>
                         ) : null}
                     </div>
 
