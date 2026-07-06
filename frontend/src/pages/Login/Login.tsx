@@ -18,30 +18,29 @@ export default function Login() {
             return;
         }
 
-        if (username.length <= 3) {
-            setErrorMessage("Username is too short");
-            setErrorShown(true);
-            return;
-        }
+        // if (username.length <= 3) {
+        //     setErrorMessage("Username is too short");
+        //     setErrorShown(true);
+        //     return;
+        // }
 
-        if (password.length <= 5) {
-            setErrorMessage("Password is too short");
-            setErrorShown(true);
-            return;
-        }
+        // if (password.length <= 5) {
+        //     setErrorMessage("Password is too short");
+        //     setErrorShown(true);
+        //     return;
+        // }
 
         setTimeout(() => {
-            setErrorMessage("")
-            setErrorShown(false)
-        }, 5000)
+            setErrorMessage("");
+            setErrorShown(false);
+        }, 5000);
 
         const response = await http("/api/login", "POST", {
             username: username,
-            password: password
-        })
+            password: password,
+        });
 
-        alert(response.status)
-        
+        alert(response.status);
     };
 
     return (

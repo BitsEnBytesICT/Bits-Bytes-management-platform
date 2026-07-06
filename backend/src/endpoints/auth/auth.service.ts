@@ -16,9 +16,9 @@ export default class AuthService {
             code: ErrorCodes.InvalidData
         } satisfies IError
 
-        const account = await this.accountService.findOne(["username", username], ["password", encrypt(password)]);
+        const account = await this.accountService.findOne(["username", username]);
 
-        if (!account)  throw {
+        if (!account || decrypt<string>(account.password) !== password)  throw {
             date: new Date(),
             errorMSG: new Error("login gegevens zijn niet juist."),
             code: ErrorCodes.invalidCredentials

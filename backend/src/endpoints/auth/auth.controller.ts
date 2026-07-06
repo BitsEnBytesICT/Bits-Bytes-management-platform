@@ -8,8 +8,8 @@ export default class AuthController {
         this.service = new AuthService();
     }
 
-    login = (req: Request, res: Response) => {
-        const token = this.service.login(req.body.username, req.body.password);
+    login = async (req: Request, res: Response) => {
+        const token = await this.service.login(req.body.username, req.body.password);
         res.cookie('login', token, { path: '/', httpOnly: true, maxAge: FIFTEEN_MINUES_IN_SECONDS * 1000, sameSite: "strict" });
         res.sendStatus(200);
     }

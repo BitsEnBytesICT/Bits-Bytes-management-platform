@@ -7,7 +7,7 @@ export const setupDatabase = () => {
 
     db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('admin', '*');
 
-    db.prepare("INSERT INTO Accounts (type, firstname, lastname, role, password) VALUES (?, ?, ?, ?, ?)").run('superAdmin', 'admin', 'Admin', 'superAdmin', encrypt('test'));
+    db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('superAdmin', 'admin', 'admin', 'Admin', 'admin', encrypt('test123'));
 
     const now = new Date().toISOString();
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, product) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Jan', 'de Vries', 'IT Afdeling', 1, '11F3EF12', now, 1, 0, 'Develop');
