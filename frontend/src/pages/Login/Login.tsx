@@ -2,7 +2,11 @@ import React from "react";
 import http from "../../common/http";
 
 export default function Login() {
-    const [errorMessage, setErrorMessage] = React.useState("");
+    const [errorMessage, setErrorMessage] = React.useState<{
+        color: string
+        message: string
+    }>();
+
     const [errorShown, setErrorShown] = React.useState(false);
 
     const usernameRef = React.createRef<HTMLInputElement>();
@@ -12,35 +16,29 @@ export default function Login() {
         let username = usernameRef.current.value;
         let password = passwordRef.current.value;
 
-        if (!username && !password) {
-            setErrorMessage("Please enter your username and password");
-            setErrorShown(true);
-            return;
-        }
-
-        // if (username.length <= 3) {
-        //     setErrorMessage("Username is too short");
-        //     setErrorShown(true);
-        //     return;
-        // }
-
-        // if (password.length <= 5) {
-        //     setErrorMessage("Password is too short");
-        //     setErrorShown(true);
-        //     return;
-        // }
-
-        setTimeout(() => {
-            setErrorMessage("");
-            setErrorShown(false);
-        }, 5000);
-
         const response = await http("/api/login", "POST", {
             username: username,
             password: password,
         });
 
-        alert(response.status);
+        if (response.status == 401) {
+             setErrorMessage({
+                color: "--color-red",
+                message: "Invalid username or password"
+             });
+             setErrorShown(true);
+        } else if (response.status == 200) {
+            setErrorMessage({
+                color: "--color-green",
+                message: "You have logged in, moving you to dashboard"
+            })
+            setErrorShown(true);
+        } else {
+            setErrorMessage({
+                color: "--color-red",
+                message: "Something went wrong, ask system admin"
+            })
+        }
     };
 
     return (
@@ -84,7 +82,7 @@ export default function Login() {
                             ref={passwordRef}
                         />
                         {errorShown ? (
-                            <p className="text-[14px] font-medium text-(--color-red)">{errorMessage}</p>
+                            <p className={`text-[14px] font-medium text-(${errorMessage.color})`}>{errorMessage.message}</p>
                         ) : null}
                     </div>
 
