@@ -2,24 +2,25 @@ import { Fun } from "../common/functor";
 import { ValidatorMap, validatorPipe, validatorPipePartial, ValidatorTuple } from "../common/Validator";
 import IParticipant from "../types/participant/IParticipant";
 
-const validateStringNotEmpty = Fun<string | undefined, boolean>(str => str === undefined ? true : str.length > 0);
-const validateAbove0 = Fun<number, boolean>(id => id > 0);
-const validateAbove0OrUndefined = Fun<number | undefined, boolean>(id => id === undefined ? true : id > 0);
+const validateNotNegativeOrUndefined = Fun<number | undefined, boolean>(id => id === undefined ? true : id >= 0);
+const validateNotNegative = Fun<number, boolean>(id => id >= 0);
 const validateDate = Fun<string, boolean>(s => !isNaN(Date.parse(s)));
 const validateOneorZero = Fun<number, boolean>(id => id === 0 || id === 1);
 const validateOneorZeroUndefined = Fun<number | undefined, boolean>(id => id === undefined ? true : id === 0 || id === 1);
+const validateStringNotEmptyAndLenBelow50Char = Fun<string, boolean>(str => str.length > 0 && str.length < 51);
+const validateStringNotEmptyAndLenBelow50CharAndUndefined = Fun<string | undefined, boolean>(str => str === undefined ? false : str.length > 0 && str.length < 51);
 
 export const participantValidatorFunctors: ValidatorMap<IParticipant> = {
-    id: [validateAbove0OrUndefined, "id is not valid"],
-    firstname: [validateStringNotEmpty, "firstname cannot be empty"],
-    lastname: [validateStringNotEmpty, "lastname cannot be empty"],
-    organisation: [validateStringNotEmpty, "organisation cannot be empty"],
-    account: [validateAbove0, "ivalid account id"],
-    rfid: [validateStringNotEmpty, "rfid cannot be empty"],
+    id: [validateNotNegativeOrUndefined, "id cannot be negative"],
+    firstname: [validateStringNotEmptyAndLenBelow50Char, "firstname cannot be empty or above 50 chars"],
+    lastname: [validateStringNotEmptyAndLenBelow50Char, "lastname cannot be empty or above 50 chars"],
+    organisation: [validateStringNotEmptyAndLenBelow50Char, "organisation cannot be empty or above 50 chars"],
+    account: [validateNotNegative, "account id cannot be negative"],
+    rfid: [validateStringNotEmptyAndLenBelow50Char, "rfid cannot be empty or above 50 chars"],
     createdAt: [validateDate, "createdAt time not valid"],
     active: [validateOneorZero, "active can only be a one or a zero"],
     clockedin: [validateOneorZeroUndefined, "clockin state can only be a one or a zero"],
-    product: [validateStringNotEmpty, "product cannot be empty"]
+    product: [validateStringNotEmptyAndLenBelow50CharAndUndefined, "product cannot be above 50 chars"]
 }
 
 export function ParticipantValidator(participant: IParticipant) {
