@@ -40,7 +40,7 @@ class MySqlMigrationStore {
 
             const row = rows?.[0];
 
-            if (!row) {
+            if (!row || !row.migrations || row.last_run) {
                 callback(null, {
                     lastRun: null,
                     migrations: [],
@@ -52,7 +52,7 @@ class MySqlMigrationStore {
             callback(null, {
                 lastRun: row.last_run ?? null,
                 migrations: JSON.parse(
-                    rows[0].migrations,
+                    row.migrations,
                 ),
             });
         })().catch((error: unknown) => {

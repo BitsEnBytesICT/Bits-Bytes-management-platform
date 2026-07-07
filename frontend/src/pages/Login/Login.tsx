@@ -39,11 +39,14 @@ export default function Login() {
             password: password,
         });
 
+        if (request.status === 200) {
+            //naviagte to /
+            return;
+        }
         const response = await request.json();
         let message = response[0];
 
-        console.log(response);
-
+        console.log(request.status);
         if (request.status) {
             if (request.status == 401) {
                 setErrorText(message, "--color-red");

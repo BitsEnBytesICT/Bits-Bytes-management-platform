@@ -10,7 +10,7 @@ export const encrypt = <Input>(data: Input) => {
 };
 
 export const decrypt = <Output>(data: string): Output => {
-    if (data.split(":").length !== 3) {
+    if (!data || data.split(":").length !== 3) {
         return data as unknown as Output;
     }
     const [initializationVector, tag, encrypted] = data.split(":");

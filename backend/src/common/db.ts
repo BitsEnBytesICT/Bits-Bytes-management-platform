@@ -51,7 +51,9 @@ const inventoryDBSQLLITE = new Database('inventoryDatabase.db', { verbose: conso
 export const dbQuery = async<T>(sql: string, values?: any[]): Promise<T[]> => {
     try {
         if (process.env.DATABASE_TYPE === "sqllite") {
-            const result = db.prepare(sql).run(values);
+            let result;
+            if (values) result = db.prepare(sql).run(values);
+            else result = db.prepare(sql).run();
             if (Array.isArray(result)) return result as T[];
             return [result] as T[];
         } 
@@ -68,7 +70,9 @@ export const dbQuery = async<T>(sql: string, values?: any[]): Promise<T[]> => {
 export const dbGet = async<T>(sql: string, values?: any[]): Promise<T[]> => {
     try {
         if (process.env.DATABASE_TYPE === "sqllite") {
-            const result = db.prepare(sql).get(values);
+            let result;
+            if (values) result = db.prepare(sql).get(values);
+            else result = db.prepare(sql).get();
             if (Array.isArray(result)) return result as T[];
             return [result] as T[];
         }
@@ -85,7 +89,9 @@ export const dbGet = async<T>(sql: string, values?: any[]): Promise<T[]> => {
 export const dbAll = async<T>(sql: string, values?: any[]): Promise<T[]> => {
     try {
         if (process.env.DATABASE_TYPE === "sqllite") {
-            const result = db.prepare(sql).all(values);
+            let result;
+            if (values) result = db.prepare(sql).all(values);
+            else result = db.prepare(sql).all();
             if (Array.isArray(result)) return result as T[];
             return [result] as T[];
         }
@@ -102,7 +108,9 @@ export const dbAll = async<T>(sql: string, values?: any[]): Promise<T[]> => {
 export const inventoryDBQuery = async<T>(sql: string, values?: any[]): Promise<T[]> => {
     try {
         if (process.env.DATABASE_TYPE === "sqllite") {
-            const result = inventoryDBSQLLITE.prepare(sql).run(values);
+            let result;
+            if (values) result = inventoryDBSQLLITE.prepare(sql).run(values);
+            else result = db.prepare(sql).run();
             if (Array.isArray(result)) return result as T[];
             return [result] as T[];
         }
