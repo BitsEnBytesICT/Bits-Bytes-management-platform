@@ -11,6 +11,8 @@ export default function Login() {
     const usernameRef = React.createRef<HTMLInputElement>();
     const passwordRef = React.createRef<HTMLInputElement>();
 
+    const buttonRef = React.createRef<HTMLButtonElement>();
+
     const setErrorText = (message: string, color: string): void => {
         setErrorMessage({
             color: color,
@@ -19,9 +21,18 @@ export default function Login() {
         setErrorShown(true);
     };
 
+    const toggleButtonDisabledState = (state?: boolean): void => {
+        if (state == null) {
+            state = true;
+        }
+        buttonRef.current && (buttonRef.current.disabled = state);
+    }
+
     const onSubmitClick = async (_event: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
         let username = usernameRef.current.value;
         let password = passwordRef.current.value;
+
+        toggleButtonDisabledState()
 
         const response = await http("/api/login", "POST", {
             username: username,
@@ -30,10 +41,13 @@ export default function Login() {
 
         if (response.status == 401) {
             setErrorText("Invalid username or password", "--color-red");
+            toggleButtonDisabledState(false);
         } else if (response.status == 200) {
             setErrorText("You have logged in, moving you to dashboard", "--color-green");
+            toggleButtonDisabledState(false);
         } else {
             setErrorText("Something went wrong, ask system admin", "--color-red");
+            toggleButtonDisabledState(false);
         }
     };
 
@@ -88,7 +102,8 @@ export default function Login() {
                         className="w-full rounded-xl bg-(--color-darkblue) py-4 text-[18px] font-semibold
                             text-(--color-white) transition-colors hover:bg-(--color-darkblue)/90"
                         type="button"
-                        onClick={onSubmitClick}>
+                        onClick={onSubmitClick}
+                        ref={buttonRef}>
                         Inloggen
                     </button>
                 </form>
