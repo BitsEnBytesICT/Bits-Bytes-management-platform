@@ -1,6 +1,8 @@
 import React from "react";
 import http from "../../common/http";
 
+import { useNavigate } from "react-router-dom";
+
 export default function Login() {
     const [errorMessage, setErrorMessage] = React.useState<{
         color: string;
@@ -12,6 +14,8 @@ export default function Login() {
     const passwordRef = React.createRef<HTMLInputElement>();
 
     const buttonRef = React.createRef<HTMLButtonElement>();
+
+    const navigate = useNavigate();
 
     const setErrorText = (message: string, color: string): void => {
         setErrorMessage({
@@ -40,9 +44,10 @@ export default function Login() {
         });
 
         if (request.status === 200) {
-            //naviagte to /
+            navigate("/")
             return;
         }
+        
         const response = await request.json();
         let message = response[0];
 

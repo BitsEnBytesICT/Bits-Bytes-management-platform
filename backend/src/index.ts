@@ -21,6 +21,7 @@ const prepareDB = async() => {
             await runMigrations();
             setupDatabase();
         } catch (error) {
+            console.log(error);
         }
     } 
     else if (process.env.DATABASE_TYPE === "mysql") createConnection();

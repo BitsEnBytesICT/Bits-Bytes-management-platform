@@ -14,7 +14,9 @@ export default function MainBody({setIsOpen}) {
             key={location.pathname}
             onClick={() => setIsOpen(false)}
             className={
-                "mx-auto my-20 w-[80vw] max-w-350 z-0 animate-[fade-in_0.3s_ease-in-out] transition-all duration-400"
+                `mx-auto w-[80vw] max-w-350 z-0 animate-[fade-in_0.3s_ease-in-out] transition-all duration-400 ${
+                    location.pathname === "/login" ? "h-screen overflow-hidden" : "my-20"
+                }`
             }>
             <Routes>
                 {routes.map(route => {
