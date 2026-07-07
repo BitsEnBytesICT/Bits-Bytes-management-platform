@@ -38,19 +38,23 @@ export default function Login() {
             username: username,
             password: password,
         });
-        const response = await request.json();
 
-        if (response.status) {
-            if (response.status == 401) {
-                setErrorText(response[0], "--color-red");
-            } else if (response.status == 200) {
-                setErrorText(response[0], "--color-green");
+        const response = await request.json();
+        let message = response[0];
+
+        console.log(response);
+
+        if (request.status) {
+            if (request.status == 401) {
+                setErrorText(message, "--color-red");
+            } else if (request.status == 200) {
+                setErrorText(message, "--color-green");
             } else {
-                setErrorText(response[0], "--color-red");
+                setErrorText(message, "--color-red");
             }
             toggleButtonDisabledState(false);
         } else {
-            setErrorText("Got no response from backend, ask system admin", "--color-red");
+            setErrorText("Backend geeft geen antwoord, vraag een icter.", "--color-red");
         }
     };
 
