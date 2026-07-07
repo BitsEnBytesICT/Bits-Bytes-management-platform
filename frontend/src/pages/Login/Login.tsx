@@ -32,7 +32,7 @@ export default function Login() {
         buttonRef.current && (buttonRef.current.disabled = state);
     };
 
-    const onSubmitClick = async (_event: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
+    const doLogin = async () => {
         let username = usernameRef.current.value;
         let password = passwordRef.current.value;
 
@@ -64,7 +64,12 @@ export default function Login() {
         } else {
             setErrorText("Backend geeft geen antwoord, vraag een icter.", "--color-red");
         }
-    };
+    }
+
+    const onFormSubmit = async (event: React.SubmitEvent): Promise<void> => {
+        event.preventDefault();
+        await doLogin();
+    }
 
     return (
         <div className="flex items-center justify-center min-h-screen">
@@ -75,7 +80,7 @@ export default function Login() {
                     <p className="text-[18px] font-medium text-(--color-orange)">Log in op je dashboard</p>
                 </div>
 
-                <form className="flex flex-col gap-6">
+                <form className="flex flex-col gap-6" onSubmit={onFormSubmit}>
                     <div className="flex flex-col gap-2">
                         <label className="text-[16px] font-semibold text-(--color-darkblue)" htmlFor="username">
                             Gebruikersnaam
@@ -88,6 +93,7 @@ export default function Login() {
                             id="username"
                             type="text"
                             placeholder="Gebruikersnaam123"
+                            required
                             ref={usernameRef}
                         />
                     </div>
@@ -104,6 +110,7 @@ export default function Login() {
                             id="password"
                             type="password"
                             placeholder="Wachtwoord123"
+                            required
                             ref={passwordRef}
                         />
                         {errorShown ? (
@@ -116,8 +123,7 @@ export default function Login() {
                     <button
                         className="w-full rounded-xl bg-(--color-darkblue) py-4 text-[18px] font-semibold
                             text-(--color-white) transition-colors hover:bg-(--color-darkblue)/90"
-                        type="button"
-                        onClick={onSubmitClick}
+                        type="submit"
                         ref={buttonRef}>
                         Inloggen
                     </button>
