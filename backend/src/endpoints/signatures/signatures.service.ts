@@ -43,7 +43,7 @@ export default class SignatureService implements serviceBase<ISignature> {
         throw new Error("Method not implemented.");
     }
 
-    async findOne(...args: KeyValuePair<ISignature>[]): Promise<ISignature> {
+    async findOne(...args: KeyValuePair<ISignature>[]): Promise<ISignature | undefined> {
         return await this.dao.findOne(...args);
     }
 }

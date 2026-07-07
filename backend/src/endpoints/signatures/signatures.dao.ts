@@ -21,7 +21,7 @@ export default class SignatureDao extends daoBase<ISignature> implements daoBase
         throw new Error("Method not implemented.");
     }
 
-    async findOne(...args: KeyValuePair<ISignature>[]): Promise<ISignature> {
+    async findOne(...args: KeyValuePair<ISignature>[]): Promise<ISignature | undefined> {
         return await this.findOneFunc(Tables.Signatures, ...args);
     }
 }
