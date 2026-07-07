@@ -52,7 +52,7 @@ app.use(HealthRouter);
 app.use(attendanceRouter);
 app.use(authRouter);
 
-app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
+app.use((err: IError[] | IError, req: Request, res: Response, next: NextFunction) => {
     console.log(err)
     const errorData = Array.isArray(err) ? err : [err]
     let responseData = [];

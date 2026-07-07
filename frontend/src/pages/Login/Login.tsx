@@ -26,28 +26,31 @@ export default function Login() {
             state = true;
         }
         buttonRef.current && (buttonRef.current.disabled = state);
-    }
+    };
 
     const onSubmitClick = async (_event: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
         let username = usernameRef.current.value;
         let password = passwordRef.current.value;
 
-        toggleButtonDisabledState()
+        toggleButtonDisabledState();
 
-        const response = await http("/api/login", "POST", {
+        const request = await http("/api/login", "POST", {
             username: username,
             password: password,
         });
+        const response = await request.json();
 
-        if (response.status == 401) {
-            setErrorText("Invalid username or password", "--color-red");
-            toggleButtonDisabledState(false);
-        } else if (response.status == 200) {
-            setErrorText("You have logged in, moving you to dashboard", "--color-green");
+        if (response.status) {
+            if (response.status == 401) {
+                setErrorText(response[0], "--color-red");
+            } else if (response.status == 200) {
+                setErrorText(response[0], "--color-green");
+            } else {
+                setErrorText(response[0], "--color-red");
+            }
             toggleButtonDisabledState(false);
         } else {
-            setErrorText("Something went wrong, ask system admin", "--color-red");
-            toggleButtonDisabledState(false);
+            setErrorText("Got no response from backend, ask system admin", "--color-red");
         }
     };
 
