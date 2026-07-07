@@ -1,7 +1,7 @@
 import React from "react";
 import http from "../../common/http";
 
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 export default function Login() {
     const [errorMessage, setErrorMessage] = React.useState<{
@@ -44,10 +44,10 @@ export default function Login() {
         });
 
         if (request.status === 200) {
-            navigate("/")
+            navigate("/");
             return;
         }
-        
+
         const response = await request.json();
         let message = response[0];
 
