@@ -19,21 +19,23 @@ export default class ParticipantDao extends daoBase<IParticipant> implements dao
     }
 
     async list(): Promise<IParticipant[]> {
-        return await dbAll<IParticipant[]>(`SELECT * FROM ${Tables.Participants}`, []);
+        return await dbAll<IParticipant>(`SELECT * FROM ${Tables.Participants}`, []);
     }
 
-    async findOne(...where: KeyValuePair<IParticipant>[]): Promise<IParticipant> {
+    async findOne(...where: KeyValuePair<IParticipant>[]): Promise<IParticipant | undefined> {
         return await this.findOneFunc(Tables.Participants, ...where);
     }
 
     async count(): Promise<number> {
-        const result = await dbGet<{ count: number }>(`SELECT COUNT(*) as count FROM ${Tables.Participants}`, []);
-        return result.count;
+        const result = await dbGet<{count: number}>(`SELECT COUNT(*) as count FROM ${Tables.Participants}`, []);
+        if (!result[0]) return 0;
+        return result[0].count;
     }
 
     async countPresent(): Promise<number> {
-        const result = await dbGet<{ count: number }>(
+        const result = await dbGet<{count: number}>(
             `SELECT COUNT(*) as count FROM ${Tables.Participants} WHERE clockedin = 1`, []);
-        return result.count;
+        if (!result[0]) return 0;
+        return result[0].count;
     }
 }

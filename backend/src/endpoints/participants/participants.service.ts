@@ -11,7 +11,7 @@ export default class ParticipantService implements serviceBase<IParticipant> {
         this.dao = new ParticipantDao();
     }
 
-    async findOne(...where: KeyValuePair<IParticipant>[]): Promise<IParticipant> {
+    async findOne(...where: KeyValuePair<IParticipant>[]): Promise<IParticipant | undefined> {
         return await this.dao.findOne(...where);
     }
 
