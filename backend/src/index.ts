@@ -7,6 +7,7 @@ import { assertNever } from './common/Validator';
 import HealthRouter from './endpoints/health/health.routes';
 import attendanceRouter from './endpoints/attendances/attendance.routes';
 import authRouter from './endpoints/auth/auth.routes';
+import participantRouter from './endpoints/participants/participants.routes';
 import { setupDatabase } from './setupDatabases';
 import { createConnection } from './common/db';
 import { environmentFileChecker } from './common/environmentFileChecker';
@@ -32,8 +33,8 @@ app.set("trust proxy", 2);
 
 app.use(cors({
     origin: function (origin, callback) {
-        const allowedOrigins = [`http://localhost:5173`];
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        const allowedOrigin = process.env.ALLOWED_ORIGIN;
+        if (!origin || allowedOrigin === "*" || origin === allowedOrigin) {
             console.log(`allowed connection from origin: ${origin}`);
             callback(null, true);
         } else {
@@ -51,6 +52,7 @@ app.set('port', process.env.PORT || 3000);
 app.use(HealthRouter);
 app.use(attendanceRouter);
 app.use(authRouter);
+app.use(participantRouter);
 
 app.use((err: IError[] | IError, req: Request, res: Response, next: NextFunction) => {
     console.log(err)

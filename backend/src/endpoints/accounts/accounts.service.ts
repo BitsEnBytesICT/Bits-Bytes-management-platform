@@ -10,7 +10,7 @@ export default class AccountService implements serviceBase<IAccount> {
         this.dao = new AccountDAO();
     }
 
-    async findOne(...where: KeyValuePair<IAccount>[]): Promise<IAccount> {
+    async findOne(...where: KeyValuePair<IAccount>[]): Promise<IAccount | undefined> {
         return await this.dao.findOne(...where);
     }
 

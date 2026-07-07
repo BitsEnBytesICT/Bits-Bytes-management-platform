@@ -6,7 +6,7 @@ import { Tables } from "../../types/tables/tablesList";
 
 export default class AccountDAO extends daoBase<IAccount> implements daoBaseType<IAccount> {
 
-    async findOne(...where: KeyValuePair<IAccount>[]): Promise<IAccount> {
+    async findOne(...where: KeyValuePair<IAccount>[]): Promise<IAccount | undefined> {
         return await this.findOneFunc(Tables.Accounts, ...where);
     }
     create(...args: any[]): void {

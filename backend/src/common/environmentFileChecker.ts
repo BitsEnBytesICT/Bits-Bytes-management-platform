@@ -9,7 +9,8 @@ const requiredVariables: string[] = [
     "BACKEND_VERSION",
     "BACKEND_SNAPSHOT_VERSION",
     "JWT_SECRET",
-    "ENCRYPTION_KEY"
+    "ENCRYPTION_KEY",
+    "ALLOWED_ORIGIN"
 ]
 
 export const environmentFileChecker = () => {

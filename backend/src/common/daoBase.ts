@@ -7,7 +7,7 @@ export interface daoBaseType<a> {
     update(where: KeyValuePair<a>, ...args: KeyValuePair<a>[]): void;
     delete(...args: any[]): void;
     list(...args: any[]): Promise<a[]>;
-    findOne(...args: KeyValuePair<a>[]): Promise<a>;
+    findOne(...args: KeyValuePair<a>[]): Promise<a | undefined>;
 }
 
 export abstract class daoBase<a> {
@@ -27,8 +27,8 @@ export abstract class daoBase<a> {
     }
 
     protected async findOneFunc(table: Tables, ...where: KeyValuePair<a>[]) {
-        return await dbGet<a>(`SELECT * FROM ${table} WHERE ${where.map(([key, value]) => 
+        return (await dbGet<a>(`SELECT * FROM ${table} WHERE ${where.map(([key, value]) => 
                 value === undefined ? `${String(key)} IS NULL` : `${String(key)} = ?`).join(" AND ")} LIMIT 1`, 
-                where.filter(([, value]) => value !== undefined).map(([, value]) => value));
+                where.filter(([, value]) => value !== undefined).map(([, value]) => value)))[0];
     }
 }
