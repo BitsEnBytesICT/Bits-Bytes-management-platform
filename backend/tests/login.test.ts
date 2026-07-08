@@ -12,8 +12,8 @@ describe("login", () => {
 
     before(async () => {
         try {
-            unlink("../database.db");
-            unlink("../inventoryDatabase.db");
+            await unlink("../database.db");
+            await unlink("../inventoryDatabase.db");
         } catch {}
         try {
             await runMigrations();
