@@ -10,7 +10,6 @@ const upStatements: string[] = [
         )
     `,
 
-    `DROP TABLE IF EXISTS Accounts`,
     `
     CREATE TABLE IF NOT EXISTS Accounts (
         id INTEGER PRIMARY KEY,
@@ -24,7 +23,6 @@ const upStatements: string[] = [
         )
     `,
 
-    `DROP TABLE IF EXISTS Participants`,
     `
     CREATE TABLE IF NOT EXISTS Participants (
         id INTEGER PRIMARY KEY,
@@ -41,7 +39,6 @@ const upStatements: string[] = [
         )
     `,
 
-    `DROP TABLE IF EXISTS Signatures`,
     `
     CREATE TABLE IF NOT EXISTS Signatures (
         id INTEGER PRIMARY KEY,
@@ -52,7 +49,6 @@ const upStatements: string[] = [
         )
     `,
 
-    `DROP TABLE IF EXISTS Attendances`,
     `
     CREATE TABLE IF NOT EXISTS Attendances (
         id INTEGER PRIMARY KEY,
@@ -67,7 +63,6 @@ const upStatements: string[] = [
         ON Attendances(participantID)
         WHERE clockoutDate IS NULL;`,
 
-    `DROP TABLE IF EXISTS Rooms`,
     `
     CREATE TABLE IF NOT EXISTS Rooms (
         id INTEGER PRIMARY KEY,
@@ -76,7 +71,6 @@ const upStatements: string[] = [
         height INTEGER NOT NULL
         )
     `,
-    `DROP TABLE IF EXISTS Workplaces`,
 
     `
     CREATE TABLE IF NOT EXISTS Workplaces (
@@ -90,7 +84,6 @@ const upStatements: string[] = [
         )
     `,
 
-    `DROP TABLE IF EXISTS Schedules`,
     `
     CREATE TABLE IF NOT EXISTS Schedules (
         id INTEGER PRIMARY KEY,
@@ -100,7 +93,6 @@ const upStatements: string[] = [
         )
     `,
 
-    `DROP TABLE IF EXISTS SchedulesParticipants`,
     `
     CREATE TABLE IF NOT EXISTS SchedulesParticipants (
         id INTEGER PRIMARY KEY,

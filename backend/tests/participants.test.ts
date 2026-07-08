@@ -5,25 +5,20 @@ import ParticipantService from "../src/endpoints/participants/participants.servi
 import { ParticipantValidator } from "../src/validators/participantValidator";
 import IParticipant from "../src/types/participant/IParticipant";
 import { runMigrations } from "../src/common/migrationsLoader";
-import { unlink } from "node:fs/promises";
 
 describe("ParticipantService", () => {
     const service = new ParticipantService();
 
     before(async () => {
-        try {
-            await unlink("../database.db");
-            await unlink("../inventoryDatabase.db");
-        } catch {}
+        process.env.DATABASE_TYPE = "sqllite";
+        process.env.NODE_ENV = "DEVELOPMENT";
+
         try {
             await runMigrations();
         } catch {}
         try {
             setupDatabase();
         } catch {}
-
-        process.env.DATABASE_TYPE = "sqllite";
-        process.env.NODE_ENV = "DEVELOPMENT";
     });
 
     it("count returns the total number of participants", async () => {

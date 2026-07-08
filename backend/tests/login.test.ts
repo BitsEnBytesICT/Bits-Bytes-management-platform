@@ -5,27 +5,22 @@ import assert from "node:assert/strict";
 import { runMigrations } from "../src/common/migrationsLoader";
 import { encrypt } from "../src/common/encryptorDecryptor";
 import jwt from "jsonwebtoken";
-import { unlink } from "node:fs/promises";
 
 describe("login", () => {
     const service = new AuthService();
 
     before(async () => {
-        try {
-            await unlink("../database.db");
-            await unlink("../inventoryDatabase.db");
-        } catch {}
+        process.env.NODE_ENV = "DEVELOPMENT";
+        process.env.DATABASE_TYPE = "sqllite";
+        process.env.JWT_SECRET = "VERYSECURESECRET";
+        process.env.ENCRYPTION_KEY = "b6424bcf211217cc99e17c27f1d36dafbe6ab3db75c65b3a10c3ab8162d1e2cd";
+
         try {
             await runMigrations();
         } catch {}
         try {
             setupDatabase();
         } catch {}
-
-        process.env.NODE_ENV = "DEVELOPMENT";
-        process.env.DATABASE_TYPE = "sqllite";
-        process.env.JWT_SECRET = "VERYSECURESECRET";
-        process.env.ENCRYPTION_KEY = "b6424bcf211217cc99e17c27f1d36dafbe6ab3db75c65b3a10c3ab8162d1e2cd";
     });
 
     it("login with username and password", async () => {
