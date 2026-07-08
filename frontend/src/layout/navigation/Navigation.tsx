@@ -1,4 +1,6 @@
-import {NavLink} from "react-router-dom";
+import {NavLink, useLocation, useNavigate} from "react-router-dom";
+
+import http from "../../common/http";
 
 import {navigationItemsMenu, navigationItemsIT, navigationItemsAccount} from "./Navigation.config";
 
@@ -7,23 +9,42 @@ import type {INavigationItem} from "../../types/navigation/INavigation";
 import {ShapeLeft, ShapeRight, ButtonMenu, LogoWhite} from "../../assets";
 
 export default function Navigation({isOpen, setIsOpen}) {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const isLoginPage = location.pathname === "/login";
+    const isNavOpen = isOpen && !isLoginPage;
+
     const versionNumber =
         import.meta.env.VITE_FRONTEND_SNAPSHOT_VERSION && Number(import.meta.env.VITE_FRONTEND_SNAPSHOT_VERSION) > 0
             ? `${import.meta.env.VITE_FRONTEND_VERSION}-snapshot-${import.meta.env.VITE_FRONTEND_SNAPSHOT_VERSION}`
             : import.meta.env.VITE_FRONTEND_VERSION;
 
+    const logout = async (): Promise<void> => {
+        await http("/api/logout", "POST");
+        navigate("/login");
+    };
+
     const navMenuItem = (item: INavigationItem) => (
         <div key={item.path} className="flex items-center gap-2.5 cursor-pointer">
             <img src={item.icon} className="shrink-0 h-fit w-fit select-none [-webkit-user-drag:none]" />
 
-            <NavLink
-                to={item.path}
-                className={({isActive}) =>
-                    `${isActive ? "text-(--color-orange)" : "text-(--color-offwhite)"} hover:text-(--color-orange)
-                    transition-colors duration-300 ease`
-                }>
-                {item.name}
-            </NavLink>
+            {item.path === "/logout" ? (
+                <div
+                    onClick={logout}
+                    className="text-(--color-offwhite) hover:text-(--color-orange) transition-colors duration-300
+                        ease">
+                    {item.name}
+                </div>
+            ) : (
+                <NavLink
+                    to={item.path}
+                    className={({isActive}) =>
+                        `${isActive ? "text-(--color-orange)" : "text-(--color-offwhite)"} hover:text-(--color-orange)
+                        transition-colors duration-300 ease`
+                    }>
+                    {item.name}
+                </NavLink>
+            )}
         </div>
     );
 
@@ -32,9 +53,9 @@ export default function Navigation({isOpen, setIsOpen}) {
             <div className="flex flex-row fixed top-0 h-fit pointer-events-none">
                 <div
                     className={`flex flex-row grow-0 relative top-0 h-screen transition-[left] duration-400
-                        ${isOpen ? "left-0" : "-left-62"}`}
-                    onMouseEnter={() => setIsOpen(true)}
-                    onMouseLeave={() => setIsOpen(false)}
+                        ${isNavOpen ? "left-0" : "-left-62"}`}
+                    onMouseEnter={() => !isLoginPage && setIsOpen(true)}
+                    onMouseLeave={() => !isLoginPage && setIsOpen(false)}
                     style={{pointerEvents: "auto"}}>
                     <div
                         className="flex flex-row gap-16 min-[1000px]:gap-16 [@media(min-height:670px)]:gap-20 absolute
@@ -49,18 +70,19 @@ export default function Navigation({isOpen, setIsOpen}) {
                         <div
                             className="mt-6! flex overflow-y-hidden"
                             onClick={() => {
-                                setIsOpen(prev => !prev);
+                                !isLoginPage && setIsOpen((prev: boolean) => !prev);
                             }}>
                             <img
                                 src={ButtonMenu}
                                 className={`min-[1000px]:hidden h-[24px] w-[24px] select-none [-webkit-user-drag:none]
-                                    transition-transform duration-400 ease-in-out ${isOpen ? "-rotate-45" : ""}`}
+                                    transition-transform duration-400 ease-in-out ${isNavOpen ? "-rotate-45" : ""}`}
                             />
 
                             <svg
                                 className={`hidden self-center min-[1000px]:block
-                                    ${isOpen ? "text-(--color-darkblue)" : "text-(--color-offwhite)"} transition-colors
-                                    duration-300 ease-in-out`}
+                                    ${isNavOpen ? "text-(--color-darkblue)" : "text-(--color-offwhite)"}
+                                    ${isLoginPage ? "opacity-0" : "opacity-100"} transition-[color,opacity]
+                                    duration-300 ease-in-out ${isLoginPage ? "pointer-events-none" : ""}`}
                                 width="12"
                                 height="19"
                                 viewBox="0 0 12 19"
@@ -117,7 +139,7 @@ export default function Navigation({isOpen, setIsOpen}) {
 
                 <div
                     className={`shrink-0 fixed -z-10 h-screen transition-[right] duration-400
-                        ${isOpen ? "right-0" : "-right-60"}`}>
+                        ${isNavOpen ? "right-0" : "-right-60"}`}>
                     <div className="flex shrink-0 flex-row justify-between h-screen">
                         <img src={ShapeRight} className="shrink-0 h-auto w-auto select-none [-webkit-user-drag:none]" />
 

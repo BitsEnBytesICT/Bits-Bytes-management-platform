@@ -32,7 +32,9 @@ export default function Login() {
         buttonRef.current && (buttonRef.current.disabled = state);
     };
 
-    const onSubmitClick = async (_event: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
+    const onSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+        event.preventDefault();
+
         let username = usernameRef.current.value;
         let password = passwordRef.current.value;
 
@@ -61,63 +63,77 @@ export default function Login() {
             }
             toggleButtonDisabledState(false);
         } else {
-            setErrorText("Backend geeft geen antwoord, vraag een icter.", "--color-red");
+            setErrorText("Server reageert niet", "--color-red");
         }
     };
 
     return (
         <div className="flex items-center justify-center min-h-screen">
-            <div className="flex w-full max-w-[28rem] flex-col gap-10 rounded-[2rem] bg-(--color-white) p-10 shadow-lg">
-                <div className="flex flex-col items-center gap-3">
+            <div
+                className="py-12.5 px-10 flex flex-col w-full max-w-110 rounded-4xl bg-(--color-white)
+                    shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent),0_10px_15px_-3px_rgb(0_0_0/0.1),0_4px_6px_-4px_rgb(0_0_0/0.1)]
+                    animate-[fade-in_0.3s_ease-in-out] transition-all duration-400">
+                <div className="mb-15 flex flex-col items-center gap-3">
                     <h1 className="text-[32px] font-bold text-(--color-darkblue)">Welkom terug</h1>
 
                     <p className="text-[18px] font-medium text-(--color-orange)">Log in op je dashboard</p>
                 </div>
 
-                <form className="flex flex-col gap-6">
-                    <div className="flex flex-col gap-2">
-                        <label className="text-[16px] font-semibold text-(--color-darkblue)" htmlFor="username">
-                            Gebruikersnaam
-                        </label>
+                <form className="flex flex-col" onSubmit={onSubmit}>
+                    <div className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-2">
+                            <label
+                                className="ml-1.5 text-[16px] font-semibold text-(--color-darkblue)"
+                                htmlFor="username">
+                                Gebruikersnaam
+                            </label>
 
-                        <input
-                            className="rounded-xl border border-(--color-lightblue) bg-(--color-offwhite) px-5 py-3
-                                text-[16px] text-(--color-offblack) outline-none transition-colors
-                                focus:border-(--color-darkblue)"
-                            id="username"
-                            type="text"
-                            placeholder="Gebruikersnaam"
-                            ref={usernameRef}
-                        />
+                            <input
+                                className="px-5 py-3 text-[16px] text-(--color-offblack) rounded-xl
+                                    bg-(--color-offwhite)
+                                    shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
+                                    outline-none transition-colors focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]"
+                                id="username"
+                                placeholder="Gebruikersnaam"
+                                ref={usernameRef}
+                                type="text"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                            <label
+                                className="ml-1.5 text-[16px] font-semibold text-(--color-darkblue)"
+                                htmlFor="password">
+                                Wachtwoord
+                            </label>
+
+                            <input
+                                className="px-5 py-3 text-[16px] text-(--color-offblack) rounded-xl
+                                    bg-(--color-offwhite)
+                                    shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
+                                    outline-none transition-colors focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]"
+                                id="password"
+                                placeholder="Wachtwoord"
+                                ref={passwordRef}
+                                type="password"
+                            />
+                        </div>
                     </div>
 
-                    <div className="flex flex-col gap-2">
-                        <label className="text-[16px] font-semibold text-(--color-darkblue)" htmlFor="password">
-                            Wachtwoord
-                        </label>
-
-                        <input
-                            className="rounded-xl border border-(--color-lightblue) bg-(--color-offwhite) px-5 py-3
-                                text-[16px] text-(--color-offblack) outline-none transition-colors
-                                focus:border-(--color-darkblue)"
-                            id="password"
-                            type="password"
-                            placeholder="Wachtwoord"
-                            ref={passwordRef}
-                        />
-                        {errorShown ? (
-                            <p className={`text-[14px] font-medium text-(${errorMessage.color})`}>
-                                {errorMessage.message}
-                            </p>
-                        ) : null}
-                    </div>
+                    <p
+                        key={errorMessage?.message}
+                        className={`mt-[0.5rem] mb-8 ml-1.5 min-h-[24px] text-[14px font-medium
+                            text-(${errorShown ? errorMessage.color : "--color-white"}) ${
+                                errorShown ? "animate-[fade-in_0.3s_ease-in-out]" : ""
+                            }`}>
+                        {errorShown ? errorMessage.message : ""}
+                    </p>
 
                     <button
-                        className="w-full rounded-xl bg-(--color-darkblue) py-4 text-[18px] font-semibold
-                            text-(--color-white) transition-colors hover:bg-(--color-darkblue)/90"
-                        type="button"
-                        onClick={onSubmitClick}
-                        ref={buttonRef}>
+                        className="py-4 w-full text-[18px] font-semibold text-(--color-white) rounded-xl
+                            bg-(--color-darkblue) cursor-pointer transition-colors hover:bg-(--color-darkblue)/90"
+                        ref={buttonRef}
+                        type="submit">
                         Inloggen
                     </button>
                 </form>
