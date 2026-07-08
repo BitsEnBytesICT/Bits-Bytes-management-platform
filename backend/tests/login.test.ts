@@ -24,6 +24,8 @@ describe("login", () => {
     });
 
     it("login with username and password", async () => {
+        console.log(process.env.DATABASE_TYPE)
+        console.log(process.env.JWT_SECRET)
         assert.ok(await service.login("admin", "test123"));
     });
 
