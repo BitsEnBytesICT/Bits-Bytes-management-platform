@@ -1,4 +1,4 @@
-export default interface IButton {
+export default interface ISmallButton {
     icon?: React.ReactNode;
     label: string;
     active?: boolean;

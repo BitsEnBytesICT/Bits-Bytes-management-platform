@@ -1,6 +1,6 @@
-import type IButton from "../../types/compontents/IButton";
+import type ISmallButton from "../../types/compontents/ISmallButton";
 
-export default function Button({icon, label, active, onClick}: IButton) {
+export default function SmallButton({icon, label, active, onClick}: ISmallButton) {
     return (
         <button
             onClick={onClick}

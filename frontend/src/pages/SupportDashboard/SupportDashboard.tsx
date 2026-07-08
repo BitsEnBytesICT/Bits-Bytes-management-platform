@@ -1,11 +1,11 @@
 import {useEffect, useState} from "react";
 
-import DateTimeDisplay from "../../common/components/dateTimeDisplay";
+import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import Card from "../../common/components/Card";
 import ParticipantsTable from "../../common/components/ParticipantsTable";
 import FloorPlans from "../../common/components/FloorPlans";
 import Calendar from "../../common/components/Calendar";
-import Button from "../../common/components/Button";
+import SmallButton from "../../common/components/SmallButton";
 
 import SupportDashboardService from "./SupportDashboard.service";
 
@@ -46,13 +46,13 @@ export default function SupportDashboard() {
                 <div className="flex flex-col gap-4">
                     <div className="flex flex-row justify-between">
                         <div className="flex flex-row gap-6">
-                            <Button
+                            <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconLink} />}
                                 label="Cliendo"
                                 onClick={() => window.open("https://www.google.nl", "_blank")}
                             />
 
-                            <Button
+                            <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconLink} />}
                                 label="ZilliZ"
                                 onClick={() => window.open("https://www.google.nl", "_blank")}
@@ -60,13 +60,13 @@ export default function SupportDashboard() {
                         </div>
 
                         <div className="flex flex-row gap-6">
-                            <Button
+                            <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconAddUser} />}
                                 label="Deelnemer toevoegen"
                                 onClick={() => console.log("must be a different action")}
                             />
 
-                            <Button
+                            <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconExport} />}
                                 label="Exporteer"
                                 onClick={() => console.log("must be a different action")}

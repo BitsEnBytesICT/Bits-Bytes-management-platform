@@ -1,6 +1,6 @@
 import {useState} from "react";
 
-import Button from "./Button";
+import SmallButton from "./SmallButton";
 
 import {IconCalendar} from "../../assets";
 
@@ -32,7 +32,7 @@ export default function Calendar() {
 
             <div className="flex flex-row gap-6">
                 {calendars.map((calendar, i) => (
-                    <Button
+                    <SmallButton
                         key={calendar.label}
                         icon={<img className="select-none [-webkit-user-drag:none]" src={IconCalendar} />}
                         label={calendar.label}
