@@ -177,12 +177,7 @@ stringData:
   DATABASE_PORT: "3306"
   BACKEND_SNAPSHOT_VERSION: "0"
   BACKEND_VERSION: "0.0.6"
-<<<<<<< HEAD
-  JWT_SECRET: DJFDG#!N4EW87R9(FHFD^F32
-  ENCRYPTION_KEY: b6424bcf211217cc99e17c27f1d36dafbe6ab3db75c65b3a10c3ab8162d1e2cd
-=======
   ALLOWED_ORIGIN: "https://management.bitsenbytes.net"
->>>>>>> f139741db225ae1f088ac7fda00098159ac5e942
 ---
 
 #Mysql

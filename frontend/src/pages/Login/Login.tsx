@@ -64,12 +64,12 @@ export default function Login() {
         } else {
             setErrorText("Backend geeft geen antwoord, vraag een icter.", "--color-red");
         }
-    }
+    };
 
     const onFormSubmit = async (event: React.SubmitEvent): Promise<void> => {
         event.preventDefault();
         await doLogin();
-    }
+    };
 
     return (
         <div className="flex items-center justify-center min-h-screen">
