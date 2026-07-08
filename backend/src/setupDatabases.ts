@@ -4,6 +4,10 @@ import { encrypt } from './common/encryptorDecryptor';
 export const setupDatabase = () => {
     const db = new Database('database.db', { verbose: console.log });
     try {
+        db.prepare('DELETE FROM Participants WHERE id > -1');
+        db.prepare('DELETE FROM Accounts WHERE id > -1');
+        db.prepare('DELETE FROM Permissions WHERE id > -1');
+
         db.pragma('foreign_keys = ON');
 
         db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('admin', '*');
