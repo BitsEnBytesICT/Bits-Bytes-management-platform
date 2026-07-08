@@ -21,9 +21,13 @@ export default function SupportDashboard() {
     const service: SupportDashboardService = new SupportDashboardService();
 
     useEffect(() => {
-        service.getTotalParticipants().then(setTotalParticipants);
-        service.getPresentParticipants().then(setPresentParticipants);
-        service.getParticipants().then(setParticipants);
+        const getData = async () => {
+            await service.getTotalParticipants().then(setTotalParticipants);
+            await service.getPresentParticipants().then(setPresentParticipants);
+            await service.getParticipants().then(setParticipants);
+        };
+
+        getData();
     }, []);
 
     return (
