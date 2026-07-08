@@ -25,7 +25,7 @@ export default class AuthService {
         } satisfies IError
         
         return jwt.sign(
-            { usename: encrypt(username) },
+            { username: encrypt(username) },
             String(process.env.JWT_SECRET),
             { expiresIn: FIFTEEN_MINUES_IN_SECONDS }
         )
@@ -68,7 +68,7 @@ export default class AuthService {
             } satisfies IError
 
             return jwt.sign(
-                { usename: encrypt(account.username) },
+                { username: encrypt(account.username) },
                 String(process.env.JWT_SECRET),
                 { expiresIn: FIFTEEN_MINUES_IN_SECONDS }
             )

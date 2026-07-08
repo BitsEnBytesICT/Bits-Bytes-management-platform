@@ -4,12 +4,21 @@ import { setupDatabase } from "../src/setupDatabases";
 import ParticipantService from "../src/endpoints/participants/participants.service";
 import { ParticipantValidator } from "../src/validators/participantValidator";
 import IParticipant from "../src/types/participant/IParticipant";
+import { runMigrations } from "../src/common/migrationsLoader";
 
 describe("ParticipantService", () => {
     const service = new ParticipantService();
 
-    before(() => {
-        setupDatabase();
+    before(async () => {
+        try {
+            await runMigrations();
+            setupDatabase();
+        } catch (error) {
+            
+        }
+
+        process.env.DATABASE_TYPE = "sqllite";
+        process.env.NODE_ENV = "DEVELOPMENT";
     });
 
     it("count returns the total number of participants", async () => {
