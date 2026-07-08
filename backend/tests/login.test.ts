@@ -5,17 +5,22 @@ import assert from "node:assert/strict";
 import { runMigrations } from "../src/common/migrationsLoader";
 import { encrypt } from "../src/common/encryptorDecryptor";
 import jwt from "jsonwebtoken";
+import { unlink } from "node:fs/promises";
 
 describe("login", () => {
     const service = new AuthService();
 
     before(async () => {
         try {
+            unlink("../database.db");
+            unlink("../inventoryDatabase.db");
+        } catch {}
+        try {
             await runMigrations();
+        } catch {}
+        try {
             setupDatabase();
-        } catch (error) {
-            
-        }
+        } catch {}
 
         process.env.NODE_ENV = "DEVELOPMENT";
         process.env.DATABASE_TYPE = "sqllite";
@@ -24,8 +29,6 @@ describe("login", () => {
     });
 
     it("login with username and password", async () => {
-        console.log(process.env.DATABASE_TYPE)
-        console.log(process.env.JWT_SECRET)
         assert.ok(await service.login("admin", "test123"));
     });
 

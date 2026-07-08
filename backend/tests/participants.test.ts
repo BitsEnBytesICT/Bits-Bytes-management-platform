@@ -5,17 +5,22 @@ import ParticipantService from "../src/endpoints/participants/participants.servi
 import { ParticipantValidator } from "../src/validators/participantValidator";
 import IParticipant from "../src/types/participant/IParticipant";
 import { runMigrations } from "../src/common/migrationsLoader";
+import { unlink } from "node:fs/promises";
 
 describe("ParticipantService", () => {
     const service = new ParticipantService();
 
     before(async () => {
         try {
+            unlink("../database.db");
+            unlink("../inventoryDatabase.db");
+        } catch {}
+        try {
             await runMigrations();
+        } catch {}
+        try {
             setupDatabase();
-        } catch (error) {
-            
-        }
+        } catch {}
 
         process.env.DATABASE_TYPE = "sqllite";
         process.env.NODE_ENV = "DEVELOPMENT";
