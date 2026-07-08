@@ -122,7 +122,7 @@ export default function Login() {
 
                     <p
                         key={errorMessage?.message}
-                        className={`mt-[0.5rem] mb-8 ml-1.5 min-h-[24px] text-[14px font-medium
+                        className={`mt-2 mb-8 ml-1.5 min-h-6 text-[14px font-medium
                             text-(${errorShown ? errorMessage.color : "--color-white"}) ${
                                 errorShown ? "animate-[fade-in_0.3s_ease-in-out]" : ""
                             }`}>
