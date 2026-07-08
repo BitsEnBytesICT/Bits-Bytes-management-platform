@@ -31,8 +31,7 @@ export default function Navigation({isOpen, setIsOpen}) {
             {item.path === "/logout" ? (
                 <div
                     onClick={logout}
-                    className="text-(--color-offwhite) hover:text-(--color-orange) transition-colors duration-300
-                        ease">
+                    className="text-(--color-offwhite) hover:text-(--color-orange) transition-colors duration-300 ease">
                     {item.name}
                 </div>
             ) : (
@@ -40,7 +39,7 @@ export default function Navigation({isOpen, setIsOpen}) {
                     to={item.path}
                     className={({isActive}) =>
                         `${isActive ? "text-(--color-orange)" : "text-(--color-offwhite)"} hover:text-(--color-orange)
-                        transition-colors duration-300 ease`
+                            transition-colors duration-300 ease`
                     }>
                     {item.name}
                 </NavLink>
@@ -81,8 +80,8 @@ export default function Navigation({isOpen, setIsOpen}) {
                             <svg
                                 className={`hidden self-center min-[1000px]:block
                                     ${isNavOpen ? "text-(--color-darkblue)" : "text-(--color-offwhite)"}
-                                    ${isLoginPage ? "opacity-0" : "opacity-100"} transition-[color,opacity]
-                                    duration-300 ease-in-out ${isLoginPage ? "pointer-events-none" : ""}`}
+                                    ${isLoginPage ? "opacity-0" : "opacity-100"} transition-[color,opacity] duration-300
+                                    ease-in-out ${isLoginPage ? "pointer-events-none" : ""}`}
                                 width="12"
                                 height="19"
                                 viewBox="0 0 12 19"
