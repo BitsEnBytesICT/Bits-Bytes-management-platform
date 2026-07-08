@@ -6,19 +6,31 @@ import IError from './types/error/IError';
 import { assertNever } from './common/Validator';
 import HealthRouter from './endpoints/health/health.routes';
 import attendanceRouter from './endpoints/attendances/attendance.routes';
+import authRouter from './endpoints/auth/auth.routes';
 import participantRouter from './endpoints/participants/participants.routes';
 import { setupDatabase } from './setupDatabases';
 import { createConnection } from './common/db';
 import { environmentFileChecker } from './common/environmentFileChecker';
+import { runMigrations } from './common/migrationsLoader';
 
 environmentFileChecker();
 
-if (process.env.DATABASE_TYPE === "sqllite") setupDatabase();
-else if (process.env.DATABASE_TYPE === "mysql") createConnection();
-
-console.log(process.env.BACKEND_SNAPSHOT_VERSION)
+const prepareDB = async() => {
+    if (process.env.DATABASE_TYPE === "sqllite"){
+        try {
+            await runMigrations();
+            setupDatabase();
+        } catch (error) {
+            console.log(error);
+        }
+    } 
+    else if (process.env.DATABASE_TYPE === "mysql") createConnection();
+}
+prepareDB();
 
 const app: Express = express();
+
+app.set("trust proxy", 2);
 
 app.use(cors({
     origin: function (origin, callback) {
@@ -40,9 +52,10 @@ app.set('port', process.env.PORT || 3000);
 
 app.use(HealthRouter);
 app.use(attendanceRouter);
+app.use(authRouter);
 app.use(participantRouter);
 
-app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
+app.use((err: IError[] | IError, req: Request, res: Response, next: NextFunction) => {
     console.log(err)
     const errorData = Array.isArray(err) ? err : [err]
     let responseData = [];
@@ -59,6 +72,10 @@ app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
             case ErrorCodes.sqlError:
                 responseData.push(error.errorMSG.message);
                 res.status(500);
+                continue;
+            case ErrorCodes.invalidCredentials:
+                responseData.push(error.errorMSG.message);
+                res.status(401);
                 continue;
             default:
                 assertNever(error.code);

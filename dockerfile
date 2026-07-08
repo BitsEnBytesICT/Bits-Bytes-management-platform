@@ -5,6 +5,7 @@ RUN apt-get install iputils-ping -y
 WORKDIR /usr/src/
 COPY ./frontend/package-lock.json ./frontend/package-lock.json
 COPY ./frontend/package.json ./frontend/package.json
+COPY ./.env.versions ./.env.versions
 WORKDIR /usr/src/frontend
 RUN npm i --ignore-scripts
 
@@ -14,8 +15,10 @@ RUN apt-get install iputils-ping -y
 WORKDIR /usr/src/
 COPY ./backend/package-lock.json ./backend/package-lock.json
 COPY ./backend/package.json ./backend/package.json
+COPY ./.env.versions ./.env.versions
 WORKDIR /usr/src/backend
 RUN npm i --ignore-scripts
+RUN npm rebuild better-sqlite3
 
 #acc
 FROM nginx:stable-alpine-perl as bitsenbytesfrontendACC
