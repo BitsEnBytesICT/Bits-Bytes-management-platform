@@ -1,12 +1,11 @@
-import React from "react";
+import React, {useEffect} from "react";
 import http from "../../common/http";
-
 import {useNavigate} from "react-router-dom";
-
 import Input from "../../common/components/Input";
 import Button from "../../common/components/Button";
+import type IAccount from "../../types/accounts/IAccount";
 
-export default function Login() {
+export default function Login({setCurrentAccountType}) {
     const [errorMessage, setErrorMessage] = React.useState<{
         color: string;
         message: string;
@@ -16,6 +15,17 @@ export default function Login() {
 
     const usernameRef = React.createRef<HTMLInputElement>();
     const passwordRef = React.createRef<HTMLInputElement>();
+
+    useEffect(() => {
+        const isVerified = async () => {
+            if ((await http("/api/verify", "POST")).status === 200) {
+                const account: IAccount = await (await http("/api/account/current", "GET")).json();
+                setCurrentAccountType(account.type);
+                navigate("/");
+            }
+        };
+        isVerified();
+    }, []);
 
     const navigate = useNavigate();
 
@@ -43,6 +53,12 @@ export default function Login() {
         });
 
         if (request.status === 200) {
+            const account: IAccount = await (await http("/api/account/current", "GET")).json();
+            if (!account) {
+                setErrorText("Er is een probleem met inloggen. Het account kan niet gevonden worden.", "--color-red");
+                return;
+            }
+            setCurrentAccountType(account.type);
             navigate("/");
             return;
         }

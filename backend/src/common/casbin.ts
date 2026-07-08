@@ -28,7 +28,7 @@ export async function BuildEnforcerPolicies() {
         }
         const accounts = await accountService.list();
         for (const account of accounts) {
-            await enforcerInstance.addRoleForUser(`${account.firstname} ${account.lastname}`, account.role);
+            await enforcerInstance.addRoleForUser(`${account.username}`, account.role);
         }
     } catch (e) {
         console.log(e + "\nCannot make enforcer policies! Retrying in 5 seconds...");
