@@ -131,24 +131,11 @@ spec:
                 secretKeyRef:
                   name: bitsenbytes-backend-secret
                   key: BACKEND_SNAPSHOT_VERSION
-<<<<<<< HEAD
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: bitsenbytes-backend-secret
-                  key: JWT_SECRET
-            - name: ENCRYPTION_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: bitsenbytes-backend-secret
-                  key: ENCRYPTION_KEY
-=======
             - name: ALLOWED_ORIGIN
               valueFrom:
                 secretKeyRef:
                   name: bitsenbytes-backend-secret
                   key: ALLOWED_ORIGIN
->>>>>>> f139741db225ae1f088ac7fda00098159ac5e942
 ---
 apiVersion: v1
 kind: Service
