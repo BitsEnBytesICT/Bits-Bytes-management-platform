@@ -2,7 +2,7 @@
   "scripts": {
     "start": "env-cmd -f ../.env.versions -- env-cmd -f ./.env.local -- nodemon ./src/index.ts",
     "build": "tsc -b",
-    "test": "node -r ts-node/register --test --test-reporter=spec tests/*.test.ts",
+    "test": "node -r ts-node/register --test --test-reporter=spec --test-concurrency=1 tests/*.test.ts",
     "prepare": "node -e \"require('fs').chmodSync('../.githooks/pre-commit', '755')\" && git config --local core.hooksPath ./.githooks"
   },
   "main": "index.ts",

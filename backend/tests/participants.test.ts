@@ -12,6 +12,7 @@ describe("ParticipantService", () => {
     before(async () => {
         process.env.DATABASE_TYPE = "sqllite";
         process.env.NODE_ENV = "DEVELOPMENT";
+        process.env.ENCRYPTION_KEY = "b6424bcf211217cc99e17c27f1d36dafbe6ab3db75c65b3a10c3ab8162d1e2cd";
 
         try {
             await runMigrations();
