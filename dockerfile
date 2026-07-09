@@ -27,7 +27,7 @@ COPY ./frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 FROM node:22-bookworm AS bitsenbytesbackendACC
 COPY ./backend/dist /usr/backend
-COPY ./backend/src/casbin /usr/backend/casbin
+COPY ./backend/src/casbin /usr/backend/src/casbin
 COPY ./backend/package.json /usr/backend/package.json
 COPY ./backend/package-lock.json ./backend/package-lock.json
 WORKDIR /usr/backend
@@ -42,7 +42,7 @@ COPY ./frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 FROM node:22-bookworm AS bitsenbytesbackendPROD
 COPY ./backend/dist /usr/backend
-COPY ./backend/src/casbin /usr/backend/casbin
+COPY ./backend/src/casbin /usr/backend/src/casbin
 COPY ./backend/package.json /usr/backend/package.json
 COPY ./backend/package-lock.json ./backend/package-lock.json
 WORKDIR /usr/backend
