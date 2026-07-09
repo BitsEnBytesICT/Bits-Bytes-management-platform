@@ -24,4 +24,9 @@ export default class AuthController {
         res.cookie('login', token, { path: '/', httpOnly: true, maxAge: FIFTEEN_MINUES_IN_SECONDS * 1000, sameSite: "strict" });
         res.sendStatus(200);
     }
+
+    logout = async (req: Request, res: Response) => {
+        res.clearCookie('login', { path: '/', httpOnly: true, sameSite: "strict" });
+        res.sendStatus(200);
+    }
 }

@@ -23,6 +23,7 @@ RUN npm rebuild better-sqlite3
 #acc
 FROM nginx:stable-alpine-perl as bitsenbytesfrontendACC
 COPY ./frontend/dist /usr/share/nginx/html
+COPY ./frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 FROM node:22-bookworm AS bitsenbytesbackendACC
 COPY ./backend/dist /usr/backend
@@ -37,6 +38,7 @@ CMD ["node", "/usr/backend/src/index.js"]
 # prod
 FROM nginx:stable-alpine-perl as bitsenbytesfrontendPROD
 COPY ./frontend/dist /usr/share/nginx/html
+COPY ./frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 FROM node:22-bookworm AS bitsenbytesbackendPROD
 COPY ./backend/dist /usr/backend

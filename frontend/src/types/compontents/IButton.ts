@@ -1,6 +1,6 @@
+import type {ReactNode} from "react";
+
 export default interface IButton {
-    icon?: React.ReactNode;
-    label: string;
-    active?: boolean;
-    onClick: () => void;
+    children: ReactNode;
+    onClick?: () => void;
 }

@@ -12,9 +12,10 @@ class AuthRouter {
     }
 
     initializeRoutes() {
-        this.router.post('/api/login', this.controller.login);
-        this.router.post('/api/verify', this.controller.verify);
-        this.router.post('/api/refresh-token', this.controller.refresh);
+        this.router.post('/api/login', this.controller.login.bind(this.controller));
+        this.router.post('/api/verify', this.controller.verify.bind(this.controller));
+        this.router.post('/api/refresh-token', this.controller.refresh.bind(this.controller));
+        this.router.post('/api/logout', this.controller.logout.bind(this.controller));
     }
 
     getRouter() {

@@ -1,28 +1,38 @@
 import { createEnforcer } from "./casbin";
+import jwt from "jsonwebtoken";
+import { decrypt } from "./encryptorDecryptor";
+import IError from "../types/error/IError";
+import { ErrorCodes } from "../types/error/ErrorCodes";
+
 
 export default function AuthenticationDecorator(permission: string) {
     return function (
-        _: undefined,
-        context: ClassFieldDecoratorContext
+        originalMethod: Function,
+        context: ClassMethodDecoratorContext,
     ) {
-        return function (target: (...args: any[]) => any) {
-            return async function (this: any, ...args: any[]) {
-                const name = "";
-                const enforcer = await createEnforcer();
+        return async function (this: any, ...args: any[]) {
+            let userName;
+            try {
+                const payload = jwt.verify(args[0].cookies["login"], String(process.env.JWT_SECRET));
+                userName = !(typeof payload === "string") && "username" in payload ? payload.username : payload;
+                userName = decrypt<string>(userName);
+            } catch (error) {
+                throw {
+                    date: new Date(),
+                    errorMSG: new Error("token is invalid"),
+                    code: ErrorCodes.invalidCredentials
+                } satisfies IError
+            }
+            const enforcer = await createEnforcer();
 
-                if (!name) {
-                    args[1].sendStatus(403);
-                    return null;
-                }
+            if (!await enforcer.enforce(userName, permission)) {
+                console.log(`User ${userName} doesn't have the permission ${permission} to do the action ${String(context.name)}.`);
+                args[1].sendStatus(423);
+                return;
+            }
+            console.log(`User ${userName} has permission ${permission} to do the action ${String(context.name)}.`);
 
-                if (!await enforcer.enforce(name, "*") && !await enforcer.enforce(name, permission)) {
-                    console.log(`User ${name} doesn't have the permission ${permission} to do the action ${String(context.name)}.`);
-                    args[1].sendStatus(401);
-                    return null;
-                }
-                console.log(`User ${name} has permission ${permission} to do the action ${String(context.name)}.`);
-                return target.apply(this, args);
-            };
+            return originalMethod.call(this, ...args);
         };
     };
 }
