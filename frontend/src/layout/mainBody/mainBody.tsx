@@ -1,14 +1,32 @@
-import {Routes, Route, useLocation} from "react-router-dom";
+import {Routes, Route, useLocation, useNavigate} from "react-router-dom";
 
 import {navigationItemsMenu, navigationItemsIT, navigationItemsAccount} from "../navigation/Navigation.config";
 import Login from "../../pages/Login/Login";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {PermissionsList} from "../../types/accounts/accountTypes";
+import http from "../../common/http";
+import type IAccount from "../../types/accounts/IAccount";
 
 export default function MainBody({setIsOpen}) {
     const [currentAccountType, setCurrentAccountType] = useState<PermissionsList>();
     const routes = navigationItemsMenu.concat(navigationItemsIT).concat(navigationItemsAccount);
+
     const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const isVerified = async () => {
+            if ((await http("/api/verify", "POST")).status !== 200) {
+                navigate("/login");
+                return;
+            } else {
+                const account: IAccount = await (await http("/api/account/current", "GET")).json();
+                setCurrentAccountType(account.type);
+            }
+        };
+
+        isVerified();
+    }, []);
 
     return (
         <div
@@ -23,7 +41,7 @@ export default function MainBody({setIsOpen}) {
                         return <Route path={route.path} element={route.page[0]} />;
                     } else if (route.path === "/" && currentAccountType === PermissionsList.participant) {
                         return <Route path={route.path} element={route.page[1]} />;
-                    } else return <Route path={route.path} element={route.page} />;
+                    } else if (currentAccountType) return <Route path={route.path} element={route.page} />;
                 })}
                 <Route path="/login" element={<Login setCurrentAccountType={setCurrentAccountType} />} />
             </Routes>
