@@ -93,7 +93,6 @@ app.use((err: IError[] | IError, req: Request, res: Response, next: NextFunction
     res.json(responseData);
 });
 
-
 const server = app.listen(app.get('port'), function () {
     console.log(`Express server version ${
         process.env.BACKEND_SNAPSHOT_VERSION && Number(process.env.BACKEND_SNAPSHOT_VERSION) > 0 ? 
