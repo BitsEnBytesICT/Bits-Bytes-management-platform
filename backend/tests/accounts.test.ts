@@ -1,13 +1,13 @@
 import { before, describe, it } from "node:test";
-import AuthService from "../src/endpoints/auth/auth.service";
 import { setupDatabase } from "../src/setupDatabases";
 import assert from "node:assert/strict";
 import { runMigrations } from "../src/common/migrationsLoader";
 import { encrypt } from "../src/common/encryptorDecryptor";
 import jwt from "jsonwebtoken";
+import AccountService from "../src/endpoints/accounts/accounts.service";
 
-describe("login", () => {
-    const service = new AuthService();
+describe("account", () => {
+    const service = new AccountService();
 
     before(async () => {
         process.env.NODE_ENV = "DEVELOPMENT";
@@ -23,27 +23,15 @@ describe("login", () => {
         } catch {}
     });
 
-    it("login with username and password", async () => {
-        assert.ok(await service.login("support", "test123"));
-    });
-
-    it("login with username and password and verify token", async () => {
+    it("get account from token", async () => {
         const token = jwt.sign(
             { username: encrypt("support") },
             String(process.env.JWT_SECRET),
             { expiresIn: 900 },
         );
-        await assert.doesNotReject(async () => {
-            await service.verify(token);
-        });
+
+        assert.ok(service.current(token));
     });
 
-    it("login with username and password and refresh token", async () => {
-        const token = jwt.sign(
-            { username: encrypt("support") },
-            String(process.env.JWT_SECRET),
-            { expiresIn: -1 },
-        );
-        assert.ok(await service.refresh(token));
-    });
+    //TODO: add tests for account validator
 })

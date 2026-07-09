@@ -35,12 +35,11 @@ class MySqlMigrationStore {
                 FROM migration_state
                 WHERE id = ?
             `, [1]);
-            if (process.env.DATABASE_TYPE === "sqllite") rows = [result];
-            else rows = result
+            rows = result
 
             const row = rows?.[0];
 
-            if (!row || !row.migrations || row.last_run) {
+            if (!row || !row.migrations || !row.last_run) {
                 callback(null, {
                     lastRun: null,
                     migrations: [],

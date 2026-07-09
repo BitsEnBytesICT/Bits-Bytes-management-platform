@@ -2,12 +2,13 @@ import {Routes, Route, useLocation} from "react-router-dom";
 
 import {navigationItemsMenu, navigationItemsIT, navigationItemsAccount} from "../navigation/Navigation.config";
 import Login from "../../pages/Login/Login";
+import {useState} from "react";
+import {PermissionsList} from "../../types/accounts/accountTypes";
 
 export default function MainBody({setIsOpen}) {
+    const [currentAccountType, setCurrentAccountType] = useState<PermissionsList>();
     const routes = navigationItemsMenu.concat(navigationItemsIT).concat(navigationItemsAccount);
     const location = useLocation();
-
-    const currentAccountType: string = "support"; // dit is als test totdat we een login hebben!
 
     return (
         <div
@@ -18,13 +19,13 @@ export default function MainBody({setIsOpen}) {
             }`}>
             <Routes>
                 {routes.map(route => {
-                    if (route.path === "/" && currentAccountType === "support") {
+                    if (route.path === "/" && currentAccountType === PermissionsList.support) {
                         return <Route path={route.path} element={route.page[0]} />;
-                    } else if (route.path === "/" && currentAccountType === "participant") {
+                    } else if (route.path === "/" && currentAccountType === PermissionsList.participant) {
                         return <Route path={route.path} element={route.page[1]} />;
                     } else return <Route path={route.path} element={route.page} />;
                 })}
-                <Route path="/login" element={<Login />} />
+                <Route path="/login" element={<Login setCurrentAccountType={setCurrentAccountType} />} />
             </Routes>
         </div>
     );

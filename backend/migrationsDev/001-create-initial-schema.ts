@@ -1,7 +1,6 @@
 import { dbQuery } from "../src/common/db";
 
 const upStatements: string[] = [
-    `DROP TABLE IF EXISTS Permissions`,
     `
     CREATE TABLE IF NOT EXISTS Permissions (
         id INTEGER PRIMARY KEY,

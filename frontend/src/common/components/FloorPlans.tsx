@@ -1,6 +1,6 @@
 import {useState} from "react";
 
-import Button from "./Button";
+import SmallButton from "./SmallButton";
 
 import {IconProduct} from "../../assets";
 
@@ -19,7 +19,7 @@ export default function FloorPlans() {
 
             <div className="flex flex-row gap-6">
                 {floorPlans.map((plan, i) => (
-                    <Button
+                    <SmallButton
                         key={plan.label}
                         icon={<img className="select-none [-webkit-user-drag:none]" src={IconProduct} />}
                         label={plan.label}

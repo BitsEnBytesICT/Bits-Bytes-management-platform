@@ -8,10 +8,13 @@ import HealthRouter from './endpoints/health/health.routes';
 import attendanceRouter from './endpoints/attendances/attendance.routes';
 import authRouter from './endpoints/auth/auth.routes';
 import participantRouter from './endpoints/participants/participants.routes';
+import AccountRouter from './endpoints/accounts/accounts.routes';
 import { setupDatabase } from './setupDatabases';
 import { createConnection } from './common/db';
 import { environmentFileChecker } from './common/environmentFileChecker';
 import { runMigrations } from './common/migrationsLoader';
+import { createEnforcer } from './common/casbin';
+import cookieParser from 'cookie-parser';
 
 environmentFileChecker();
 
@@ -26,7 +29,7 @@ const prepareDB = async() => {
     } 
     else if (process.env.DATABASE_TYPE === "mysql") createConnection();
 }
-prepareDB();
+prepareDB().then(createEnforcer);
 
 const app: Express = express();
 
@@ -48,12 +51,14 @@ app.use(cors({
 
 app.use(express.json({ limit: "20kb" }));
 app.use(express.urlencoded({ extended: true, limit: "20kb" }));
+app.use(cookieParser());
 app.set('port', process.env.PORT || 3000);
 
 app.use(HealthRouter);
 app.use(attendanceRouter);
 app.use(authRouter);
 app.use(participantRouter);
+app.use(AccountRouter);
 
 app.use((err: IError[] | IError, req: Request, res: Response, next: NextFunction) => {
     console.log(err)
@@ -67,6 +72,9 @@ app.use((err: IError[] | IError, req: Request, res: Response, next: NextFunction
                 continue;
             case ErrorCodes.Unknown:
                 responseData.push(error.errorMSG.message);
+                res.status(500);
+                continue;
+            case undefined:
                 res.status(500);
                 continue;
             case ErrorCodes.sqlError:
