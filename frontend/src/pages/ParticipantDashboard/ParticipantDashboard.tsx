@@ -1,10 +1,7 @@
 import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
 
 export default function DeelnemerDashboard() {
     const [date, setDate] = useState(new Date());
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         const timer = setInterval(() => {
