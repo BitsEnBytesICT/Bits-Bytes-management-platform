@@ -1,19 +1,9 @@
 import {useEffect, useState} from "react";
-import ParticipantDashboardService from "./ParticipantDashboard.service";
-import {useNavigate} from "react-router-dom";
 
 export default function DeelnemerDashboard() {
     const [date, setDate] = useState(new Date());
 
-    const service: ParticipantDashboardService = new ParticipantDashboardService();
-
-    const navigate = useNavigate();
-
     useEffect(() => {
-        service.isVerified().then(status => {
-            if (status !== 200) navigate("/login");
-        });
-
         const timer = setInterval(() => {
             setDate(new Date());
         }, 1000);

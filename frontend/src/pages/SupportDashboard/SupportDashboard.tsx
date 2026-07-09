@@ -12,7 +12,6 @@ import SupportDashboardService from "./SupportDashboard.service";
 import type IParticipant from "../../types/compontents/IParticipant";
 
 import {IconAddUser, IconExport, IconLink} from "../../assets";
-import {useNavigate} from "react-router-dom";
 
 export default function SupportDashboard() {
     const [totalParticipants, setTotalParticipants] = useState(0);
@@ -21,14 +20,8 @@ export default function SupportDashboard() {
 
     const service: SupportDashboardService = new SupportDashboardService();
 
-    const navigate = useNavigate();
-
     useEffect(() => {
         const getData = async () => {
-            if ((await service.isVerified()) !== 200) {
-                navigate("/login");
-                return;
-            }
             await service.getTotalParticipants().then(setTotalParticipants);
             await service.getPresentParticipants().then(setPresentParticipants);
             await service.getParticipants().then(setParticipants);
