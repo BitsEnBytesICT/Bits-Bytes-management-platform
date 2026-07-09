@@ -16,6 +16,8 @@ export default function Login({setCurrentAccountType}) {
     const usernameRef = React.createRef<HTMLInputElement>();
     const passwordRef = React.createRef<HTMLInputElement>();
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         const isVerified = async () => {
             if ((await http("/api/verify", "POST")).status === 200) {
@@ -26,8 +28,6 @@ export default function Login({setCurrentAccountType}) {
         };
         isVerified();
     }, []);
-
-    const navigate = useNavigate();
 
     const setErrorText = (message: string, color: string): void => {
         setErrorMessage({

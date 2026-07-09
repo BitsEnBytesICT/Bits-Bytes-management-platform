@@ -3,6 +3,10 @@ import http from "../../common/http";
 import type IParticipant from "../../types/compontents/IParticipant";
 
 export default class SupportDashboardService {
+    isVerified = async () => {
+        return (await http("/api/verify", "POST")).status;
+    };
+
     getTotalParticipants = async () => {
         let total = 0;
 
