@@ -1,4 +1,4 @@
-import {StrictMode, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {createRoot} from "react-dom/client";
 import {BrowserRouter} from "react-router-dom";
 
@@ -47,11 +47,7 @@ function App() {
 }
 
 createRoot(document.getElementById("root")!).render(
-    <StrictMode>
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
-    </StrictMode>,
+    <BrowserRouter>
+        <App />
+    </BrowserRouter>,
 );
-
-//small change to test the bump version test5

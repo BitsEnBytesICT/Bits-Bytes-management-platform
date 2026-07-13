@@ -6,23 +6,39 @@ import IError from './types/error/IError';
 import { assertNever } from './common/Validator';
 import HealthRouter from './endpoints/health/health.routes';
 import attendanceRouter from './endpoints/attendances/attendance.routes';
+import authRouter from './endpoints/auth/auth.routes';
+import participantRouter from './endpoints/participants/participants.routes';
+import AccountRouter from './endpoints/accounts/accounts.routes';
 import { setupDatabase } from './setupDatabases';
 import { createConnection } from './common/db';
 import { environmentFileChecker } from './common/environmentFileChecker';
+import { runMigrations } from './common/migrationsLoader';
+import { createEnforcer } from './common/casbin';
+import cookieParser from 'cookie-parser';
 
 environmentFileChecker();
 
-if (process.env.DATABASE_TYPE === "sqllite") setupDatabase();
-else if (process.env.DATABASE_TYPE === "mysql") createConnection();
-
-console.log(process.env.BACKEND_SNAPSHOT_VERSION)
+const prepareDB = async() => {
+    if (process.env.DATABASE_TYPE === "sqllite"){
+        try {
+            await runMigrations();
+            setupDatabase();
+        } catch (error) {
+            console.log(error);
+        }
+    } 
+    else if (process.env.DATABASE_TYPE === "mysql") createConnection();
+}
+prepareDB().then(createEnforcer);
 
 const app: Express = express();
 
+app.set("trust proxy", 2);
+
 app.use(cors({
     origin: function (origin, callback) {
-        const allowedOrigins = [`http://localhost:5173`];
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        const allowedOrigin = process.env.ALLOWED_ORIGIN;
+        if (!origin || allowedOrigin === "*" || origin === allowedOrigin) {
             console.log(`allowed connection from origin: ${origin}`);
             callback(null, true);
         } else {
@@ -35,12 +51,16 @@ app.use(cors({
 
 app.use(express.json({ limit: "20kb" }));
 app.use(express.urlencoded({ extended: true, limit: "20kb" }));
+app.use(cookieParser());
 app.set('port', process.env.PORT || 3000);
 
 app.use(HealthRouter);
 app.use(attendanceRouter);
+app.use(authRouter);
+app.use(participantRouter);
+app.use(AccountRouter);
 
-app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
+app.use((err: IError[] | IError, req: Request, res: Response, next: NextFunction) => {
     console.log(err)
     const errorData = Array.isArray(err) ? err : [err]
     let responseData = [];
@@ -54,9 +74,16 @@ app.use((err: IError[], req: Request, res: Response, next: NextFunction) => {
                 responseData.push(error.errorMSG.message);
                 res.status(500);
                 continue;
+            case undefined:
+                res.status(500);
+                continue;
             case ErrorCodes.sqlError:
                 responseData.push(error.errorMSG.message);
                 res.status(500);
+                continue;
+            case ErrorCodes.invalidCredentials:
+                responseData.push(error.errorMSG.message);
+                res.status(401);
                 continue;
             default:
                 assertNever(error.code);
@@ -72,5 +99,3 @@ const server = app.listen(app.get('port'), function () {
         `${process.env.BACKEND_VERSION}-snapshot-${process.env.BACKEND_SNAPSHOT_VERSION}` : 
         process.env.BACKEND_VERSION} listening on port ${(server.address() as AddressInfo).port}`);
 });
-
-//small change to test the bump version test5

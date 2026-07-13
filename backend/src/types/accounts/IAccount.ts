@@ -6,6 +6,7 @@ export default interface IAccount {
     type: PermissionsList,
     firstname: string,
     lastname: string,
+    username: string,
     role: Roles,
     password: string
 }

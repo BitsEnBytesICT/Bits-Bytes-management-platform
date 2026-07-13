@@ -26,7 +26,7 @@ jobs:
 
       - name: Build frontend
         working-directory: ./frontend
-        run: npm run build
+        run: npm run build:acc
 
       - name: Check frontend formatting
         working-directory: ./frontend
@@ -39,3 +39,7 @@ jobs:
       - name: Build backend
         working-directory: ./backend
         run: npm run build
+
+      - name: run tests
+        working-directory: ./backend
+        run: npm run test

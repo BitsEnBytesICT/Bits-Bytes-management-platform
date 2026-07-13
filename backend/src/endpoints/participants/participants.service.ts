@@ -11,7 +11,7 @@ export default class ParticipantService implements serviceBase<IParticipant> {
         this.dao = new ParticipantDao();
     }
 
-    async findOne(...where: KeyValuePair<IParticipant>[]): Promise<IParticipant> {
+    async findOne(...where: KeyValuePair<IParticipant>[]): Promise<IParticipant | undefined> {
         return await this.dao.findOne(...where);
     }
 
@@ -34,7 +34,15 @@ export default class ParticipantService implements serviceBase<IParticipant> {
         throw new Error("Method not implemented.");
     }
 
-    async list(...args: any[]): Promise<IParticipant[]> {
-        throw new Error("Method not implemented.");
+    async list(): Promise<IParticipant[]> {
+        return await this.dao.list();
+    }
+
+    async count(): Promise<number> {
+        return await this.dao.count();
+    }
+
+    async countPresent(): Promise<number> {
+        return await this.dao.countPresent();
     }
 }

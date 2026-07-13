@@ -21,18 +21,18 @@ export default class AttendanceDao extends daoBase<IAttendance> implements daoBa
         throw new Error('Method not implemented.');
     }
     
-    async findOne(...where: KeyValuePair<IAttendance>[]): Promise<IAttendance> {
+    async findOne(...where: KeyValuePair<IAttendance>[]): Promise<IAttendance | undefined> {
         return await this.findOneFunc(Tables.Attendances, ...where);
     }
 
     async getAttendanceLast30Days(participantID: number): Promise<string[]> {
-        const rows = await dbAll(
+        const rows = await dbAll<{date: string}>(
             `SELECT DISTINCT date(clockinDate) as date
              FROM Attendances
              WHERE participantID = ? AND clockinDate >= date('now', '-30 days')
              ORDER BY date DESC`,
             [participantID]
-        ) as { date: string }[];
+        )
         return rows.map(r => r.date);
     }
 }

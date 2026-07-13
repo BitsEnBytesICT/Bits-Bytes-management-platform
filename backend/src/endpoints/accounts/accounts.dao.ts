@@ -2,11 +2,12 @@ import { daoBase, daoBaseType } from "../../common/daoBase";
 import { dbAll } from "../../common/db";
 import { KeyValuePair } from "../../common/Validator";
 import IAccount from "../../types/accounts/IAccount";
+import { Tables } from "../../types/tables/tablesList";
 
 export default class AccountDAO extends daoBase<IAccount> implements daoBaseType<IAccount> {
 
-    async findOne(...args: KeyValuePair<IAccount>[]): Promise<IAccount> {
-        throw new Error("Method not implemented.");
+    async findOne(...where: KeyValuePair<IAccount>[]): Promise<IAccount | undefined> {
+        return await this.findOneFunc(Tables.Accounts, ...where);
     }
     create(...args: any[]): void {
         throw new Error("Method not implemented.");

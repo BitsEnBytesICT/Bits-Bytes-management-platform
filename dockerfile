@@ -5,6 +5,7 @@ RUN apt-get install iputils-ping -y
 WORKDIR /usr/src/
 COPY ./frontend/package-lock.json ./frontend/package-lock.json
 COPY ./frontend/package.json ./frontend/package.json
+COPY ./.env.versions ./.env.versions
 WORKDIR /usr/src/frontend
 RUN npm i --ignore-scripts
 
@@ -14,15 +15,19 @@ RUN apt-get install iputils-ping -y
 WORKDIR /usr/src/
 COPY ./backend/package-lock.json ./backend/package-lock.json
 COPY ./backend/package.json ./backend/package.json
+COPY ./.env.versions ./.env.versions
 WORKDIR /usr/src/backend
 RUN npm i --ignore-scripts
+RUN npm rebuild better-sqlite3
 
 #acc
 FROM nginx:stable-alpine-perl as bitsenbytesfrontendACC
 COPY ./frontend/dist /usr/share/nginx/html
+COPY ./frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 FROM node:22-bookworm AS bitsenbytesbackendACC
 COPY ./backend/dist /usr/backend
+COPY ./backend/src/casbin /usr/backend/src/casbin
 COPY ./backend/package.json /usr/backend/package.json
 COPY ./backend/package-lock.json ./backend/package-lock.json
 WORKDIR /usr/backend
@@ -33,9 +38,11 @@ CMD ["node", "/usr/backend/src/index.js"]
 # prod
 FROM nginx:stable-alpine-perl as bitsenbytesfrontendPROD
 COPY ./frontend/dist /usr/share/nginx/html
+COPY ./frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 FROM node:22-bookworm AS bitsenbytesbackendPROD
 COPY ./backend/dist /usr/backend
+COPY ./backend/src/casbin /usr/backend/src/casbin
 COPY ./backend/package.json /usr/backend/package.json
 COPY ./backend/package-lock.json ./backend/package-lock.json
 WORKDIR /usr/backend

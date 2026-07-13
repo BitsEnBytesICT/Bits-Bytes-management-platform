@@ -28,8 +28,10 @@ export const createConnection = async () => {
     });
 
     console.log("connected to databases");
-    await runMigrations();
-    console.log("finished migrations");
+    if (process.env.NODE_ENV !== "DEVELOPMENT") {
+        await runMigrations();
+        console.log("finished migrations");
+    }
     } catch (error) {
         console.log("cannot create db connection or run migrations!");
         console.log(`error: ${error}`);
@@ -46,10 +48,16 @@ export const createConnection = async () => {
 
 const inventoryDBSQLLITE = new Database('inventoryDatabase.db', { verbose: console.log });
 
-export const dbQuery = async<T>(sql: string, values?: any[]): Promise<T> => {
+export const dbQuery = async<T>(sql: string, values?: any[]): Promise<T[]> => {
     try {
-        if (process.env.DATABASE_TYPE === "sqllite") return db.prepare(sql).run(values) as T;
-        return (await managementDB.query(sql, values))[0] as T;
+        if (process.env.DATABASE_TYPE === "sqllite") {
+            let result;
+            if (values) result = db.prepare(sql).run(values);
+            else result = db.prepare(sql).run();
+            if (Array.isArray(result)) return result as T[];
+            return [result] as T[];
+        } 
+        return (await managementDB.query(sql, values))[0] as T[];
     } catch (err) {
         throw {
             date: new Date(),
@@ -59,10 +67,16 @@ export const dbQuery = async<T>(sql: string, values?: any[]): Promise<T> => {
     }
 }
 
-export const dbGet = async<T>(sql: string, values?: any[]): Promise<T> => {
+export const dbGet = async<T>(sql: string, values?: any[]): Promise<T[]> => {
     try {
-        if (process.env.DATABASE_TYPE === "sqllite") return db.prepare(sql).get(values) as T;
-        return (await managementDB.query(sql, values))[0] as T;
+        if (process.env.DATABASE_TYPE === "sqllite") {
+            let result;
+            if (values) result = db.prepare(sql).get(values);
+            else result = db.prepare(sql).get();
+            if (Array.isArray(result)) return result as T[];
+            return [result] as T[];
+        }
+        return (await managementDB.query(sql, values))[0] as T[];
     } catch (err) {
         throw {
             date: new Date(),
@@ -72,10 +86,16 @@ export const dbGet = async<T>(sql: string, values?: any[]): Promise<T> => {
     }
 }
 
-export const dbAll = async<T>(sql: string, values?: any[]): Promise<T> => {
+export const dbAll = async<T>(sql: string, values?: any[]): Promise<T[]> => {
     try {
-        if (process.env.DATABASE_TYPE === "sqllite") return db.prepare(sql).all(values) as T;
-        return (await managementDB.query(sql, values))[0] as T;
+        if (process.env.DATABASE_TYPE === "sqllite") {
+            let result;
+            if (values) result = db.prepare(sql).all(values);
+            else result = db.prepare(sql).all();
+            if (Array.isArray(result)) return result as T[];
+            return [result] as T[];
+        }
+        return (await managementDB.query(sql, values))[0] as T[];
     } catch (err) {
         throw {
             date: new Date(),
@@ -85,10 +105,16 @@ export const dbAll = async<T>(sql: string, values?: any[]): Promise<T> => {
     }
 }
 
-export const inventoryDBQuery = async<T>(sql: string, values?: any[]): Promise<T> => {
+export const inventoryDBQuery = async<T>(sql: string, values?: any[]): Promise<T[]> => {
     try {
-        if (process.env.DATABASE_TYPE === "sqllite") return inventoryDBSQLLITE.prepare(sql).run(values)as T;
-        return (await inventoryDB.query(sql, values))[0] as T;
+        if (process.env.DATABASE_TYPE === "sqllite") {
+            let result;
+            if (values) result = inventoryDBSQLLITE.prepare(sql).run(values);
+            else result = db.prepare(sql).run();
+            if (Array.isArray(result)) return result as T[];
+            return [result] as T[];
+        }
+        return (await inventoryDB.query(sql, values))[0] as T[];
     } catch (err) {
         throw {
             date: new Date(),
