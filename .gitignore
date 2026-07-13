@@ -432,3 +432,5 @@ FodyWeavers.xsd
 *.msp
 .DS_Store
 backend/.env.local
+/KnowledgeBase/KnowledgeBaseBNB/XMLFile.xml
+/KnowledgeBase/KnowledgeBaseBNB/XMLFile1.xml

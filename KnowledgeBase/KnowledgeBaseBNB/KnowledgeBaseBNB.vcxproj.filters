@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\BackendAPI">
-      <UniqueIdentifier>{97b4a634-a480-4639-a0ad-ade73a375748}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\BackendAPI">
-      <UniqueIdentifier>{1ae5c227-61d1-4453-a457-09b3f5d2dfd5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\ValidationLayer">
       <UniqueIdentifier>{bb33706a-dc51-4aa6-beaa-723d9c9af5c7}</UniqueIdentifier>
     </Filter>
@@ -31,16 +25,37 @@
     <Filter Include="Source Files\DatabaseLayer">
       <UniqueIdentifier>{c651f39e-2f97-4224-83ed-1da93fcd0d4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\TransformationLayer">
+      <UniqueIdentifier>{8061d456-80ef-42bb-8c83-886b2970f0c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DataLayer">
+      <UniqueIdentifier>{2df2ed32-9ec0-4aac-9248-b17802c4d140}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CommunicationLayer">
+      <UniqueIdentifier>{97b4a634-a480-4639-a0ad-ade73a375748}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\TransformationLayer">
+      <UniqueIdentifier>{92cc9c43-da30-4926-a2b2-d6e1ac5ea3f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DataLayer">
+      <UniqueIdentifier>{84985cea-8175-4da4-8290-32e9d4a3634b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CommunicationLayer">
+      <UniqueIdentifier>{1ae5c227-61d1-4453-a457-09b3f5d2dfd5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BackendAPI.cpp">
-      <Filter>Source Files\BackendAPI</Filter>
+      <Filter>Source Files\CommunicationLayer</Filter>
     </ClCompile>
     <ClCompile Include="ValidationCheck.cpp">
       <Filter>Source Files\ValidationLayer</Filter>
+    </ClCompile>
+    <ClCompile Include="Transformation.cpp">
+      <Filter>Source Files\TransformationLayer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,7 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackendAPI.hpp">
-      <Filter>Header Files\BackendAPI</Filter>
+      <Filter>Header Files\CommunicationLayer</Filter>
     </ClInclude>
     <ClInclude Include="ValidationCheck.hpp">
       <Filter>Header Files\ValidationLayer</Filter>
@@ -58,5 +73,16 @@
     <ClInclude Include="IDatabase.hpp">
       <Filter>Header Files\DatabaseLayer</Filter>
     </ClInclude>
+    <ClInclude Include="Transformation.hpp">
+      <Filter>Header Files\TransformationLayer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="XMLFile.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="XMLFile1.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

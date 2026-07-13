@@ -10,9 +10,11 @@ public:
 	void RunBackend();
 private:
 	ValidationCheck validation;
+	std::string backendPath = "/api/knowledgebase/";
 
 	void RegisterArticlesRoute();
 	void RegisterArticleRoute();
+	void RegisterHierarchyRoute();
 	void RegisterCreateRoute();
 	void RegisterUpdateRoute();
 	void RegisterDeleteRoute();

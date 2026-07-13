@@ -1,9 +1,5 @@
 #include <drogon/drogon.h>
-#include <functional>
 #include "BackendAPI.hpp"
-
-#include <iostream>
-#include <sstream>
 
 void BackendAPI::RunBackend()
 {
@@ -18,6 +14,7 @@ void BackendAPI::RunBackend()
         });*/
     RegisterArticlesRoute();
     RegisterArticleRoute();
+    RegisterHierarchyRoute();
     RegisterCreateRoute();
     RegisterUpdateRoute();
     RegisterDeleteRoute();
@@ -29,14 +26,16 @@ void BackendAPI::RunBackend()
 void BackendAPI::RegisterArticlesRoute()
 {
     drogon::app().registerHandler(
-        "/client/articles",
+        backendPath + "client/articles",
         [this](const drogon::HttpRequestPtr& req,
             std::function<void(const drogon::HttpResponsePtr&)>&& callback)
         {
             auto resp = drogon::HttpResponse::newHttpResponse();            
             auto keys = req->getParameters();
+            std::string category = this->ReadData(keys["category"])[0];
             std::vector<std::string> splittedValues = this->ReadData(keys["keys"]);
             std::string values = "";
+            values += "\nCategory : " + category + "\nKeys : ";
             for (int i = 0; i < splittedValues.size();i++) {
                 values += splittedValues[i] + " ";
             }
@@ -45,76 +44,6 @@ void BackendAPI::RegisterArticlesRoute()
         },
     { drogon::Get }
     );
-}
-
-void BackendAPI::RegisterArticleRoute()
-{
-    drogon::app().registerHandler(
-        "/client/article",
-        [this](const drogon::HttpRequestPtr&,
-            std::function<void(const drogon::HttpResponsePtr&)>&& callback)
-        {
-            auto resp = drogon::HttpResponse::newHttpResponse();
-            resp->setBody("Get article");
-            this->ReadData("");
-            callback(resp);
-        },
-        { drogon::Get }
-    );
-}
-
-void BackendAPI::RegisterCreateRoute()
-{
-    drogon::app().registerHandler(
-        "/admin/create",
-        [this](const drogon::HttpRequestPtr&,
-            std::function<void(const drogon::HttpResponsePtr&)>&& callback)
-        {
-            auto resp = drogon::HttpResponse::newHttpResponse();
-            resp->setBody("Post Create");
-            this->CreateData("");
-            callback(resp);
-        },
-        { drogon::Post }
-    );
-}
-
-void BackendAPI::RegisterUpdateRoute()
-{
-    drogon::app().registerHandler(
-        "/admin/update",
-        [this](const drogon::HttpRequestPtr&,
-            std::function<void(const drogon::HttpResponsePtr&)>&& callback)
-        {
-            auto resp = drogon::HttpResponse::newHttpResponse();
-            resp->setBody("Put update");
-            this->UpdateData(0, "");
-            callback(resp);
-        },
-        { drogon::Put }
-    );
-}
-
-void BackendAPI::RegisterDeleteRoute()
-{
-    drogon::app().registerHandler(
-        "/admin/delete",
-        [this](const drogon::HttpRequestPtr&,
-            std::function<void(const drogon::HttpResponsePtr&)>&& callback)
-        {
-            auto resp = drogon::HttpResponse::newHttpResponse();
-            resp->setBody("Delete");
-            this->DeleteData(0);
-            callback(resp);
-        },
-        { drogon::Delete }
-    );
-}
-
-int BackendAPI::CreateData(const std::string& data)
-{
-    std::cout << "Create Test" << std::endl;
-    return 0;
 }
 
 std::vector<std::string> BackendAPI::ReadData(const std::string& searchData)
@@ -137,6 +66,95 @@ std::vector<std::string> BackendAPI::Split(const std::string& str, char delimite
     }
 
     return result;
+}
+
+void BackendAPI::RegisterArticleRoute()
+{
+    drogon::app().registerHandler(
+        backendPath + "client/article",
+        [this](const drogon::HttpRequestPtr&,
+            std::function<void(const drogon::HttpResponsePtr&)>&& callback)
+        {
+            auto resp = drogon::HttpResponse::newHttpResponse();
+            resp->setBody("Get article");
+            //this->ReadData("");
+            callback(resp);
+        },
+        { drogon::Get }
+    );
+}
+
+void BackendAPI::RegisterHierarchyRoute()
+{
+    drogon::app().registerHandler(
+        backendPath + "client/hierarchy",
+        [this](const drogon::HttpRequestPtr& req,
+            std::function<void(const drogon::HttpResponsePtr&)>&& callback)
+        {
+            auto resp = drogon::HttpResponse::newHttpResponse();
+            auto keys = req->getParameters();
+            std::string category = this->ReadData(keys["category"])[0];
+            std::string values = "";
+            values += "\nCategory : " + category;
+            resp->setBody("Hierarchy lookup : " + values);
+            callback(resp);
+        },
+        { drogon::Get }
+    );
+}
+
+void BackendAPI::RegisterCreateRoute()
+{
+    drogon::app().registerHandler(
+        backendPath + "admin/create",
+        [this](const drogon::HttpRequestPtr&,
+            std::function<void(const drogon::HttpResponsePtr&)>&& callback)
+        {
+            auto resp = drogon::HttpResponse::newHttpResponse();
+            resp->setBody("Post Create");
+            this->CreateData("");
+            callback(resp);
+        },
+        { drogon::Post }
+    );
+}
+
+void BackendAPI::RegisterUpdateRoute()
+{
+    drogon::app().registerHandler(
+        backendPath + "admin/update",
+        [this](const drogon::HttpRequestPtr&,
+            std::function<void(const drogon::HttpResponsePtr&)>&& callback)
+        {
+            auto resp = drogon::HttpResponse::newHttpResponse();
+            resp->setBody("Put update");
+            this->UpdateData(0, "");
+            callback(resp);
+        },
+        { drogon::Put }
+    );
+}
+
+void BackendAPI::RegisterDeleteRoute()
+{
+    drogon::app().registerHandler(
+        backendPath + "admin/delete",
+        [this](const drogon::HttpRequestPtr&,
+            std::function<void(const drogon::HttpResponsePtr&)>&& callback)
+        {
+            auto resp = drogon::HttpResponse::newHttpResponse();
+            resp->setBody("Delete");
+            this->DeleteData(0);
+            callback(resp);
+        },
+        { drogon::Delete }
+    );
+}
+
+int BackendAPI::CreateData(const std::string& data)
+{
+    std::cout << "Create Test" << std::endl;
+    return 0;
 }
 
 int BackendAPI::UpdateData(int key, const std::string& data)

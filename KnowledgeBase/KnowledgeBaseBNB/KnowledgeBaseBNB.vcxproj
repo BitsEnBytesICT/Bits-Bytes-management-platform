@@ -126,6 +126,7 @@
   <ItemGroup>
     <ClCompile Include="BackendAPI.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Transformation.cpp" />
     <ClCompile Include="ValidationCheck.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -134,7 +135,12 @@
   <ItemGroup>
     <ClInclude Include="BackendAPI.hpp" />
     <ClInclude Include="IDatabase.hpp" />
+    <ClInclude Include="Transformation.hpp" />
     <ClInclude Include="ValidationCheck.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="XMLFile.xml" />
+    <Xml Include="XMLFile1.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
