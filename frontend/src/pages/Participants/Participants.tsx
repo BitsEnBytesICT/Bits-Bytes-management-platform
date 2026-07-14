@@ -19,7 +19,7 @@ const participantColumns: ITableColumn<IParticipant>[] = [
         label: "Actief",
         render: row => (row.active ? "Actief" : "Inactief"),
     },
-    {key: "rfid", label: "RFID TAG"},
+    {key: "rfid", label: "RFID Tag"},
     {
         key: "clockedin",
         label: "Aanwezig",
