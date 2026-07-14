@@ -18,8 +18,14 @@ export abstract class daoBase<a> {
                         values.concat(where[1] === undefined ? [] : [where]).map(([, value]) => value));
     }
 
-    protected async deleteFunc(...args: any[]) {
-        
+    protected async createFunc(table: Tables, ...values: KeyValuePair<a>[]) {
+        await dbQuery<a>(`INSERT INTO ${table} (${values.map(([key]) => String(key)).join(", ")}) VALUES (${values.map((key) => "?").join(", ")})`,
+            values.map(([, value]) => value));
+    }
+
+    protected async deleteFunc(table: Tables, where: KeyValuePair<a>) {
+        await dbQuery<a>(`DELETE FROM ${table} WHERE ${
+                        where[1] === undefined ? `${String(where[0])} IS NULL` : `${String(where[0])} = ?`}`, [where[1]]);
     }
 
     protected async listFunc(...args: any[]) {

@@ -1,6 +1,6 @@
-import type IDeelnemer from "./IParticipant";
+import type IParticipant from "./IParticipant";
 
 export default interface IDeelnemerTable {
-    tableColumns: (keyof IDeelnemer)[];
-    participants: IDeelnemer[];
+    tableColumns: (keyof IParticipant)[];
+    participants: IParticipant[];
 }

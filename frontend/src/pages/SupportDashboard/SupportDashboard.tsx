@@ -79,7 +79,7 @@ export default function SupportDashboard() {
                     </div>
 
                     <ParticipantsTable
-                        tableColumns={["firstname", "lastname", "organisation", "product", "active"]}
+                        tableColumns={["firstname", "lastname", "organisation", "financing", "active"]}
                         participants={participants}
                     />
                 </div>

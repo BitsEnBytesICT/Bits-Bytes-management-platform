@@ -1,7 +1,9 @@
 import serviceBase from "../../common/serviceBase";
 import { KeyValuePair, ValidatorTuple } from "../../common/Validator";
+import { ErrorCodes } from "../../types/error/ErrorCodes";
+import IError from "../../types/error/IError";
 import IParticipant from "../../types/participant/IParticipant";
-import { participantValidatorFunctors, partialParticipantValidator } from "../../validators/participantValidator";
+import { participantValidatorFunctors, partialParticipantValidator, ParticipantValidator } from "../../validators/participantValidator";
 import ParticipantDao from "./participants.dao";
 
 export default class ParticipantService implements serviceBase<IParticipant> {
@@ -15,11 +17,26 @@ export default class ParticipantService implements serviceBase<IParticipant> {
         return await this.dao.findOne(...where);
     }
 
-    async create(...args: any[]) {
-        throw new Error("Method not implemented.");
+    async create(participant: IParticipant) {
+        if (!participant) throw {
+            date: new Date(),
+            errorMSG: new Error("no participant supplied"),
+            code: ErrorCodes.InvalidData
+        } satisfies IError
+
+        const errors = ParticipantValidator(participant).filter((result) => result.kind === "error").map((r) => r.errorMSG);
+        if (errors && errors.length > 0) throw errors;
+
+        await this.dao.create(participant);
     }
 
     async update(where: KeyValuePair<IParticipant>, ...values: KeyValuePair<IParticipant>[]) {
+        if (!where || !values) throw {
+            date: new Date(),
+            errorMSG: new Error("no values to update supplied or no where clause supplied"),
+            code: ErrorCodes.InvalidData
+        } satisfies IError
+
         const validatorFunctors = values.map((item) => 
             [item[0], participantValidatorFunctors[item[0]][0], participantValidatorFunctors[item[0]][1]] as ValidatorTuple<IParticipant>);
 
@@ -30,8 +47,8 @@ export default class ParticipantService implements serviceBase<IParticipant> {
         await this.dao.update(where, ...values);
     }
     
-    delete(...args: any[]): void {
-        throw new Error("Method not implemented.");
+    async delete(id: number) {
+        await this.dao.delete(["id", id]);
     }
 
     async list(): Promise<IParticipant[]> {

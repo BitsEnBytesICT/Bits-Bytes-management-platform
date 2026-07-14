@@ -39,6 +39,41 @@ describe("ParticipantService", () => {
         assert.ok(participants.some((p) => p.firstname === "Maria" && p.clockedin === 1));
     });
 
+    it("create new participant", async () => {
+        const participant: IParticipant = {
+            firstname: "participant",
+            lastname: "participant",
+            organisation: "test",
+            account: 2,
+            rfid: "AAAA",
+            createdAt: new Date().toDateString(),
+            active: 1
+        }
+
+        await assert.doesNotReject(async () => {
+            await service.create(participant);
+        });
+    });
+
+    it("update participant", async () => {
+        await assert.doesNotReject(async () => {
+            service.update(["rfid", "AAAA"], ["firstname", "participantUpdated"], ["lastname", "participantUpdated"]);
+        });
+
+        const updatedParticipant = await service.findOne(["rfid", "AAAA"]);
+
+        assert.equal(updatedParticipant?.firstname, "participantUpdated");
+        assert.equal(updatedParticipant?.lastname, "participantUpdated");
+    });
+
+    it("delete participant", async () => {
+        const participant = await service.findOne(["rfid", "AAAA"]);
+        await assert.doesNotReject(async () => {
+            service.delete(participant?.id as number);
+        });
+        
+        assert.equal(await service.findOne(["rfid", "AAAA"]), undefined);
+    });
 });
 
 describe("ParticipantValidator", () => {
@@ -52,7 +87,7 @@ describe("ParticipantValidator", () => {
         createdAt: new Date().toISOString(),
         active: 1,
         clockedin: 0,
-        product: "Develop",
+        financing: "Develop",
     };
 
     it("accepts a fully valid participant", () => {
@@ -71,7 +106,7 @@ describe("ParticipantValidator", () => {
             createdAt: "",
             active: -1,
             clockedin: -1,
-            product: "",
+            financing: "",
         });
 
         assert.ok(results.every((r) => r.kind === "error"));
@@ -117,9 +152,9 @@ describe("ParticipantValidator", () => {
         assert.equal(tooLongResults.find((r) => r.key === "firstname")?.kind, "error");
     });
 
-    it("rejects a participant with product left undefined", () => {
-        const { product, ...rest } = validParticipant;
+    it("accepts a participant with financing left undefined", () => {
+        const { financing, ...rest } = validParticipant;
         const results = ParticipantValidator(rest as IParticipant);
-        assert.equal(results.find((r) => r.key === "product")?.kind, "error");
+        assert.equal(results.find((r) => r.key === "financing")?.kind, "success");
     });
 });

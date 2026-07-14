@@ -4,6 +4,7 @@ import { KeyValuePair } from "../../common/Validator";
 import IAccount from "../../types/accounts/IAccount";
 import { ErrorCodes } from "../../types/error/ErrorCodes";
 import IError from "../../types/error/IError";
+import { AccountValidator } from "../../validators/accountValidator";
 import AccountDAO from "./accounts.dao";
 import jwt from "jsonwebtoken";
 
@@ -18,15 +19,27 @@ export default class AccountService implements serviceBase<IAccount> {
         return await this.dao.findOne(...where);
     }
 
-    create(account: IAccount): void {
-        throw new Error("Method not implemented.");
+    async create(account: IAccount) {
+        if (!account) throw {
+            date: new Date(),
+            errorMSG: new Error("no account supplied"),
+            code: ErrorCodes.InvalidData
+        } satisfies IError
+
+        const errors = AccountValidator(account).filter((result) => result.kind === "error").map((r) => r.errorMSG);
+        if (errors && errors.length > 0) throw errors;
+
+        await this.dao.create(account);
     }
+
     update(...args: any[]): void {
         throw new Error("Method not implemented.");
     }
+
     delete(...args: any[]): void {
         throw new Error("Method not implemented.");
     }
+
     async list(): Promise<IAccount[]> {
         return await this.dao.list();
     }

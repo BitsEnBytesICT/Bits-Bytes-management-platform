@@ -11,7 +11,7 @@ const columnLabels: Record<keyof IParticipant, string> = {
     createdAt: "Aangemaakt",
     active: "Status",
     clockedin: "Ingeklokt",
-    product: "Plaats",
+    financing: "Plaats",
 };
 
 export default function DeelnemerTable({tableColumns, participants}: IParticipantsTable) {

@@ -6,7 +6,7 @@ import { Tables } from "../../types/tables/tablesList";
 
 export default class SignatureDao extends daoBase<ISignature> implements daoBaseType<ISignature> {
     async create(signature: ISignature) {
-         await dbQuery('INSERT INTO Signatures (participantID, date, signature) VALUES (?, ?, ?)', [signature.participantID, signature.date, signature.signature]);
+        await this.createFunc(Tables.Signatures, ...Object.entries(signature) as KeyValuePair<ISignature>[])
     }
 
     async update(where: KeyValuePair<ISignature>, ...args: KeyValuePair<ISignature>[]) {
