@@ -33,10 +33,10 @@ describe("account", () => {
             { expiresIn: 900 },
         );
 
-        assert.ok(service.current(token));
+        assert.ok(await service.current(token));
     });
 
-    it ("create new account", async () => {
+    it("create new account", async () => {
         const account: IAccount = {
             type: PermissionsList.participant,
             firstname: "Chris",
@@ -45,10 +45,16 @@ describe("account", () => {
             role: Roles.admin,
             password: encrypt("test123")
         }
-        
+
         await assert.doesNotReject(async () => {
             await service.create(account);
         });
+    });
+
+    it("find account", async () => {
+        const account = await service.findOne(["firstname", "Chris"], ["lastname", "Redfield"]);
+
+        assert.ok(account);
     });
 
     //TODO: add tests for account validator
