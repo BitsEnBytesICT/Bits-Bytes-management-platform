@@ -1,61 +1,38 @@
-import type IParticipant from "../../types/compontents/IParticipant";
-import type IParticipantsTable from "../../types/compontents/IParticipantsTable";
+import type ITable from "../../types/compontents/ITable";
+import type {ITableColumn} from "../../types/compontents/ITable";
 
-const columnLabels: Record<keyof IParticipant, string> = {
-    id: "ID",
-    firstname: "Naam",
-    lastname: "Achternaam",
-    organisation: "Organisatie",
-    account: "Account",
-    rfid: "RFID",
-    createdAt: "Aangemaakt",
-    active: "Status",
-    clockedin: "Ingeklokt",
-    product: "Plaats",
-};
-
-export default function DeelnemerTable({tableColumns, participants}: IParticipantsTable) {
-    function renderColumn(column: keyof IParticipant, row: IParticipant): React.ReactNode {
-        if (column === "active") {
-            const present = row.clockedin === 1;
-            return (
-                <div className={present ? "font-semibold text-(--color-green)" : "font-semibold text-(--color-red)"}>
-                    {present ? "Aanwezig" : "Afwezig"}
-                </div>
-            );
-        }
-
-        return <div>{String(row[column])}</div>;
-    }
-
-    function renderRow(row: IParticipant) {
+export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
+    function renderHeader(column: ITableColumn<T>) {
         return (
-            <div key={row.id} className="flex flex-row">
-                {tableColumns.map(col => (
-                    <div key={col} className="px-4 py-4 flex-1 text-sm font-semibold">
-                        {renderColumn(col, row)}
-                    </div>
-                ))}
-            </div>
+            <th key={String(column.key)} className="px-4 py-3 truncate font-medium text-(--color-darkblue)/50">
+                {column.label}
+            </th>
         );
     }
 
-    return (
-        <div className="pr-3 w-full">
-            <div className="flex flex-row text-(--color-darkblue)/50 rounded-lg bg-(--color-darkblue)/2">
-                {tableColumns.map(col => (
-                    <div key={col} className="px-4 py-3 flex-1 text-sm font-medium">
-                        {columnLabels[col]}
-                    </div>
-                ))}
-            </div>
+    function renderCell(column: ITableColumn<T>, row: T) {
+        const value = column.render ? column.render(row) : String(row[column.key as unknown as keyof T]);
 
-            <div
-                className="-mr-[0.30rem] overflow-y-scroll max-h-64 [&::-webkit-scrollbar]:w-[0.30rem]
-                    [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-(--color-black)/10
-                    [&::-webkit-scrollbar-track]:bg-transparent">
-                {participants.map(row => renderRow(row))}
-            </div>
+        return (
+            <td key={String(column.key)} className="px-4 py-4 truncate font-semibold">
+                {value}
+            </td>
+        );
+    }
+
+    function renderRow(row: T) {
+        return <tr key={String(row[rowKey])}>{columns.map(column => renderCell(column, row))}</tr>;
+    }
+
+    return (
+        <div className="relative overflow-auto h-full w-full">
+            <table className="table-fixed w-full text-left text-sm">
+                <thead>
+                    <tr className="sticky top-0 rounded-lg bg-(--color-lightwhite)">{columns.map(renderHeader)}</tr>
+                </thead>
+
+                <tbody>{rows.map(renderRow)}</tbody>
+            </table>
         </div>
     );
 }

@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 
 import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import Card from "../../common/components/Card";
-import ParticipantsTable from "../../common/components/ParticipantsTable";
+import Table from "../../common/components/Table";
 import FloorPlans from "../../common/components/FloorPlans";
 import Calendar from "../../common/components/Calendar";
 import SmallButton from "../../common/components/SmallButton";
@@ -10,8 +10,27 @@ import SmallButton from "../../common/components/SmallButton";
 import SupportDashboardService from "./SupportDashboard.service";
 
 import type IParticipant from "../../types/compontents/IParticipant";
+import type {ITableColumn} from "../../types/compontents/ITable";
 
 import {IconAddUser, IconExport, IconLink} from "../../assets";
+
+const participantColumns: ITableColumn<IParticipant>[] = [
+    {key: "firstname", label: "Naam"},
+    {key: "lastname", label: "Achternaam"},
+    {key: "organisation", label: "Organisatie"},
+    {
+        key: "active",
+        label: "Status",
+        render: row => {
+            const present = row.clockedin === 1;
+            return (
+                <div className={present ? "font-semibold text-(--color-green)" : "font-semibold text-(--color-red)"}>
+                    {present ? "Aanwezig" : "Afwezig"}
+                </div>
+            );
+        },
+    },
+];
 
 export default function SupportDashboard() {
     const [totalParticipants, setTotalParticipants] = useState(0);
@@ -78,10 +97,7 @@ export default function SupportDashboard() {
                         </div>
                     </div>
 
-                    <ParticipantsTable
-                        tableColumns={["firstname", "lastname", "organisation", "product", "active"]}
-                        participants={participants}
-                    />
+                    <Table columns={participantColumns} rows={participants} rowKey="id" />
                 </div>
 
                 <FloorPlans />

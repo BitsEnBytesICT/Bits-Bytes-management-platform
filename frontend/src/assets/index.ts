@@ -17,6 +17,10 @@ export {default as IconExport} from "./ui/icon-export.svg";
 export {default as IconLink} from "./ui/icon-link.svg";
 export {default as IconCalendar} from "./ui/icon-calendar.svg";
 export {default as IconProduct} from "./ui/icon-product.svg";
+export {default as IconEdit} from "./ui/icon-edit.svg";
+export {default as IconDelete} from "./ui/icon-delete.svg";
+export {default as IconInfo} from "./ui/icon-info.svg";
+export {default as IconFilter} from "./ui/icon-filter.svg";
 
 // logo
 export {default as LogoWhite} from "./logo/logo-white.svg";
