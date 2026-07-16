@@ -14,20 +14,22 @@ import type {ITableColumn} from "../../types/compontents/ITable";
 
 import {IconAddUser, IconExport, IconLink} from "../../assets";
 
+function getPresenceLabel(participant: IParticipant): "Aanwezig" | "Afwezig" {
+    return participant.clockedin === 1 ? "Aanwezig" : "Afwezig";
+}
+
 const participantColumns: ITableColumn<IParticipant>[] = [
     {key: "firstname", label: "Naam"},
     {key: "lastname", label: "Achternaam"},
     {key: "organisation", label: "Organisatie"},
     {
-        key: "active",
-        label: "Status",
+        key: "clockedin",
+        label: "Aanwezig",
         render: row => {
-            const present = row.clockedin === 1;
-            return (
-                <div className={present ? "font-semibold text-(--color-green)" : "font-semibold text-(--color-red)"}>
-                    {present ? "Aanwezig" : "Afwezig"}
-                </div>
-            );
+            const isPresent = row.clockedin === 1;
+            const presenceColor = isPresent ? "text-(--color-green)" : "text-(--color-red)";
+
+            return <div className={`font-semibold ${presenceColor}`}>{getPresenceLabel(row)}</div>;
         },
     },
 ];
