@@ -21,7 +21,7 @@ entity Participant {
     * active: boolean
     --
     clockedin: boolean
-    product: string
+    financing: string
 }
 
 entity Signatures {
