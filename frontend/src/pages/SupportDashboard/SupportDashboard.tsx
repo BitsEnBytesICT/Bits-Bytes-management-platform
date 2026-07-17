@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 
 import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import Card from "../../common/components/Card";
-import ParticipantsTable from "../../common/components/ParticipantsTable";
+import Table from "../../common/components/Table";
 import FloorPlans from "../../common/components/FloorPlans";
 import Calendar from "../../common/components/Calendar";
 import SmallButton from "../../common/components/SmallButton";
@@ -10,17 +10,34 @@ import SmallButton from "../../common/components/SmallButton";
 import SupportDashboardService from "./SupportDashboard.service";
 
 import type IParticipant from "../../types/compontents/IParticipant";
+import type {ITableColumn} from "../../types/compontents/ITable";
 
 import {IconAddUser, IconExport, IconLink} from "../../assets";
+
+const participantColumns: ITableColumn<IParticipant>[] = [
+    {key: "firstname", label: "Naam"},
+    {key: "lastname", label: "Achternaam"},
+    {key: "organisation", label: "Organisatie"},
+    {
+        key: "clockedin",
+        label: "Aanwezig",
+        render: row => {
+            const isPresent = row.clockedin === 1;
+            const presenceColor = isPresent ? "text-(--color-green)" : "text-(--color-red)";
+
+            return <div className={`font-semibold ${presenceColor}`}>{isPresent ? "Aanwezig" : "Afwezig"}</div>;
+        },
+    },
+];
 
 export default function SupportDashboard() {
     const [totalParticipants, setTotalParticipants] = useState(0);
     const [presentParticipants, setPresentParticipants] = useState(0);
     const [participants, setParticipants] = useState<IParticipant[]>([]);
 
-    const service: SupportDashboardService = new SupportDashboardService();
-
     useEffect(() => {
+        const service = new SupportDashboardService();
+
         const getData = async () => {
             await service.getTotalParticipants().then(setTotalParticipants);
             await service.getPresentParticipants().then(setPresentParticipants);
@@ -67,21 +84,18 @@ export default function SupportDashboard() {
                             <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconAddUser} />}
                                 label="Deelnemer toevoegen"
-                                onClick={() => console.log("must be a different action")}
+                                onClick={() => console.log("Deelnemer toevoegen")}
                             />
 
                             <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconExport} />}
                                 label="Exporteer"
-                                onClick={() => console.log("must be a different action")}
+                                onClick={() => console.log("Exporteer")}
                             />
                         </div>
                     </div>
 
-                    <ParticipantsTable
-                        tableColumns={["firstname", "lastname", "organisation", "financing", "active"]}
-                        participants={participants}
-                    />
+                    <Table columns={participantColumns} rows={participants} rowKey="id" />
                 </div>
 
                 <FloorPlans />

@@ -1,5 +1,6 @@
 import ParticipantDashboard from "../../pages/ParticipantDashboard/ParticipantDashboard";
 import SupportDashboard from "../../pages/SupportDashboard/SupportDashboard";
+import Participants from "../../pages/Participants/Participants";
 
 import type {INavigationItem} from "../../types/navigation/INavigation";
 
@@ -26,6 +27,7 @@ export const navigationItemsMenu: INavigationItem[] = [
         name: "Deelnemers",
         path: "/deelnemers",
         icon: IconParticipant,
+        page: <Participants />,
     },
     {
         name: "Handtekeningen",

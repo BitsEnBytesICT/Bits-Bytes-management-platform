@@ -10,7 +10,7 @@ export default class AuthController {
 
     login = async (req: Request, res: Response) => {
         const token = await this.service.login(req.body.username, req.body.password);
-        res.cookie('login', token, { path: '/', httpOnly: true, sameSite: "strict" });
+        res.cookie('login', token, { path: '/', httpOnly: true, sameSite: "strict", maxAge: 30 * 24 * 60 * 60 * 1000 });
         res.sendStatus(200);
     }
 
@@ -21,12 +21,12 @@ export default class AuthController {
 
     refresh = async (req: Request, res: Response) => {
         const token = await this.service.refresh(req.cookies["login"]);
-        res.cookie('login', token, { path: '/', httpOnly: true, sameSite: "strict" });
+        res.cookie('login', token, { path: '/', httpOnly: true, sameSite: "strict", maxAge: 30 * 24 * 60 * 60 * 1000 });
         res.sendStatus(200);
     }
 
     logout = async (req: Request, res: Response) => {
-        res.clearCookie('login', { path: '/', httpOnly: true, sameSite: "strict" });
+        res.clearCookie('login', { path: '/', httpOnly: true, sameSite: "strict", maxAge: 30 * 24 * 60 * 60 * 1000 });
         res.sendStatus(200);
     }
 }
