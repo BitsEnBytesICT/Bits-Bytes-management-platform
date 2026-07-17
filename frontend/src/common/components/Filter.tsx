@@ -1,28 +1,6 @@
 import type IFilter from "../../types/compontents/IFilter";
-import type {IFilterOption} from "../../types/compontents/IFilter";
 
 export default function Filter({filters, search}: IFilter) {
-    function renderFilter(filter: IFilterOption) {
-        return (
-            <label key={filter.label} className="flex flex-row gap-px items-center size-fit cursor-pointer">
-                <span className="size-fit text-(--color-darkblue)/50">{filter.label}:</span>
-
-                <select
-                    onChange={event => filter.onChange(event.target.value)}
-                    value={filter.value}
-                    className="w-12.5 truncate bg-transparent outline-none cursor-pointer">
-                    <option value="">Alle</option>
-
-                    {filter.options.map(option => (
-                        <option key={option} value={option}>
-                            {option}
-                        </option>
-                    ))}
-                </select>
-            </label>
-        );
-    }
-
     function resetFilters() {
         filters.forEach(filter => filter.onChange(""));
         search?.onChange("");
@@ -42,7 +20,24 @@ export default function Filter({filters, search}: IFilter) {
                 />
             )}
 
-            {filters.map(renderFilter)}
+            {filters.map(filter => (
+                <label key={filter.label} className="flex flex-row gap-px items-center size-fit cursor-pointer">
+                    <span className="size-fit text-(--color-darkblue)/50">{filter.label}:</span>
+
+                    <select
+                        onChange={event => filter.onChange(event.target.value)}
+                        value={filter.value}
+                        className="w-12.5 truncate bg-transparent outline-none cursor-pointer">
+                        <option value="">Alle</option>
+
+                        {filter.options.map(option => (
+                            <option key={option} value={option}>
+                                {option}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+            ))}
 
             <button onClick={resetFilters} className="ml-auto text-(--color-darkblue) cursor-pointer">
                 Reset

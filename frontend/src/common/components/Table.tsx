@@ -53,19 +53,6 @@ export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
         setTooltipKey(scrollWidth > clientWidth ? cellKey : null);
     }
 
-    function renderHeader(column: ITableColumn<T>) {
-        return (
-            <th
-                key={String(column.key)}
-                onClick={() => handleHeaderClick(column)}
-                className={`px-4 py-3 truncate font-medium text-(--color-darkblue)/50 ${
-                    column.sortable !== false ? "cursor-pointer select-none" : ""
-                }`}>
-                {column.label} {getSortIndicator(column)}
-            </th>
-        );
-    }
-
     function renderCell(column: ITableColumn<T>, row: T) {
         const value = String(row[column.key as unknown as keyof T]);
         const content = column.render ? column.render(row) : value;
@@ -100,18 +87,29 @@ export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
         );
     }
 
-    function renderRow(row: T) {
-        return <tr key={String(row[rowKey])}>{columns.map(column => renderCell(column, row))}</tr>;
-    }
-
     return (
         <div className="relative overflow-auto w-full h-full">
             <table className="table-fixed w-full text-left text-sm">
                 <thead>
-                    <tr className="sticky top-0 rounded-lg bg-(--color-lightwhite)">{columns.map(renderHeader)}</tr>
+                    <tr className="sticky top-0 rounded-lg bg-(--color-lightwhite)">
+                        {columns.map(column => (
+                            <th
+                                key={String(column.key)}
+                                onClick={() => handleHeaderClick(column)}
+                                className={`px-4 py-3 truncate font-medium text-(--color-darkblue)/50 ${
+                                    column.sortable !== false ? "cursor-pointer select-none" : ""
+                                }`}>
+                                {column.label} {getSortIndicator(column)}
+                            </th>
+                        ))}
+                    </tr>
                 </thead>
 
-                <tbody>{sortedRows.map(renderRow)}</tbody>
+                <tbody>
+                    {sortedRows.map(row => (
+                        <tr key={String(row[rowKey])}>{columns.map(column => renderCell(column, row))}</tr>
+                    ))}
+                </tbody>
             </table>
         </div>
     );
