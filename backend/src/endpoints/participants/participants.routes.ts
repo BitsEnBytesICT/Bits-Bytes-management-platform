@@ -15,6 +15,9 @@ class ParticipantRouter {
         this.router.get('/api/participants', this.controller.list.bind(this.controller));
         this.router.get('/api/participants/count', this.controller.count.bind(this.controller));
         this.router.get('/api/participants/count/present', this.controller.countPresent.bind(this.controller));
+        this.router.get('/api/participants/create', this.controller.create.bind(this.controller));
+        this.router.get('/api/participants/update', this.controller.update.bind(this.controller));
+        this.router.get('/api/participants/delete', this.controller.delete.bind(this.controller));
     }
 
     getRouter() {

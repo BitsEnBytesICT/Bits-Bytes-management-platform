@@ -9,15 +9,19 @@ export default class AccountDAO extends daoBase<IAccount> implements daoBaseType
     async findOne(...where: KeyValuePair<IAccount>[]): Promise<IAccount | undefined> {
         return await this.findOneFunc(Tables.Accounts, ...where);
     }
-    create(...args: any[]): void {
-        throw new Error("Method not implemented.");
+
+    async create(account: IAccount) {
+        await this.createFunc(Tables.Accounts, ...Object.entries(account) as KeyValuePair<IAccount>[]);
     }
+
     update(...args: any[]): void {
         throw new Error("Method not implemented.");
     }
+
     delete(...args: any[]): void {
         throw new Error("Method not implemented.");
     }
+
     async list(...args: any[]): Promise<IAccount[]> {
         return await dbAll('SELECT * FROM Accounts');
     }

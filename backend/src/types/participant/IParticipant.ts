@@ -8,5 +8,5 @@ export default interface IParticipant {
     createdAt: string;
     active: number;
     clockedin?: number;
-    product?: string;
+    financing?: string;
 }
