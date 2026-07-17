@@ -22,7 +22,7 @@ export default class AccountService implements serviceBase<IAccount> {
     async create(account: IAccount) {
         if (!account) throw {
             date: new Date(),
-            errorMSG: new Error("no account supplied"),
+            errorMSG: new Error("account is required"),
             code: ErrorCodes.InvalidData
         } satisfies IError
 
@@ -34,6 +34,7 @@ export default class AccountService implements serviceBase<IAccount> {
 
     update(...args: any[]): void {
         throw new Error("Method not implemented.");
+        //when updating an account. Check if this account is connected to a participant. If so the first and last name of that perticipant should also change
     }
 
     delete(...args: any[]): void {

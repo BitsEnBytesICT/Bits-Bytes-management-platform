@@ -1,16 +1,20 @@
 import serviceBase from "../../common/serviceBase";
 import { KeyValuePair, ValidatorTuple } from "../../common/Validator";
+import IAccount from "../../types/accounts/IAccount";
 import { ErrorCodes } from "../../types/error/ErrorCodes";
 import IError from "../../types/error/IError";
 import IParticipant from "../../types/participant/IParticipant";
 import { participantValidatorFunctors, partialParticipantValidator, ParticipantValidator } from "../../validators/participantValidator";
+import AccountService from "../accounts/accounts.service";
 import ParticipantDao from "./participants.dao";
 
 export default class ParticipantService implements serviceBase<IParticipant> {
     dao: ParticipantDao;
+    accountService: AccountService;
 
     constructor() {
         this.dao = new ParticipantDao();
+        this.accountService = new AccountService();
     }
 
     async findOne(...where: KeyValuePair<IParticipant>[]): Promise<IParticipant | undefined> {
@@ -20,7 +24,19 @@ export default class ParticipantService implements serviceBase<IParticipant> {
     async create(participant: IParticipant) {
         if (!participant) throw {
             date: new Date(),
-            errorMSG: new Error("no participant supplied"),
+            errorMSG: new Error("participant required"),
+            code: ErrorCodes.InvalidData
+        } satisfies IError
+
+        const account = await this.accountService.findOne(["id", participant.account]);
+        if (!account) throw {
+            date: new Date(),
+            errorMSG: new Error("account not found"),
+            code: ErrorCodes.InvalidData
+        } satisfies IError
+        else if (account.firstname !== participant.firstname || account.lastname !== participant.lastname) throw {
+            date: new Date(),
+            errorMSG: new Error("firstname or lastname of the account and participant do not match"),
             code: ErrorCodes.InvalidData
         } satisfies IError
 
@@ -33,9 +49,24 @@ export default class ParticipantService implements serviceBase<IParticipant> {
     async update(where: KeyValuePair<IParticipant>, ...values: KeyValuePair<IParticipant>[]) {
         if (!where || !values) throw {
             date: new Date(),
-            errorMSG: new Error("no values to update supplied or no where clause supplied"),
+            errorMSG: new Error("where clause and values are required"),
             code: ErrorCodes.InvalidData
         } satisfies IError
+
+        if (values.map((value) => value[0]).includes("account")) {
+            const participant = await this.findOne(where);
+            const account = await this.accountService.findOne(["id", values.find((value) => value[0] === "account")?.[1]]);
+            if (!account) throw {
+                date: new Date(),
+                errorMSG: new Error("account not found"),
+                code: ErrorCodes.InvalidData
+            } satisfies IError
+            else if (account.firstname !== participant?.firstname || account.lastname !== participant?.lastname) throw {
+                date: new Date(),
+                errorMSG: new Error("firstname or lastname of the account and participant do not match"),
+                code: ErrorCodes.InvalidData
+            } satisfies IError
+        }
 
         const validatorFunctors = values.map((item) => 
             [item[0], participantValidatorFunctors[item[0]][0], participantValidatorFunctors[item[0]][1]] as ValidatorTuple<IParticipant>);
