@@ -13,14 +13,6 @@ import type {ITableColumn} from "../../types/compontents/ITable";
 
 import {IconAddUser, IconDelete, IconEdit, IconExport, IconFilter, IconInfo} from "../../assets";
 
-function getActiveLabel(participant: IParticipant): "Actief" | "Inactief" {
-    return participant.active ? "Actief" : "Inactief";
-}
-
-function getPresenceLabel(participant: IParticipant): "Aanwezig" | "Afwezig" {
-    return participant.clockedin === 1 ? "Aanwezig" : "Afwezig";
-}
-
 function ActionIcons() {
     return (
         <div className="flex flex-row gap-[10%]">
@@ -50,7 +42,7 @@ const participantColumns: ITableColumn<IParticipant>[] = [
     {
         key: "active",
         label: "Actief",
-        render: getActiveLabel,
+        render: row => (row.active ? "Actief" : "Inactief"),
     },
     {key: "rfid", label: "RFID Tag"},
     {
@@ -60,7 +52,7 @@ const participantColumns: ITableColumn<IParticipant>[] = [
             const isPresent = row.clockedin === 1;
             const presenceColor = isPresent ? "text-(--color-green)" : "text-(--color-red)";
 
-            return <div className={`font-semibold ${presenceColor}`}>{getPresenceLabel(row)}</div>;
+            return <div className={`font-semibold ${presenceColor}`}>{isPresent ? "Aanwezig" : "Afwezig"}</div>;
         },
     },
     {key: "financing", label: "Financiering"},
@@ -78,6 +70,7 @@ export default function Participants() {
     const [isFilterShown, setIsFilterShown] = useState(false);
     const [filterHeight, setFilterHeight] = useState(0);
 
+    const [searchTerm, setSearchTerm] = useLocalStorage("participants.searchTerm", "");
     const [organisationFilter, setOrganisationFilter] = useLocalStorage("participants.organisationFilter", "");
     const [activeFilter, setActiveFilter] = useLocalStorage("participants.activeFilter", "");
     const [presentFilter, setPresentFilter] = useLocalStorage("participants.presentFilter", "");
@@ -99,12 +92,22 @@ export default function Participants() {
     const financingOptions = [...new Set(participants.map(participant => participant.financing).filter(Boolean))];
 
     function matchesFilters(participant: IParticipant): boolean {
+        const term = searchTerm.toLowerCase();
+
+        const matchesSearch =
+            !searchTerm ||
+            Object.values(participant).some(value =>
+                String(value ?? "")
+                    .toLowerCase()
+                    .includes(term),
+            );
         const matchesOrganisation = !organisationFilter || participant.organisation === organisationFilter;
-        const matchesActive = !activeFilter || getActiveLabel(participant) === activeFilter;
-        const matchesPresence = !presentFilter || getPresenceLabel(participant) === presentFilter;
+        const matchesActive = !activeFilter || (participant.active ? "Actief" : "Inactief") === activeFilter;
+        const matchesPresence =
+            !presentFilter || (participant.clockedin === 1 ? "Aanwezig" : "Afwezig") === presentFilter;
         const matchesFinancing = !financingFilter || participant.financing === financingFilter;
 
-        return matchesOrganisation && matchesActive && matchesPresence && matchesFinancing;
+        return matchesSearch && matchesOrganisation && matchesActive && matchesPresence && matchesFinancing;
     }
 
     const filteredParticipants = participants.filter(matchesFilters);
@@ -136,24 +139,12 @@ export default function Participants() {
         },
     ];
 
-    function handleFilterToggle() {
-        setIsFilterShown(prev => !prev);
-    }
-
-    function handleAddParticipant() {
-        console.log("must be a different action");
-    }
-
-    function handleExport() {
-        console.log("must be a different action");
-    }
-
     return (
         <div className="flex flex-col h-[calc(100vh-10rem)]">
             <div className="mb-4 flex flex-row justify-between">
                 <div className="flex flex-row gap-6">
                     <SmallButton
-                        onClick={handleFilterToggle}
+                        onClick={() => setIsFilterShown(prev => !prev)}
                         icon={<img src={IconFilter} className="select-none [-webkit-user-drag:none]" />}
                         label="Filter"
                         active={isFilterShown}
@@ -162,13 +153,13 @@ export default function Participants() {
 
                 <div className="flex flex-row gap-6">
                     <SmallButton
-                        onClick={handleAddParticipant}
+                        onClick={() => console.log("Deelnemer toevoegen")}
                         icon={<img src={IconAddUser} className="select-none [-webkit-user-drag:none]" />}
                         label="Deelnemer toevoegen"
                     />
 
                     <SmallButton
-                        onClick={handleExport}
+                        onClick={() => console.log("xporteer")}
                         icon={<img src={IconExport} className="select-none [-webkit-user-drag:none]" />}
                         label="Exporteer"
                     />
@@ -180,7 +171,14 @@ export default function Participants() {
                     duration-300 ease-in-out`}
                 style={{height: filterHeight}}>
                 <div ref={filterContentRef}>
-                    <Filter filters={filterGroups} />
+                    <Filter
+                        filters={filterGroups}
+                        search={{
+                            value: searchTerm,
+                            onChange: setSearchTerm,
+                            placeholder: "Zoek",
+                        }}
+                    />
                 </div>
             </div>
 

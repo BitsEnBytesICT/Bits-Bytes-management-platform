@@ -14,10 +14,6 @@ import type {ITableColumn} from "../../types/compontents/ITable";
 
 import {IconAddUser, IconExport, IconLink} from "../../assets";
 
-function getPresenceLabel(participant: IParticipant): "Aanwezig" | "Afwezig" {
-    return participant.clockedin === 1 ? "Aanwezig" : "Afwezig";
-}
-
 const participantColumns: ITableColumn<IParticipant>[] = [
     {key: "firstname", label: "Naam"},
     {key: "lastname", label: "Achternaam"},
@@ -29,7 +25,7 @@ const participantColumns: ITableColumn<IParticipant>[] = [
             const isPresent = row.clockedin === 1;
             const presenceColor = isPresent ? "text-(--color-green)" : "text-(--color-red)";
 
-            return <div className={`font-semibold ${presenceColor}`}>{getPresenceLabel(row)}</div>;
+            return <div className={`font-semibold ${presenceColor}`}>{isPresent ? "Aanwezig" : "Afwezig"}</div>;
         },
     },
 ];
@@ -39,9 +35,9 @@ export default function SupportDashboard() {
     const [presentParticipants, setPresentParticipants] = useState(0);
     const [participants, setParticipants] = useState<IParticipant[]>([]);
 
-    const service: SupportDashboardService = new SupportDashboardService();
-
     useEffect(() => {
+        const service = new SupportDashboardService();
+
         const getData = async () => {
             await service.getTotalParticipants().then(setTotalParticipants);
             await service.getPresentParticipants().then(setPresentParticipants);
@@ -88,13 +84,13 @@ export default function SupportDashboard() {
                             <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconAddUser} />}
                                 label="Deelnemer toevoegen"
-                                onClick={() => console.log("must be a different action")}
+                                onClick={() => console.log("Deelnemer toevoegen")}
                             />
 
                             <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconExport} />}
                                 label="Exporteer"
-                                onClick={() => console.log("must be a different action")}
+                                onClick={() => console.log("Exporteer")}
                             />
                         </div>
                     </div>

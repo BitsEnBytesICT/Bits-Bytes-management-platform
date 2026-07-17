@@ -21,13 +21,8 @@ export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
         return sortDirection === "asc" ? sorted : sorted.reverse();
     }, [rows, sortKey, sortDirection]);
 
-    function isTruncated(element: HTMLElement): boolean {
-        return element.scrollWidth > element.clientWidth;
-    }
-
     function getSortIndicator(column: ITableColumn<T>): string {
-        const isSorted = column.sortable !== false && sortKey === String(column.key);
-        if (!isSorted) return "";
+        if (column.sortable === false || sortKey !== String(column.key)) return "";
 
         return sortDirection === "asc" ? "^" : "⌄";
     }
@@ -36,9 +31,8 @@ export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
         if (column.sortable === false) return;
 
         const key = String(column.key);
-        const isSameColumn = sortKey === key;
 
-        if (!isSameColumn) {
+        if (sortKey !== key) {
             setSortKey(key);
             setSortDirection("asc");
             return;
@@ -54,27 +48,19 @@ export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
     }
 
     function handleCellMouseEnter(event: React.MouseEvent<HTMLDivElement>, cellKey: string) {
-        const truncated = isTruncated(event.currentTarget);
+        const {scrollWidth, clientWidth} = event.currentTarget;
 
-        setTooltipKey(truncated ? cellKey : null);
-    }
-
-    function handleCellMouseLeave() {
-        setTooltipKey(null);
-    }
-
-    function handleCellClick(event: React.MouseEvent<HTMLDivElement>) {
-        navigator.clipboard.writeText(event.currentTarget.textContent ?? "");
+        setTooltipKey(scrollWidth > clientWidth ? cellKey : null);
     }
 
     function renderHeader(column: ITableColumn<T>) {
-        const sortable = column.sortable !== false;
-        const headerClassName = `px-4 py-3 truncate font-medium text-(--color-darkblue)/50 ${
-            sortable ? "cursor-pointer select-none" : ""
-        }`;
-
         return (
-            <th key={String(column.key)} onClick={() => handleHeaderClick(column)} className={headerClassName}>
+            <th
+                key={String(column.key)}
+                onClick={() => handleHeaderClick(column)}
+                className={`px-4 py-3 truncate font-medium text-(--color-darkblue)/50 ${
+                    column.sortable !== false ? "cursor-pointer select-none" : ""
+                }`}>
                 {column.label} {getSortIndicator(column)}
             </th>
         );
@@ -84,9 +70,8 @@ export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
         const value = String(row[column.key as unknown as keyof T]);
         const content = column.render ? column.render(row) : value;
         const cellKey = `${String(row[rowKey])}-${String(column.key)}`;
-        const copyable = column.copyable !== false;
 
-        if (!copyable) {
+        if (column.copyable === false) {
             return (
                 <td key={String(column.key)} className="px-4 py-4 font-semibold">
                     {content}
@@ -98,8 +83,8 @@ export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
             <td key={String(column.key)} className="px-4 py-4 relative font-semibold">
                 <div
                     onMouseEnter={event => handleCellMouseEnter(event, cellKey)}
-                    onMouseLeave={handleCellMouseLeave}
-                    onClick={handleCellClick}
+                    onMouseLeave={() => setTooltipKey(null)}
+                    onClick={event => navigator.clipboard.writeText(event.currentTarget.textContent ?? "")}
                     className="truncate cursor-pointer">
                     {content}
                 </div>
