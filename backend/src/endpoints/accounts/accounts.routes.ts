@@ -13,6 +13,8 @@ class AccountRouter {
 
     initializeRoutes() {
         this.router.get('/api/account/current', this.controller.current.bind(this.controller));
+        this.router.get('/api/account/create', this.controller.create.bind(this.controller));
+        this.router.get('/api/account/findOne', this.controller.findOne.bind(this.controller));
     }
 
     getRouter() {

@@ -26,4 +26,22 @@ export default class ParticipantController {
         const participants = await this.service.list();
         res.json(participants);
     }
+
+    @AuthenticationDecorator("participant.create")
+    async create (req: Request, res: Response) {
+        await this.service.create(req.body.participant);
+        res.sendStatus(200);
+    }
+
+    @AuthenticationDecorator("participant.update")
+    async update (req: Request, res: Response) {
+        await this.service.update(req.body.where, ...req.body.values);
+        res.sendStatus(200);
+    }
+
+    @AuthenticationDecorator("participant.delete")
+    async delete (req: Request, res: Response) {
+        await this.service.delete(req.body.id);
+        res.sendStatus(200);
+    }
 }
