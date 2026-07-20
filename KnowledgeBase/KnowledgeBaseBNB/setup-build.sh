@@ -1,5 +1,15 @@
 #!/bin/bash
 
+command -v git >/dev/null 2>&1 || {
+    echo "Git is not installed."
+    exit 1
+}
+
+command -v cmake >/dev/null 2>&1 || {
+    echo "CMake is not installed."
+    exit 1
+}
+
 VCPKG_DIR="$HOME/vcpkg"
 
 if [ ! -d "$VCPKG_DIR" ]; then

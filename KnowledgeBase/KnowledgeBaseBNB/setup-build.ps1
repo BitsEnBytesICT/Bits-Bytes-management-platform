@@ -1,5 +1,15 @@
 $ErrorActionPreference = "Stop"
 
+if (!(Get-Command git -ErrorAction SilentlyContinue)) {
+    Write-Host "Installing Git..."
+    winget install --id Git.Git -e --source winget
+}
+
+if (!(Get-Command cmake -ErrorAction SilentlyContinue)) {
+    Write-Host "Installing CMake..."
+    winget install --id Kitware.CMake -e --source winget
+}
+
 $VCPKG_DIR = "$env:USERPROFILE\vcpkg"
 
 if (!(Test-Path $VCPKG_DIR)) {
