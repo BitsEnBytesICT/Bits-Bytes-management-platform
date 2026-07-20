@@ -3,4 +3,6 @@ export default interface IInput {
     placeholder: string;
     id: string;
     type: string;
+    value?: string;
+    readOnly?: boolean;
 }
