@@ -16,13 +16,9 @@ export default function AddParticipantPopUp({onClose}: IAddParticipantPopUp) {
             <Input label="Naam" placeholder="Naam" id="firstname" type="text" />
             <Input label="Achternaam" placeholder="Achternaam" id="lastname" type="text" />
             <Input label="Organisatie" placeholder="Organisatie" id="organisation" type="text" />
-        </div>,
-        <div className="grid grid-cols-2 gap-x-6 gap-y-4">
             <Input label="Actief" placeholder="Actief" id="active" type="text" />
             <Input label="RFID Tag" placeholder="RFID Tag" id="rfid" type="text" />
             <Input label="Aanwezig" placeholder="Aanwezig" id="clockedin" type="text" />
-        </div>,
-        <div className="grid grid-cols-2 gap-x-6 gap-y-4">
             <Input label="Financiering" placeholder="Financiering" id="financing" type="text" />
             <Input label="Plek" placeholder="Plek" id="location" type="text" />
         </div>,
