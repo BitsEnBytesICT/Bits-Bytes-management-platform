@@ -2,7 +2,8 @@ import {useState} from "react";
 
 import Table from "../../../common/components/Table";
 
-import ParticipantInfoPopUp from "./ParticipantInfoPopUp";
+import EditParticipantPopUp from "./EditParticipantPopUp";
+import InfoParticipantPopUp from "./InfoParticipantPopUp";
 
 import type IParticipant from "../../../types/compontents/IParticipant";
 import type {ITableColumn} from "../../../types/compontents/ITable";
@@ -13,7 +14,11 @@ interface IParticipantsTable {
     participants: IParticipant[];
 }
 
-function ActionIcons(participant: IParticipant, onInfoClick: (participant: IParticipant) => void) {
+function ActionIcons(
+    participant: IParticipant,
+    onInfoClick: (participant: IParticipant) => void,
+    onEditClick: (participant: IParticipant) => void,
+) {
     return (
         <div className="flex flex-row gap-[10%]">
             <img
@@ -22,7 +27,7 @@ function ActionIcons(participant: IParticipant, onInfoClick: (participant: IPart
                 className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
             />
             <img
-                onClick={() => {}}
+                onClick={() => onEditClick(participant)}
                 src={IconEdit}
                 className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
             />
@@ -37,6 +42,7 @@ function ActionIcons(participant: IParticipant, onInfoClick: (participant: IPart
 
 export default function ParticipantsTable({participants}: IParticipantsTable) {
     const [infoParticipant, setInfoParticipant] = useState<IParticipant | null>(null);
+    const [editParticipant, setEditParticipant] = useState<IParticipant | null>(null);
 
     const participantColumns: ITableColumn<IParticipant>[] = [
         {key: "firstname", label: "Naam"},
@@ -64,7 +70,7 @@ export default function ParticipantsTable({participants}: IParticipantsTable) {
             label: "Acties",
             copyable: false,
             sortable: false,
-            render: row => ActionIcons(row, setInfoParticipant),
+            render: row => ActionIcons(row, setInfoParticipant, setEditParticipant),
         },
     ];
 
@@ -73,7 +79,11 @@ export default function ParticipantsTable({participants}: IParticipantsTable) {
             <Table columns={participantColumns} rows={participants} rowKey="id" />
 
             {infoParticipant && (
-                <ParticipantInfoPopUp participant={infoParticipant} onClose={() => setInfoParticipant(null)} />
+                <InfoParticipantPopUp participant={infoParticipant} onClose={() => setInfoParticipant(null)} />
+            )}
+
+            {editParticipant && (
+                <EditParticipantPopUp participant={editParticipant} onClose={() => setEditParticipant(null)} />
             )}
         </div>
     );
