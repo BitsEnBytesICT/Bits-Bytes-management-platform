@@ -14,6 +14,12 @@ if ! command -v cmake >/dev/null 2>&1; then
     brew install cmake
 fi
 
+# Install pkg-config if missing (required by vcpkg to build zlib and others)
+if ! command -v pkg-config >/dev/null 2>&1; then
+    echo "Installing pkg-config..."
+    brew install pkg-config
+fi
+
 # Check Homebrew exists
 if ! command -v brew >/dev/null 2>&1; then
     echo "Homebrew is not installed."
