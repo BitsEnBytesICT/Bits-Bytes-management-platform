@@ -26,9 +26,12 @@ if (!(Test-Path "$VCPKG_DIR\vcpkg.exe")) {
     }
 }
 
-cmake -B build `
+cmake --fresh `
+    -B build `
     -S . `
     -DCMAKE_TOOLCHAIN_FILE="$VCPKG_DIR/scripts/buildsystems/vcpkg.cmake"
+
+cmake --build build --config Release
 
 if ($LASTEXITCODE -ne 0) {
     throw "CMake configuration failed."
