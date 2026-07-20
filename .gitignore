@@ -436,3 +436,4 @@ backend/.env.local
 /KnowledgeBase/KnowledgeBaseBNB/XMLFile1.xml
 /KnowledgeBase/KnowledgeBaseBNB/build
 /KnowledgeBase/KnowledgeBaseBNB/CMakeFiles
+/KnowledgeBase/KnowledgeBaseBNB/CMakeCache.txt
