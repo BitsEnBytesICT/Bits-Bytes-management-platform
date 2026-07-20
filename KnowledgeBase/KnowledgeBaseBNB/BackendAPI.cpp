@@ -1,8 +1,9 @@
-#include "drogon\drogon.h"
+#include "drogon/drogon.h"
 #include "BackendAPI.hpp"
 
 void BackendAPI::RunBackend()
 {
+    std::cout << "starting KnowledgeBase backend\n";
     /*drogon::app().registerHandler(
         "/",
         [](const drogon::HttpRequestPtr&,
