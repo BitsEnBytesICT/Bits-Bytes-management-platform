@@ -37,11 +37,19 @@ export default function MainBody({setIsOpen}) {
             }`}>
             <Routes>
                 {routes.map(route => {
-                    if (route.path === "/" && currentAccountType === PermissionsList.support) {
-                        return <Route path={route.path} element={route.page[0]} />;
-                    } else if (route.path === "/" && currentAccountType === PermissionsList.participant) {
-                        return <Route path={route.path} element={route.page[1]} />;
-                    } else if (currentAccountType) return <Route path={route.path} element={route.page} />;
+                    if (route.path === "/") {
+                        if (currentAccountType === PermissionsList.support) {
+                            return <Route path={route.path} element={route.page[0]} />;
+                        }
+
+                        if (currentAccountType === PermissionsList.participant) {
+                            return <Route path={route.path} element={route.page[1]} />;
+                        }
+
+                        return null;
+                    }
+
+                    if (currentAccountType) return <Route path={route.path} element={route.page} />;
                 })}
                 <Route path="/login" element={<Login setCurrentAccountType={setCurrentAccountType} />} />
             </Routes>
