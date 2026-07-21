@@ -33,13 +33,7 @@ export default function EditParticipantPopUp({participant, onClose}: IEditPartic
                     type="text"
                     value={participant.organisation}
                 />
-                <Input
-                    label="Actief"
-                    placeholder="Actief"
-                    id="active"
-                    type="text"
-                    value={participant.active ? "Actief" : "Inactief"}
-                />
+                <Input label="Actief" id="active" type="checkbox" checked={Boolean(participant.active)} />
                 <Input label="RFID Tag" placeholder="RFID Tag" id="rfid" type="text" value={participant.rfid} />
                 <Input
                     label="Aanwezig"

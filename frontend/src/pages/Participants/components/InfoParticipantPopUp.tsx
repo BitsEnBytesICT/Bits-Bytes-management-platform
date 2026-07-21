@@ -37,14 +37,7 @@ export default function InfoParticipantPopUp({participant, onClose}: IInfoPartic
                     value={participant.organisation}
                     readOnly
                 />
-                <Input
-                    label="Actief"
-                    placeholder="Actief"
-                    id="active"
-                    type="text"
-                    value={participant.active ? "Actief" : "Inactief"}
-                    readOnly
-                />
+                <Input label="Actief" id="active" type="checkbox" checked={Boolean(participant.active)} readOnly />
                 <Input
                     label="RFID Tag"
                     placeholder="RFID Tag"
