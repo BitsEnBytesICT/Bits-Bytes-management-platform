@@ -25,21 +25,21 @@ export default function Navigation({isOpen, setIsOpen}) {
     };
 
     const navMenuItem = (item: INavigationItem) => (
-        <div key={item.path} className="flex items-center gap-2.5 cursor-pointer">
+        <div key={item.path} className="flex gap-2.5 items-center cursor-pointer">
             <img src={item.icon} className="shrink-0 h-fit w-fit select-none [-webkit-user-drag:none]" />
 
             {item.path === "/logout" ? (
                 <div
                     onClick={logout}
-                    className="text-(--color-offwhite) hover:text-(--color-orange) transition-colors duration-300 ease">
+                    className="text-(--color-offwhite) transition-colors duration-300 ease hover:text-(--color-orange)">
                     {item.name}
                 </div>
             ) : (
                 <NavLink
                     to={item.path}
                     className={({isActive}) =>
-                        `${isActive ? "text-(--color-orange)" : "text-(--color-offwhite)"} hover:text-(--color-orange)
-                            transition-colors duration-300 ease`
+                        `${isActive ? "text-(--color-orange)" : "text-(--color-offwhite)"} transition-colors
+                            duration-300 ease hover:text-(--color-orange)`
                     }>
                     {item.name}
                 </NavLink>

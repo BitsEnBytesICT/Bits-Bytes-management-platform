@@ -11,7 +11,7 @@ import "./index.css";
 
 function Mobile() {
     return (
-        <div className="p-8 flex flex-col items-center justify-center gap-8 h-screen text-center bg-(--color-offwhite)">
+        <div className="p-8 flex flex-col gap-8 items-center justify-center h-screen text-center bg-(--color-offwhite)">
             <img
                 alt="Bits & Bytes"
                 src={LogoDefault}

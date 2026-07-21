@@ -1,5 +1,6 @@
 import {useState} from "react";
 
+import SmallPopUp from "../../../common/components/SmallPopUp";
 import Table from "../../../common/components/Table";
 
 import EditParticipantPopUp from "./EditParticipantPopUp";
@@ -18,6 +19,7 @@ function ActionIcons(
     participant: IParticipant,
     onInfoClick: (participant: IParticipant) => void,
     onEditClick: (participant: IParticipant) => void,
+    onDeleteClick: (participant: IParticipant) => void,
 ) {
     return (
         <div className="flex flex-row gap-[10%]">
@@ -32,7 +34,7 @@ function ActionIcons(
                 className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
             />
             <img
-                onClick={() => {}}
+                onClick={() => onDeleteClick(participant)}
                 src={IconDelete}
                 className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
             />
@@ -43,6 +45,7 @@ function ActionIcons(
 export default function ParticipantsTable({participants}: IParticipantsTable) {
     const [infoParticipant, setInfoParticipant] = useState<IParticipant | null>(null);
     const [editParticipant, setEditParticipant] = useState<IParticipant | null>(null);
+    const [deleteParticipant, setDeleteParticipant] = useState<IParticipant | null>(null);
 
     const participantColumns: ITableColumn<IParticipant>[] = [
         {key: "firstname", label: "Naam"},
@@ -70,7 +73,7 @@ export default function ParticipantsTable({participants}: IParticipantsTable) {
             label: "Acties",
             copyable: false,
             sortable: false,
-            render: row => ActionIcons(row, setInfoParticipant, setEditParticipant),
+            render: row => ActionIcons(row, setInfoParticipant, setEditParticipant, setDeleteParticipant),
         },
     ];
 
@@ -84,6 +87,17 @@ export default function ParticipantsTable({participants}: IParticipantsTable) {
 
             {editParticipant && (
                 <EditParticipantPopUp participant={editParticipant} onClose={() => setEditParticipant(null)} />
+            )}
+
+            {deleteParticipant && (
+                <SmallPopUp
+                    title="Verwijderen"
+                    message="Weet je dit zeker?"
+                    onCancel={() => setDeleteParticipant(null)}
+                    onConfirm={() => {
+                        setDeleteParticipant(null);
+                    }}
+                />
             )}
         </div>
     );

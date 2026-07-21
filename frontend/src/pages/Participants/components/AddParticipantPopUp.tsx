@@ -17,6 +17,8 @@ export default function AddParticipantPopUp({onClose}: IAddParticipantPopUp) {
             <Input label="Achternaam" placeholder="Achternaam" id="lastname" type="text" />
             <Input label="Organisatie" placeholder="Organisatie" id="organisation" type="text" />
             <Input label="Actief" placeholder="Actief" id="active" type="text" />
+        </div>,
+        <div className="grid grid-cols-2 gap-x-6 gap-y-4">
             <Input label="RFID Tag" placeholder="RFID Tag" id="rfid" type="text" />
             <Input label="Aanwezig" placeholder="Aanwezig" id="clockedin" type="text" />
             <Input label="Financiering" placeholder="Financiering" id="financing" type="text" />
@@ -45,13 +47,11 @@ export default function AddParticipantPopUp({onClose}: IAddParticipantPopUp) {
         <PopUp onClose={close} title="Deelnemer Toevoegen">
             {steps[step]}
 
-            <div className="flex flex-row items-center gap-4">
+            <div className="flex flex-row gap-4 items-center">
                 {step > 0 && (
-                    <button
-                        onClick={() => setStep(current => current - 1)}
-                        className="text-(--color-darkblue) cursor-pointer">
-                        Vorige
-                    </button>
+                    <div className="flex-1">
+                        <Button onClick={() => setStep(current => current - 1)}>Vorige</Button>
+                    </div>
                 )}
 
                 <div className="flex-1">
