@@ -3,8 +3,7 @@ import {useState} from "react";
 import SmallPopUp from "../../../common/components/SmallPopUp";
 import Table from "../../../common/components/Table";
 
-import EditParticipantPopUp from "./EditParticipantPopUp";
-import InfoParticipantPopUp from "./InfoParticipantPopUp";
+import ParticipantPopUp from "./ParticipantPopUp";
 
 import type IParticipant from "../../../types/compontents/IParticipant";
 import type {ITableColumn} from "../../../types/compontents/ITable";
@@ -82,17 +81,17 @@ export default function ParticipantsTable({participants}: IParticipantsTable) {
             <Table columns={participantColumns} rows={participants} rowKey="id" />
 
             {infoParticipant && (
-                <InfoParticipantPopUp participant={infoParticipant} onClose={() => setInfoParticipant(null)} />
+                <ParticipantPopUp mode="info" participant={infoParticipant} onClose={() => setInfoParticipant(null)} />
             )}
 
             {editParticipant && (
-                <EditParticipantPopUp participant={editParticipant} onClose={() => setEditParticipant(null)} />
+                <ParticipantPopUp mode="edit" participant={editParticipant} onClose={() => setEditParticipant(null)} />
             )}
 
             {deleteParticipant && (
                 <SmallPopUp
                     title="Verwijderen"
-                    message="Weet je dit zeker?"
+                    message="Weet je zeker dat je dit wil verwijderen?"
                     onCancel={() => setDeleteParticipant(null)}
                     onConfirm={() => {
                         setDeleteParticipant(null);

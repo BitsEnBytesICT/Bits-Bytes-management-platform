@@ -2,7 +2,7 @@ import type IPopUp from "../../types/compontents/IPopUp";
 
 import {IconClose} from "../../assets";
 
-export default function PopUp({onClose, title, children}: IPopUp) {
+export default function PopUp({onClose, title, child}: IPopUp) {
     return (
         <div className="flex items-center justify-center fixed inset-0 z-50 bg-(--color-black)/50">
             <div
@@ -17,7 +17,7 @@ export default function PopUp({onClose, title, children}: IPopUp) {
 
                 {title && <div className="text-[20px] font-extrabold text-center text-(--color-darkblue)">{title}</div>}
 
-                {children}
+                {child}
             </div>
         </div>
     );

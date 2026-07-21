@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 
 import SmallButton from "../../common/components/SmallButton";
 
-import AddParticipantPopUp from "./components/AddParticipantPopUp";
+import ParticipantPopUp from "./components/ParticipantPopUp";
 import ParticipantsFilter from "./components/ParticipantsFilter";
 import ParticipantsTable from "./components/ParticipantsTable";
 
@@ -54,7 +54,7 @@ export default function Participants() {
                 {filteredParticipants => <ParticipantsTable participants={filteredParticipants} />}
             </ParticipantsFilter>
 
-            {isAddParticipantShown && <AddParticipantPopUp onClose={() => setIsAddParticipantShown(false)} />}
+            {isAddParticipantShown && <ParticipantPopUp mode="add" onClose={() => setIsAddParticipantShown(false)} />}
         </div>
     );
 }

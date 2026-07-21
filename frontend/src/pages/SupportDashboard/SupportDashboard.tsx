@@ -8,6 +8,8 @@ import SmallButton from "../../common/components/SmallButton";
 
 import SupportDashboardTable from "./components/SupportDashboardTable";
 
+import ParticipantPopUp from "../Participants/components/ParticipantPopUp";
+
 import SupportDashboardService from "./SupportDashboard.service";
 
 import type IParticipant from "../../types/compontents/IParticipant";
@@ -18,6 +20,7 @@ export default function SupportDashboard() {
     const [totalParticipants, setTotalParticipants] = useState(0);
     const [presentParticipants, setPresentParticipants] = useState(0);
     const [participants, setParticipants] = useState<IParticipant[]>([]);
+    const [isAddParticipantShown, setIsAddParticipantShown] = useState(false);
 
     useEffect(() => {
         const service = new SupportDashboardService();
@@ -68,7 +71,7 @@ export default function SupportDashboard() {
                             <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconAddUser} />}
                                 label="Deelnemer toevoegen"
-                                onClick={() => console.log("Deelnemer toevoegen")}
+                                onClick={() => setIsAddParticipantShown(true)}
                             />
 
                             <SmallButton
@@ -86,6 +89,8 @@ export default function SupportDashboard() {
 
                 <Calendar />
             </div>
+
+            {isAddParticipantShown && <ParticipantPopUp mode="add" onClose={() => setIsAddParticipantShown(false)} />}
         </>
     );
 }
