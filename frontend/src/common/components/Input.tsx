@@ -12,11 +12,9 @@ const Input = forwardRef<HTMLInputElement, IInput>(({label, placeholder, id, typ
             )}
 
             <input
-                className={`px-5 py-3 text-[16px] text-(--color-offblack) bg-(--color-offwhite) outline-none
-                    rounded-xl shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
-                    transition-colors focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)] ${
-                        readOnly ? "cursor-default" : ""
-                    }`}
+                className={`px-5 py-3 text-[16px] text-(--color-offblack) bg-(--color-offwhite) outline-none rounded-xl
+                    shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)] transition-colors
+                    focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)] ${readOnly ? "cursor-default" : ""}`}
                 id={id}
                 placeholder={placeholder}
                 defaultValue={value}
