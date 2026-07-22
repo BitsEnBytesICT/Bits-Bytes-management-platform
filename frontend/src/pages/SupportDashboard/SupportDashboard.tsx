@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import {usePDF} from "react-to-pdf";
 
 import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import Card from "../../common/components/Card";
@@ -21,6 +22,8 @@ export default function SupportDashboard() {
     const [presentParticipants, setPresentParticipants] = useState(0);
     const [participants, setParticipants] = useState<IParticipant[]>([]);
     const [isAddParticipantShown, setIsAddParticipantShown] = useState(false);
+
+    const {toPDF, targetRef} = usePDF({filename: "participants.pdf"});
 
     useEffect(() => {
         const service = new SupportDashboardService();
@@ -45,7 +48,7 @@ export default function SupportDashboard() {
                     </div>
 
                     <div className="flex flex-row gap-8 min-[1000px]:gap-16">
-                        <Card title="Deelnemers aanwezig:" value={presentParticipants} />
+                        <Card title="Deelnemers aanwezig:" value={presentParticipants} ref={targetRef} />
 
                         <Card title="Deelnemers totaal:" value={totalParticipants} />
                     </div>
@@ -77,7 +80,9 @@ export default function SupportDashboard() {
                             <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconExport} />}
                                 label="Exporteer"
-                                onClick={() => console.log("Exporteer")}
+                                onClick={() => {
+                                    toPDF();
+                                }}
                             />
                         </div>
                     </div>
