@@ -9,9 +9,11 @@ import type IParticipant from "../../../types/compontents/IParticipant";
 import type {ITableColumn} from "../../../types/compontents/ITable";
 
 import {IconDelete, IconEdit, IconInfo} from "../../../assets";
+import ParticipantsService from "../Participants.service";
 
 interface IParticipantsTable {
     participants: IParticipant[];
+    setParticipants: (value: IParticipant[]) => void;
 }
 
 function ActionIcons(
@@ -41,10 +43,12 @@ function ActionIcons(
     );
 }
 
-export default function ParticipantsTable({participants}: IParticipantsTable) {
+export default function ParticipantsTable({participants, setParticipants}: IParticipantsTable) {
     const [infoParticipant, setInfoParticipant] = useState<IParticipant | null>(null);
     const [editParticipant, setEditParticipant] = useState<IParticipant | null>(null);
     const [deleteParticipant, setDeleteParticipant] = useState<IParticipant | null>(null);
+
+    const service: ParticipantsService = new ParticipantsService();
 
     const participantColumns: ITableColumn<IParticipant>[] = [
         {key: "firstname", label: "Naam"},
@@ -85,7 +89,12 @@ export default function ParticipantsTable({participants}: IParticipantsTable) {
             )}
 
             {editParticipant && (
-                <ParticipantPopUp mode="edit" participant={editParticipant} onClose={() => setEditParticipant(null)} />
+                <ParticipantPopUp
+                    mode="edit"
+                    participant={editParticipant}
+                    setParticipants={setParticipants}
+                    onClose={() => setEditParticipant(null)}
+                />
             )}
 
             {deleteParticipant && (
@@ -93,8 +102,14 @@ export default function ParticipantsTable({participants}: IParticipantsTable) {
                     title="Verwijderen"
                     message={`Weet je zeker dat je ${deleteParticipant.firstname} ${deleteParticipant.lastname} wil verwijderen?`}
                     onCancel={() => setDeleteParticipant(null)}
-                    onConfirm={() => {
+                    onConfirm={async () => {
+                        const account = await service.findAccount(
+                            ["firstname", deleteParticipant.firstname],
+                            ["lastname", deleteParticipant.lastname],
+                        );
+                        await service.deleteAccount(account.id);
                         setDeleteParticipant(null);
+                        setParticipants(await service.getParticipants());
                     }}
                 />
             )}

@@ -28,18 +28,14 @@ export default class ParticipantService implements serviceBase<IParticipant> {
             code: ErrorCodes.InvalidData
         } satisfies IError
 
-        const account = await this.accountService.findOne(["id", participant.account]);
+        const account = await this.accountService.findOne(["firstname", participant.firstname], ["lastname", participant.lastname]);
         if (!account) throw {
             date: new Date(),
             errorMSG: new Error("account not found"),
             code: ErrorCodes.InvalidData
         } satisfies IError
-        else if (account.firstname !== participant.firstname || account.lastname !== participant.lastname) throw {
-            date: new Date(),
-            errorMSG: new Error("firstname or lastname of the account and participant do not match"),
-            code: ErrorCodes.InvalidData
-        } satisfies IError
 
+        if (account.id) participant.account = account.id;
         const errors = ParticipantValidator(participant).filter((result) => result.kind === "error").map((r) => r.errorMSG);
         if (errors && errors.length > 0) throw errors;
 

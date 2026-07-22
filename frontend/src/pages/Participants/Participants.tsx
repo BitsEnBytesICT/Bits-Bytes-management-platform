@@ -51,10 +51,18 @@ export default function Participants() {
             </div>
 
             <ParticipantsFilter participants={participants} isShown={isFilterShown}>
-                {filteredParticipants => <ParticipantsTable participants={filteredParticipants} />}
+                {filteredParticipants => (
+                    <ParticipantsTable participants={filteredParticipants} setParticipants={setParticipants} />
+                )}
             </ParticipantsFilter>
 
-            {isAddParticipantShown && <ParticipantPopUp mode="add" onClose={() => setIsAddParticipantShown(false)} />}
+            {isAddParticipantShown && (
+                <ParticipantPopUp
+                    mode="add"
+                    setParticipants={setParticipants}
+                    onClose={() => setIsAddParticipantShown(false)}
+                />
+            )}
         </div>
     );
 }

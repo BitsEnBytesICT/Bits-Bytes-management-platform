@@ -5,14 +5,18 @@ import IAccount from "../../types/accounts/IAccount";
 import { ErrorCodes } from "../../types/error/ErrorCodes";
 import IError from "../../types/error/IError";
 import { AccountValidator } from "../../validators/accountValidator";
+import ParticipantDao from "../participants/participants.dao";
+import ParticipantService from "../participants/participants.service";
 import AccountDAO from "./accounts.dao";
 import jwt from "jsonwebtoken";
 
 export default class AccountService implements serviceBase<IAccount> {
     dao: AccountDAO;
+    participantDAO: ParticipantDao;
 
     constructor() {
         this.dao = new AccountDAO();
+        this.participantDAO = new ParticipantDao();
     }
 
     async findOne(...where: KeyValuePair<IAccount>[]): Promise<IAccount | undefined> {
@@ -37,8 +41,10 @@ export default class AccountService implements serviceBase<IAccount> {
         //when updating an account. Check if this account is connected to a participant. If so the first and last name of that perticipant should also change
     }
 
-    delete(...args: any[]): void {
-        throw new Error("Method not implemented.");
+    async delete(id: number) {
+        const participant = await this.participantDAO.findOne(["account", id]);
+        if (participant?.id) await this.participantDAO.delete(["id", participant.id]);
+        await this.dao.delete(["id", id]);
     }
 
     async list(): Promise<IAccount[]> {

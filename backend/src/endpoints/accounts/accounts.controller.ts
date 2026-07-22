@@ -23,7 +23,13 @@ export default class AccountController {
 
     @AuthenticationDecorator("account.list")
     async findOne (req: Request, res: Response) {
-        const account = await this.service.findOne(req.body.where);
+        const account = await this.service.findOne(...req.body.where);
         res.status(200).json(account);
+    }
+
+    @AuthenticationDecorator("account.delete")
+    async delete (req: Request, res: Response) {
+        await this.service.delete(req.body.id);
+        res.sendStatus(200);
     }
 }
