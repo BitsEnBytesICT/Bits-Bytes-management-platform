@@ -84,10 +84,10 @@ export default function Login({setCurrentAccountType}) {
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div
-                className="py-12.5 px-10 flex flex-col w-full max-w-110 rounded-4xl bg-(--color-white)
+                className="py-12.5 px-10 flex flex-col w-full max-w-110 bg-(--color-white) rounded-4xl
                     shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent),0_10px_15px_-3px_rgb(0_0_0/0.1),0_4px_6px_-4px_rgb(0_0_0/0.1)]
                     animate-[fade-in_0.3s_ease-in-out] transition-all duration-400">
-                <div className="mb-15 flex flex-col items-center gap-3">
+                <div className="mb-15 flex flex-col gap-3 items-center">
                     <h1 className="text-[32px] font-bold text-(--color-darkblue)">Welkom terug</h1>
 
                     <p className="text-[18px] font-medium text-(--color-orange)">Log in op je dashboard</p>

@@ -8,15 +8,16 @@ export default function Filter({filters, search}: IFilter) {
 
     return (
         <div
-            className="py-2 px-4 flex flex-row gap-5 w-full text-[14px] font-semibold text-(--color-darkblue) rounded-lg
-                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)] bg-(--color-white)">
+            className="py-2 px-4 flex flex-row gap-5 w-full text-[14px] font-semibold text-(--color-darkblue)
+                bg-(--color-white) rounded-lg
+                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
             {search && (
                 <input
                     type="text"
                     value={search.value}
                     onChange={event => search.onChange(event.target.value)}
                     placeholder={search.placeholder ?? "Zoek"}
-                    className="flex-1 min-w-0 bg-transparent outline-none placeholder:text-(--color-darkblue)/50"
+                    className="flex-1 min-w-0 placeholder:text-(--color-darkblue)/50 bg-transparent outline-none"
                 />
             )}
 

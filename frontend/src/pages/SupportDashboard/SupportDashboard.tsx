@@ -2,38 +2,25 @@ import {useEffect, useState} from "react";
 
 import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import Card from "../../common/components/Card";
-import Table from "../../common/components/Table";
 import FloorPlans from "../../common/components/FloorPlans";
 import Calendar from "../../common/components/Calendar";
 import SmallButton from "../../common/components/SmallButton";
 
+import SupportDashboardTable from "./components/SupportDashboardTable";
+
+import ParticipantPopUp from "../Participants/components/ParticipantPopUp";
+
 import SupportDashboardService from "./SupportDashboard.service";
 
 import type IParticipant from "../../types/compontents/IParticipant";
-import type {ITableColumn} from "../../types/compontents/ITable";
 
 import {IconAddUser, IconExport, IconLink} from "../../assets";
-
-const participantColumns: ITableColumn<IParticipant>[] = [
-    {key: "firstname", label: "Naam"},
-    {key: "lastname", label: "Achternaam"},
-    {key: "organisation", label: "Organisatie"},
-    {
-        key: "clockedin",
-        label: "Aanwezig",
-        render: row => {
-            const isPresent = row.clockedin === 1;
-            const presenceColor = isPresent ? "text-(--color-green)" : "text-(--color-red)";
-
-            return <div className={`font-semibold ${presenceColor}`}>{isPresent ? "Aanwezig" : "Afwezig"}</div>;
-        },
-    },
-];
 
 export default function SupportDashboard() {
     const [totalParticipants, setTotalParticipants] = useState(0);
     const [presentParticipants, setPresentParticipants] = useState(0);
     const [participants, setParticipants] = useState<IParticipant[]>([]);
+    const [isAddParticipantShown, setIsAddParticipantShown] = useState(false);
 
     useEffect(() => {
         const service = new SupportDashboardService();
@@ -84,7 +71,7 @@ export default function SupportDashboard() {
                             <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconAddUser} />}
                                 label="Deelnemer toevoegen"
-                                onClick={() => console.log("Deelnemer toevoegen")}
+                                onClick={() => setIsAddParticipantShown(true)}
                             />
 
                             <SmallButton
@@ -95,13 +82,15 @@ export default function SupportDashboard() {
                         </div>
                     </div>
 
-                    <Table columns={participantColumns} rows={participants} rowKey="id" />
+                    <SupportDashboardTable participants={participants} />
                 </div>
 
                 <FloorPlans />
 
                 <Calendar />
             </div>
+
+            {isAddParticipantShown && <ParticipantPopUp mode="add" onClose={() => setIsAddParticipantShown(false)} />}
         </>
     );
 }
