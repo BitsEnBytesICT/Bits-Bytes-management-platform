@@ -428,3 +428,8 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+/backend/dist
+/backend/.env.local
+/KnowledgeBase/KnowledgeBaseBNB/CMakeCache.txt
+/KnowledgeBase/KnowledgeBaseBNB/XMLFile.xml
+/KnowledgeBase/KnowledgeBaseBNB/XMLFile1.xml

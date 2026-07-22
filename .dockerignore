@@ -3,6 +3,11 @@
 **/.vite
 .git
 .gitignore
-docker-compose.yml
+compose.yaml
 deployment.yaml
 dockerfile
+./KnowledgeBase/KnowledgeBaseBNB/uploads
+./KnowledgeBase/KnowledgeBaseBNB/x64
+**/*.vcxproj
+**/*.vcxproj.filters
+**/*.vcxproj.user

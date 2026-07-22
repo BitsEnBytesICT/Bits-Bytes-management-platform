@@ -53,6 +53,28 @@ services:
     networks:
       default:
         ipv4_address: 100.0.200.100
+  knowledgebase:
+    mem_limit: 512m
+    memswap_limit: 512m
+    container_name: knowledgebase
+    command: |
+      sh -c "
+        set -e 
+         ( cd /user/src/KnowledgeBase && cmake --build build --config Release && ./build/KnowledgeBase ) &
+         wait
+        "
+    volumes:
+      - ./KnowledgeBase/KnowledgeBaseBNB:/usr/src/KnowledgeBase:cached
+    build:
+      context: .
+      target: knowledgebase
+    ports:
+      - 8080:8080
+    expose:
+      - 8080
+    networks:
+      default:
+        ipv4_address: 100.0.200.102
         
 volumes:
     bitsenbytesfrontend_node_modules:
