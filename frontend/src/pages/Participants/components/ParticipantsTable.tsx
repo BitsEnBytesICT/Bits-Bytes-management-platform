@@ -91,7 +91,7 @@ export default function ParticipantsTable({participants}: IParticipantsTable) {
             {deleteParticipant && (
                 <SmallPopUp
                     title="Verwijderen"
-                    message="Weet je zeker dat je dit wil verwijderen?"
+                    message={`Weet je zeker dat je ${deleteParticipant.firstname} ${deleteParticipant.lastname} wil verwijderen?`}
                     onCancel={() => setDeleteParticipant(null)}
                     onConfirm={() => {
                         setDeleteParticipant(null);
