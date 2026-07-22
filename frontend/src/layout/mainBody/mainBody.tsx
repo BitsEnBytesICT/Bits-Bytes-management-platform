@@ -1,22 +1,49 @@
-import {Routes, Route} from "react-router-dom";
-import {navigationItemsAccount, navigationItemsBeheer, navigationItemsMenu} from "../navigation/navigation.config";
+import {Routes, Route, useLocation, useNavigate} from "react-router-dom";
 
-export default function MainBody({isOpen, setIsOpen}) {
-    const routes = navigationItemsMenu.concat(navigationItemsBeheer).concat(navigationItemsAccount);
+import {navigationItemsMenu, navigationItemsIT, navigationItemsAccount} from "../navigation/Navigation.config";
+import Login from "../../pages/Login/Login";
+import {useEffect, useState} from "react";
+import {PermissionsList} from "../../types/accounts/accountTypes";
+import http from "../../common/http";
+import type IAccount from "../../types/accounts/IAccount";
 
-    const currentAccountType: string = "zorg"; //dit is als test totdat we een login hebben!
+export default function MainBody({setIsOpen}) {
+    const [currentAccountType, setCurrentAccountType] = useState<PermissionsList>();
+    const routes = navigationItemsMenu.concat(navigationItemsIT).concat(navigationItemsAccount);
+
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const isVerified = async () => {
+            if ((await http("/api/verify", "POST")).status !== 200) {
+                navigate("/login");
+                return;
+            } else {
+                const account: IAccount = await (await http("/api/account/current", "GET")).json();
+                setCurrentAccountType(account.type);
+            }
+        };
+
+        isVerified();
+    }, []);
+
     return (
         <div
+            key={location.pathname}
             onClick={() => setIsOpen(false)}
-            className={`absolute top-1/2 left-1/2 z-0 h-[95vh] w-[85vw] -translate-x-1/2 -translate-y-1/2 rounded-xl transition-all duration-400`}>
+            className={`mx-auto w-[80vw] max-w-350 z-0 animate-[fade-in_0.3s_ease-in-out] transition-all duration-400 ${
+                location.pathname === "/login" ? "h-screen overflow-hidden" : "my-20"
+            }`}>
             <Routes>
                 {routes.map(route => {
-                    if (route.path === "/" && currentAccountType === "zorg") {
+                    if (route.path === "/" && currentAccountType === PermissionsList.support) {
                         return <Route path={route.path} element={route.page[0]} />;
-                    } else if (route.path === "/" && currentAccountType === "deelnemer") {
+                    } else if (route.path === "/" && currentAccountType === PermissionsList.participant) {
                         return <Route path={route.path} element={route.page[1]} />;
-                    } else return <Route path={route.path} element={route.page} />;
+                    } else if (currentAccountType) return <Route path={route.path} element={route.page} />;
                 })}
+                <Route path="/login" element={<Login setCurrentAccountType={setCurrentAccountType} />} />
             </Routes>
         </div>
     );

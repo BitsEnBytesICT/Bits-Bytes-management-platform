@@ -9,7 +9,7 @@ const validateString = Fun<string, boolean>(s => s.length > 0);
 
 export const signatureValidatorFunctors: ValidatorMap<ISignature> = {
     id: [validateNumberOrUndefined, "id is not valid"],
-    deelnemerID: [validateNumber, "deelnemerID is required"],
+    participantID: [validateNumber, "participantID is required"],
     date: [validateDate, "date is not a valid date"],
     signature: [validateString, "signature is required"]
 }

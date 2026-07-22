@@ -1,31 +1,40 @@
 import { dbGet, dbQuery } from "./db";
 import { KeyValuePair } from "./Validator";
+import { Tables } from "../types/tables/tablesList";
 
 export interface daoBaseType<a> {
     create(item: a): void;
     update(where: KeyValuePair<a>, ...args: KeyValuePair<a>[]): void;
     delete(...args: any[]): void;
-    list(...args: any[]): a[];
-    findOne(...args: KeyValuePair<a>[]): a;
+    list(...args: any[]): Promise<a[]>;
+    findOne(...args: KeyValuePair<a>[]): Promise<a | undefined>;
 }
 
 export abstract class daoBase<a> {
-    protected updateFunc(table: string, where: KeyValuePair<a>, ...args: KeyValuePair<a>[]) {
-        dbQuery<a>(`UPDATE ${table} SET ${args.map(([key]) => 
-                    `${String(key)} = ?`).join(", ")} WHERE ${String(where[0])} = ?`, args.concat([where]).map(([, value]) => value));
+    protected async updateFunc(table: Tables, where: KeyValuePair<a>, ...values: KeyValuePair<a>[]) {
+        await dbQuery<a>(`UPDATE ${table} SET ${values.map(([key]) => 
+                    `${String(key)} = ?`).join(", ")} WHERE ${
+                        where[1] === undefined ? `${String(where[0])} IS NULL` : `${String(where[0])} = ?`}`,
+                        values.concat(where[1] === undefined ? [] : [where]).map(([, value]) => value));
     }
 
-    protected deleteFunc(...args: any[]) {
+    protected async createFunc(table: Tables, ...values: KeyValuePair<a>[]) {
+        await dbQuery<a>(`INSERT INTO ${table} (${values.map(([key]) => String(key)).join(", ")}) VALUES (${values.map((key) => "?").join(", ")})`,
+            values.map(([, value]) => value));
+    }
+
+    protected async deleteFunc(table: Tables, where: KeyValuePair<a>) {
+        await dbQuery<a>(`DELETE FROM ${table} WHERE ${
+                        where[1] === undefined ? `${String(where[0])} IS NULL` : `${String(where[0])} = ?`}`, [where[1]]);
+    }
+
+    protected async listFunc(...args: any[]) {
         
     }
 
-    protected listFunc(...args: any[]) {
-        
-    }
-
-    protected findOneFunc(table: string, ...args: KeyValuePair<a>[]) {
-        return dbGet<a>(`SELECT * FROM ${table} WHERE ${args.map(([key, value]) => 
+    protected async findOneFunc(table: Tables, ...where: KeyValuePair<a>[]) {
+        return (await dbGet<a>(`SELECT * FROM ${table} WHERE ${where.map(([key, value]) => 
                 value === undefined ? `${String(key)} IS NULL` : `${String(key)} = ?`).join(" AND ")} LIMIT 1`, 
-                args.filter(([, value]) => value !== undefined).map(([, value]) => value));
+                where.filter(([, value]) => value !== undefined).map(([, value]) => value)))[0];
     }
 }

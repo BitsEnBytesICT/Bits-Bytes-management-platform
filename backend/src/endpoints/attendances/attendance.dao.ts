@@ -1,37 +1,38 @@
-import { dbQuery, dbGet, dbAll } from '../../common/db';
+import { dbQuery, dbAll } from '../../common/db';
 import IAttendance from '../../types/attendance/IAttendance';
 import { KeyValuePair } from '../../common/Validator';
 import { daoBase, daoBaseType } from '../../common/daoBase';
+import { Tables } from '../../types/tables/tablesList';
 
 export default class AttendanceDao extends daoBase<IAttendance> implements daoBaseType<IAttendance> {
-    create(attendance: IAttendance): void {
-        dbQuery('INSERT INTO Attendances (deelnemerID, clockinDate) VALUES (?, ?)', [attendance.deelnemerID, attendance.clockinDate]);
+    async create(attendance: IAttendance) {
+        await dbQuery('INSERT INTO Attendances (participantID, clockinDate) VALUES (?, ?)', [attendance.participantID, attendance.clockinDate]);
     }
 
-    update(where: KeyValuePair<IAttendance>, ...args: KeyValuePair<IAttendance>[]): void {
-        this.updateFunc("Attendances", where, ...args);
+    async update(where: KeyValuePair<IAttendance>, ...values: KeyValuePair<IAttendance>[]) {
+        await this.updateFunc(Tables.Attendances, where, ...values);
     }
     
     delete(...args: any[]): void {
         throw new Error('Method not implemented.');
     }
     
-    list(...args: any[]): IAttendance[] {
+    async list(...args: any[]): Promise<IAttendance[]> {
         throw new Error('Method not implemented.');
     }
     
-    findOne(...args: KeyValuePair<IAttendance>[]): IAttendance {
-        return this.findOneFunc("Attendances", ...args);
+    async findOne(...where: KeyValuePair<IAttendance>[]): Promise<IAttendance | undefined> {
+        return await this.findOneFunc(Tables.Attendances, ...where);
     }
 
-    getAttendanceLast30Days(deelnemerID: number): string[] {
-        const rows = dbAll(
+    async getAttendanceLast30Days(participantID: number): Promise<string[]> {
+        const rows = await dbAll<{date: string}>(
             `SELECT DISTINCT date(clockinDate) as date
              FROM Attendances
-             WHERE deelnemerID = ? AND clockinDate >= date('now', '-30 days')
+             WHERE participantID = ? AND clockinDate >= date('now', '-30 days')
              ORDER BY date DESC`,
-            [deelnemerID]
-        ) as { date: string }[];
+            [participantID]
+        )
         return rows.map(r => r.date);
     }
 }

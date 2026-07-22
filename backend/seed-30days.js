@@ -15,23 +15,23 @@ function genSvg() {
   return '<svg width="550" height="270" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="white"/><polyline points="' + points.join(' ') + '" stroke="black" stroke-width="3" fill="none"/></svg>';
 }
 
-const deelnemers = [
+const participants = [
   { id: 1, name: 'Jan' },
   { id: 2, name: 'Maria' }
 ];
 
 const now = new Date();
-const insertAttendance = db.prepare('INSERT INTO Attendances (deelnemerID, clockinDate, clockoutDate, workDuration) VALUES (?, ?, ?, ?)');
-const insertSignature = db.prepare('INSERT INTO Signatures (deelnemerID, date, signature) VALUES (?, ?, ?)');
+const insertAttendance = db.prepare('INSERT INTO Attendances (participantID, clockinDate, clockoutDate, workDuration) VALUES (?, ?, ?, ?)');
+const insertSignature = db.prepare('INSERT INTO Signatures (participantID, date, signature) VALUES (?, ?, ?)');
 
 // Clear existing data
 db.prepare('DELETE FROM Signatures').run();
 db.prepare('DELETE FROM Attendances').run();
-db.prepare('UPDATE Deelnemers SET clockedin = 0').run();
+db.prepare('UPDATE Participants SET clockedin = 0').run();
 
 let attCount = 0, sigCount = 0;
 
-for (const d of deelnemers) {
+for (const d of participants) {
   for (let daysAgo = 30; daysAgo >= 1; daysAgo--) {
     const day = new Date(now);
     day.setDate(day.getDate() - daysAgo);
@@ -58,16 +58,16 @@ for (const d of deelnemers) {
 const today = new Date();
 today.setHours(randomBetween(7, 9), randomBetween(0, 30), 0, 0);
 insertAttendance.run(1, iso(today), null, null);
-db.prepare('UPDATE Deelnemers SET clockedin = 1 WHERE id = 1').run();
+db.prepare('UPDATE Participants SET clockedin = 1 WHERE id = 1').run();
 attCount++;
 
 console.log('Inserted ' + attCount + ' attendances, ' + sigCount + ' signatures');
 
 const total = db.prepare('SELECT COUNT(*) as c FROM Attendances').get();
 const sigs = db.prepare('SELECT COUNT(*) as c FROM Signatures').get();
-const perPerson = db.prepare('SELECT deelnemerID, COUNT(*) as cnt FROM Attendances GROUP BY deelnemerID').all();
+const perPerson = db.prepare('SELECT participantID, COUNT(*) as cnt FROM Attendances GROUP BY participantID').all();
 console.log('Total: ' + total.c + ' attendances, ' + sigs.c + ' signatures');
-perPerson.forEach(r => console.log('  deelnemerID ' + r.deelnemerID + ': ' + r.cnt + ' records'));
+perPerson.forEach(r => console.log('  participantID ' + r.participantID + ': ' + r.cnt + ' records'));
 
 console.log('\nLast 5 records:');
 const sample = db.prepare('SELECT * FROM Attendances ORDER BY clockinDate DESC LIMIT 5').all();

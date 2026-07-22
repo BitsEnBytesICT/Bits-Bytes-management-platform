@@ -1,23 +1,35 @@
 {
   "scripts": {
-    "start": "nodemon ./src/index.ts"
+    "start": "env-cmd -f ../.env.versions -- env-cmd -f ./.env.local -- nodemon ./src/index.ts",
+    "build": "tsc -b",
+    "test": "node -r ts-node/register --test --test-reporter=spec --test-concurrency=1 tests/*.test.ts",
+    "prepare": "node -e \"require('fs').chmodSync('../.githooks/pre-commit', '755')\" && git config --local core.hooksPath ./.githooks"
   },
   "main": "index.ts",
   "dependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "better-sqlite3": "^12.10.0",
     "casbin": "^5.50.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
+    "env-cmd": "^11.0.0",
     "express": "^5.2.1",
-    "mysql2": "^3.22.3",
+    "jsonwebtoken": "^9.0.3",
+    "migrate": "^2.1.0",
+    "mysql2": "^3.22.5",
     "nodemon": "^3.1.14",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/node": "^25.9.1"
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.9.4"
+  },
+  "allowScripts": {
+    "better-sqlite3@12.10.0": true
   }
 }

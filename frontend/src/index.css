@@ -8,9 +8,18 @@
     --color-lightorange: #ffd6a7;
 
     --color-darkblue: #317199;
+    --color-blue: #317199;
     --color-lightblue: #92d5ff;
 
+    --color-white: #ffffff;
+    --color-lightwhite: #f3f8fd;
     --color-offwhite: #f7fbff;
+
+    --color-black: #000000;
+    --color-offblack: #414141;
+
+    --color-red: #ff6b6b;
+    --color-green: #60f376;
 }
 
 /* @font-face {
@@ -27,21 +36,9 @@
     font-style: normal;
 } */
 
-*,
-:root,
-*::before,
-*::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-
-    overflow-x: hidden;
-
-    font-size: 16px;
-}
-
 html {
     font-family: "Outfit", sans-serif;
+    color: var(--color-offblack);
     font-size: 16px;
     font-weight: 400;
     font-optical-sizing: auto;
@@ -50,8 +47,6 @@ html {
 
 body {
     background: var(--color-offwhite);
-
-    height: 150vh;
 }
 
 input,
@@ -59,4 +54,13 @@ textarea,
 select,
 button {
     font: inherit;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
