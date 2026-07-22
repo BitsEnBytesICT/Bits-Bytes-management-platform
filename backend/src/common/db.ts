@@ -17,6 +17,8 @@ export const createConnection = async () => {
         port: Number(process.env.DATABASE_PORT),
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_NAME,
+        keepAliveInitialDelay: 10000,
+        enableKeepAlive: true,
     });
 
     inventoryDB = await mysql.createConnection({
@@ -25,6 +27,8 @@ export const createConnection = async () => {
         port: Number(process.env.DATABASE_PORT),
         password: process.env.DATABASE_PASSWORD,
         database: process.env.INVENTORYDB_NAME,
+        keepAliveInitialDelay: 10000,
+        enableKeepAlive: true,
     });
 
     console.log("connected to databases");
