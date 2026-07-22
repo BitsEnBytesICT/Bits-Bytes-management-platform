@@ -71,14 +71,16 @@ export default function ParticipantPopUp({mode, participant, onClose}: IParticip
                             value={participant?.rfid}
                             readOnly={isInfo}
                         />
-                        <Input
-                            label="Aanwezig"
-                            placeholder="Aanwezig"
-                            id="clockedin"
-                            type="text"
-                            value={participant?.clockedin === 1 ? "Aanwezig" : "Afwezig"}
-                            readOnly
-                        />
+                        {isInfo && (
+                            <Input
+                                label="Aanwezig"
+                                placeholder="Aanwezig"
+                                id="clockedin"
+                                type="text"
+                                value={participant?.clockedin === 1 ? "Aanwezig" : "Afwezig"}
+                                readOnly
+                            />
+                        )}
                         <Input
                             label="Financiering"
                             placeholder="Financiering"
@@ -87,7 +89,9 @@ export default function ParticipantPopUp({mode, participant, onClose}: IParticip
                             value={participant?.financing ?? ""}
                             readOnly={isInfo}
                         />
-                        <Input label="Plek" placeholder="Plek" id="location" type="text" readOnly={isInfo} />
+                        {isInfo && (
+                            <Input label="Plek" placeholder="Plek" id="location" type="text" readOnly={isInfo} />
+                        )}
                     </div>
 
                     <Button onClick={isInfo ? onClose : save}>{isInfo ? "Terug" : "Opslaan"}</Button>
