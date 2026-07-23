@@ -20,7 +20,9 @@ export default class AccountService implements serviceBase<IAccount> {
     }
 
     async findOne(...where: KeyValuePair<IAccount>[]): Promise<IAccount | undefined> {
-        return await this.dao.findOne(...where);
+        const account = await this.dao.findOne(...where);
+        if (account?.password) account.password = decrypt(account.password);
+        return account;
     }
 
     async create(account: IAccount) {

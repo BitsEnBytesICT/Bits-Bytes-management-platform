@@ -14,6 +14,7 @@ type ParticipantPopUpMode = "info" | "add" | "edit";
 interface IParticipantPopUp {
     mode: ParticipantPopUpMode;
     participant?: IParticipant;
+    account?: IAccount;
     onClose: () => void;
     setParticipants?: (value: IParticipant[]) => void;
 }
@@ -24,7 +25,7 @@ const titles: Record<ParticipantPopUpMode, string> = {
     edit: "Deelnemer Bewerken",
 };
 
-export default function ParticipantPopUp({mode, participant, onClose, setParticipants}: IParticipantPopUp) {
+export default function ParticipantPopUp({mode, participant, account, onClose, setParticipants}: IParticipantPopUp) {
     const [currentParticipant, setCurrentParticipant] = useState(participant);
     const [password, setPassword] = useState("");
     const [error, setError] = useState([]);
@@ -46,7 +47,7 @@ export default function ParticipantPopUp({mode, participant, onClose, setPartici
         if (duplicateAccount) username = `${currentParticipant.firstname}${currentParticipant.lastname.slice(0, 2)}`;
 
         currentParticipant.createdAt = new Date().toISOString();
-        const account: IAccount = {
+        const newAccount: IAccount = {
             type: PermissionsList.participant,
             firstname: currentParticipant.firstname,
             lastname: currentParticipant.lastname,
@@ -54,14 +55,14 @@ export default function ParticipantPopUp({mode, participant, onClose, setPartici
             role: Roles.admin,
             password: password,
         };
-        const error = await service.createAccount(account);
+        const error = await service.createAccount(newAccount);
         if (error) {
             setError(error);
             return;
         }
         const error2 = await service.createParticipant(currentParticipant);
         if (error2) {
-            const AccountID = (await service.findAccount(["username", account.username])).id;
+            const AccountID = (await service.findAccount(["username", newAccount.username])).id;
             await service.deleteAccount(AccountID);
             setError(error2);
             return;
@@ -129,6 +130,7 @@ export default function ParticipantPopUp({mode, participant, onClose, setPartici
                             placeholder="Password"
                             id="password"
                             type="text"
+                            value={mode !== "add" && account?.password ? `${account?.password}` : ""}
                             readOnly={isInfo}
                             onChange={(value: string) => setPassword(value)}
                             required={!isInfo}
@@ -164,12 +166,18 @@ export default function ParticipantPopUp({mode, participant, onClose, setPartici
                             }
                         />
                         {isInfo && (
-                            <Input label="Plek" placeholder="Plek" id="location" type="text" readOnly={isInfo} />
+                            <Input
+                                label="Huidige plek"
+                                placeholder="Huidige plek"
+                                id="location"
+                                type="text"
+                                readOnly={isInfo}
+                            />
                         )}
                     </div>
 
                     {error.length > 0 && (
-                        <div className="m-1.5 flex flex-col">
+                        <div className="flex flex-col">
                             {error.map(e => (
                                 <span key={e} className="text-[16px] font-semibold text-(--color-red)">
                                     {e}
@@ -177,12 +185,14 @@ export default function ParticipantPopUp({mode, participant, onClose, setPartici
                             ))}
                         </div>
                     )}
-                    <Button
-                        onClick={async () => {
-                            isInfo ? onClose() : await save();
-                        }}>
-                        {isInfo ? "Terug" : "Opslaan"}
-                    </Button>
+                    <div className="mt-auto">
+                        <Button
+                            onClick={async () => {
+                                isInfo ? onClose() : await save();
+                            }}>
+                            {isInfo ? "Terug" : "Opslaan"}
+                        </Button>
+                    </div>
                 </>
             }
         />
