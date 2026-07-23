@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react";
-import {usePDF} from "react-to-pdf";
 
 import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import Card from "../../common/components/Card";
@@ -15,15 +14,16 @@ import SupportDashboardService from "./SupportDashboard.service";
 
 import type IParticipant from "../../types/compontents/IParticipant";
 
-import {IconAddUser, IconExport, IconLink} from "../../assets";
+import {IconAddUser, IconLink} from "../../assets";
+
+import {Document, Page, Text, View} from "@react-pdf/renderer";
+import PDFDownload from "../../common/components/PDFDownload";
 
 export default function SupportDashboard() {
     const [totalParticipants, setTotalParticipants] = useState(0);
     const [presentParticipants, setPresentParticipants] = useState(0);
     const [participants, setParticipants] = useState<IParticipant[]>([]);
     const [isAddParticipantShown, setIsAddParticipantShown] = useState(false);
-
-    const {toPDF, targetRef} = usePDF({filename: "participants.pdf"});
 
     useEffect(() => {
         const service = new SupportDashboardService();
@@ -37,6 +37,19 @@ export default function SupportDashboard() {
         getData();
     }, []);
 
+    const PDF = () => (
+        <Document>
+            <Page size="A4" style={{padding: 24}}>
+                {participants.map((p, i) => (
+                    <View key={i} style={{flexDirection: "row", marginBottom: 4}}>
+                        <Text>{String(p.firstname ?? "")}</Text>
+                        <Text>{String(p.lastname ?? "")}</Text>
+                    </View>
+                ))}
+            </Page>
+        </Document>
+    );
+
     return (
         <>
             <div className="flex flex-col gap-25">
@@ -48,7 +61,7 @@ export default function SupportDashboard() {
                     </div>
 
                     <div className="flex flex-row gap-8 min-[1000px]:gap-16">
-                        <Card title="Deelnemers aanwezig:" value={presentParticipants} ref={targetRef} />
+                        <Card title="Deelnemers aanwezig:" value={presentParticipants} />
 
                         <Card title="Deelnemers totaal:" value={totalParticipants} />
                     </div>
@@ -77,17 +90,17 @@ export default function SupportDashboard() {
                                 onClick={() => setIsAddParticipantShown(true)}
                             />
 
-                            <SmallButton
-                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconExport} />}
-                                label="Exporteer"
-                                onClick={() => {
-                                    toPDF();
-                                }}
-                            />
+                            <PDFDownload
+                                document={<PDF />}
+                                filename={"participant-export.pdf"}
+                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconAddUser} />}
+                                active={false}></PDFDownload>
                         </div>
                     </div>
 
-                    <SupportDashboardTable participants={participants} />
+                    <div>
+                        <SupportDashboardTable participants={participants} />
+                    </div>
                 </div>
 
                 <FloorPlans />

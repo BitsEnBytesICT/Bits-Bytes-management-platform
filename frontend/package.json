@@ -19,12 +19,12 @@
         "@fortawesome/free-regular-svg-icons": "^7.2.0",
         "@fortawesome/free-solid-svg-icons": "^7.2.0",
         "@fortawesome/react-fontawesome": "^3.3.1",
+        "@react-pdf/renderer": "^4.5.1",
         "@tailwindcss/vite": "^4.3.0",
         "env-cmd": "^11.0.0",
         "react": "^19.2.6",
         "react-dom": "^19.2.6",
         "react-router-dom": "^7.15.1",
-        "react-to-pdf": "^3.2.2",
         "tailwindcss": "^4.3.0"
     },
     "devDependencies": {
