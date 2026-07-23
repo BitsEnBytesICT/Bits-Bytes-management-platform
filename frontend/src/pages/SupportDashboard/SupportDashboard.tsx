@@ -14,9 +14,9 @@ import SupportDashboardService from "./SupportDashboard.service";
 
 import type IParticipant from "../../types/compontents/IParticipant";
 
-import {IconAddUser, IconLink} from "../../assets";
+import {IconAddUser, IconLink, IconExport} from "../../assets";
 
-import {Document, Page, Text, View} from "@react-pdf/renderer";
+import {Document, Page, StyleSheet, Text, View} from "@react-pdf/renderer";
 import PDFDownload from "../../common/components/PDFDownload";
 
 export default function SupportDashboard() {
@@ -37,15 +37,51 @@ export default function SupportDashboard() {
         getData();
     }, []);
 
+    const styles = StyleSheet.create({
+        page: {
+            padding: 30,
+            backgroundColor: "#FFFFFF",
+        },
+        gridContainer: {
+            flexDirection: "row",
+            flexWrap: "wrap",
+            marginHorizontal: -10,
+        },
+        gridItem: {
+            width: "33.33%",
+            paddingHorizontal: 10,
+            marginBottom: 20,
+        },
+        card: {
+            border: "1px solid #e2e8f0",
+            borderRadius: 4,
+            padding: 12,
+            backgroundColor: "#f8fafc",
+            minHeight: 100,
+        },
+        title: {
+            fontSize: 12,
+            fontWeight: "bold",
+        },
+    });
+
     const PDF = () => (
         <Document>
-            <Page size="A4" style={{padding: 24}}>
-                {participants.map((p, i) => (
-                    <View key={i} style={{flexDirection: "row", marginBottom: 4}}>
-                        <Text>{String(p.firstname ?? "")}</Text>
-                        <Text>{String(p.lastname ?? "")}</Text>
-                    </View>
-                ))}
+            <Page size="A4" style={styles.page}>
+                <View style={styles.gridContainer}>
+                    {participants.map((participant, index) => (
+                        <View key={index} style={styles.gridItem}>
+                            <View style={styles.card}>
+                                <Text style={styles.title}>
+                                    {participant.firstname} {participant.lastname}
+                                </Text>
+                                <Text style={{fontSize: 10}}>Organisatie: {participant.organisation}</Text>
+                                <Text style={{fontSize: 10}}>RFID: {participant.rfid}</Text>
+                                <Text style={{fontSize: 10}}>Financiering: {participant.financing}</Text>
+                            </View>
+                        </View>
+                    ))}
+                </View>
             </Page>
         </Document>
     );
@@ -93,7 +129,7 @@ export default function SupportDashboard() {
                             <PDFDownload
                                 document={<PDF />}
                                 filename={"participant-export.pdf"}
-                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconAddUser} />}
+                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconExport} />}
                                 active={false}></PDFDownload>
                         </div>
                     </div>
