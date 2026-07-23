@@ -57,7 +57,6 @@ export const createConnection = async () => {
                 inventoryPool?.end(),
             ]);
             await sleep(5000);
-            await createConnection();
         }
     }
 }
