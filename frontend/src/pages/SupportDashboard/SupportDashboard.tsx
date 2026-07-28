@@ -14,9 +14,9 @@ import SupportDashboardService from "./SupportDashboard.service";
 
 import type IParticipant from "../../types/compontents/IParticipant";
 
-import {IconAddUser, IconLink, IconExport} from "../../assets";
+import {IconAddUser, IconLink, IconExport, LogoDefaultPng} from "../../assets";
 
-import {Document, Page, StyleSheet, Text, View} from "@react-pdf/renderer";
+import {Document, Page, StyleSheet, Text, View, Image} from "@react-pdf/renderer";
 import PDFDownload from "../../common/components/PDFDownload";
 
 export default function SupportDashboard() {
@@ -37,52 +37,118 @@ export default function SupportDashboard() {
         getData();
     }, []);
 
+    const printDate = new Date();
+    const formattedDate = `${printDate.getDate()}-${printDate.getMonth() + 1}-${printDate.getFullYear()}`;
+
     const styles = StyleSheet.create({
         page: {
-            padding: 30,
+            paddingHorizontal: 30,
+            paddingTop: 100,
+            paddingBottom: 24,
+            fontSize: 9,
+            color: "#1e293b",
             backgroundColor: "#FFFFFF",
         },
-        gridContainer: {
+        header: {
+            position: "absolute",
+            top: 24,
+            left: 30,
+            right: 30,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingBottom: 6,
+            borderBottom: "1px solid #1e293b",
+        },
+        headerLeft: {
+            flexDirection: "row",
+        },
+        headerLabel: {
+            fontWeight: "bold",
+        },
+        headerDate: {
+            marginLeft: 4,
+        },
+        logo: {
+            width: 150,
+            height: 40,
+            objectFit: "contain",
+        },
+        grid: {
             flexDirection: "row",
             flexWrap: "wrap",
-            marginHorizontal: -10,
         },
-        gridItem: {
-            width: "33.33%",
-            paddingHorizontal: 10,
-            marginBottom: 20,
+        cell: {
+            width: "50%",
+            height: 348,
+            padding: 14,
         },
-        card: {
-            border: "1px solid #e2e8f0",
-            borderRadius: 4,
-            padding: 12,
-            backgroundColor: "#f8fafc",
-            minHeight: 100,
+        cellBorderRight: {
+            borderRight: "1px solid #1e293b",
         },
-        title: {
-            fontSize: 12,
+        cellBorderBottom: {
+            borderBottom: "1px solid #1e293b",
+        },
+        name: {
             fontWeight: "bold",
+            marginBottom: 12,
+        },
+        row: {
+            flexDirection: "row",
+            marginBottom: 6,
+        },
+        rowLabel: {
+            width: 80,
         },
     });
 
+    const Field = ({label, value}: {label: string; value?: string | number}) => (
+        <View style={styles.row}>
+            <Text style={styles.rowLabel}>{label}</Text>
+            <Text>{value}</Text>
+        </View>
+    );
+
+    const ENTRIES_PER_PAGE = 4;
+
+    const pages = Array.from({length: Math.max(1, Math.ceil(participants.length / ENTRIES_PER_PAGE))}, (_, page) =>
+        participants.slice(page * ENTRIES_PER_PAGE, (page + 1) * ENTRIES_PER_PAGE),
+    );
+
     const PDF = () => (
         <Document>
-            <Page size="A4" style={styles.page}>
-                <View style={styles.gridContainer}>
-                    {participants.map((participant, index) => (
-                        <View key={index} style={styles.gridItem}>
-                            <View style={styles.card}>
-                                <Text style={styles.title}>
+            {pages.map((pageParticipants, pageIndex) => (
+                <Page key={pageIndex} size="A4" style={styles.page}>
+                    <View style={styles.header} fixed>
+                        <View style={styles.headerLeft}>
+                            <Text style={styles.headerLabel}>Print Datum:</Text>
+                            <Text style={styles.headerDate}>{formattedDate}</Text>
+                        </View>
+
+                        <Image style={styles.logo} src={LogoDefaultPng} />
+                    </View>
+
+                    <View style={styles.grid}>
+                        {pageParticipants.map((participant, index) => (
+                            <View
+                                key={index}
+                                style={[
+                                    styles.cell,
+                                    index % 2 === 0 ? styles.cellBorderRight : {},
+                                    index < 2 ? styles.cellBorderBottom : {},
+                                ]}>
+                                <Text style={styles.name}>
                                     {participant.firstname} {participant.lastname}
                                 </Text>
-                                <Text style={{fontSize: 10}}>Organisatie: {participant.organisation}</Text>
-                                <Text style={{fontSize: 10}}>RFID: {participant.rfid}</Text>
-                                <Text style={{fontSize: 10}}>Financiering: {participant.financing}</Text>
+                                <Field label="Organisatie:" value={participant.organisation} />
+                                <Field label="RFID Tag:" value={participant.rfid} />
+                                <Field label="Actief:" value={participant.active ? "Actief" : "InActief"} />
+                                <Field label="Financiering:" value={participant.financing} />
                             </View>
-                        </View>
-                    ))}
-                </View>
-            </Page>
+                        ))}
+                    </View>
+                </Page>
+            ))}
         </Document>
     );
 
