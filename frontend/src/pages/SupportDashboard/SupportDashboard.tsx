@@ -40,11 +40,18 @@ export default function SupportDashboard() {
     const printDate = new Date();
     const formattedDate = `${printDate.getDate()}-${printDate.getMonth() + 1}-${printDate.getFullYear()}`;
 
+    const PAGE_WIDTH = 595.28;
+    const PAGE_HEIGHT = 841.89;
+    const PADDING_X = 30;
+    const PADDING_TOP = 100;
+    const PADDING_BOTTOM = 40;
+    const CELL_HEIGHT = (PAGE_HEIGHT - PADDING_TOP - PADDING_BOTTOM) / 2;
+
     const styles = StyleSheet.create({
         page: {
-            paddingHorizontal: 30,
-            paddingTop: 100,
-            paddingBottom: 24,
+            paddingHorizontal: PADDING_X,
+            paddingTop: PADDING_TOP,
+            paddingBottom: PADDING_BOTTOM,
             fontSize: 9,
             color: "#1e293b",
             backgroundColor: "#FFFFFF",
@@ -52,8 +59,8 @@ export default function SupportDashboard() {
         header: {
             position: "absolute",
             top: 24,
-            left: 30,
-            right: 30,
+            left: PADDING_X,
+            right: PADDING_X,
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
@@ -80,14 +87,27 @@ export default function SupportDashboard() {
         },
         cell: {
             width: "50%",
-            height: 348,
+            height: CELL_HEIGHT,
             padding: 14,
         },
-        cellBorderRight: {
-            borderRight: "1px solid #1e293b",
+        columnDivider: {
+            position: "absolute",
+            top: PADDING_TOP,
+            bottom: PADDING_BOTTOM,
+            left: PAGE_WIDTH / 2,
+            borderLeft: "1px solid #1e293b",
         },
-        cellBorderBottom: {
-            borderBottom: "1px solid #1e293b",
+        rowDivider: {
+            position: "absolute",
+            top: PADDING_TOP + CELL_HEIGHT,
+            left: PADDING_X,
+            right: PADDING_X,
+            borderTop: "1px solid #1e293b",
+        },
+        footer: {
+            position: "absolute",
+            bottom: 18,
+            right: PADDING_X,
         },
         name: {
             fontWeight: "bold",
@@ -128,15 +148,12 @@ export default function SupportDashboard() {
                         <Image style={styles.logo} src={LogoDefaultPng} />
                     </View>
 
+                    <View style={styles.columnDivider} fixed />
+                    <View style={styles.rowDivider} fixed />
+
                     <View style={styles.grid}>
                         {pageParticipants.map((participant, index) => (
-                            <View
-                                key={index}
-                                style={[
-                                    styles.cell,
-                                    index % 2 === 0 ? styles.cellBorderRight : {},
-                                    index < 2 ? styles.cellBorderBottom : {},
-                                ]}>
+                            <View key={index} style={styles.cell}>
                                 <Text style={styles.name}>
                                     {participant.firstname} {participant.lastname}
                                 </Text>
@@ -147,6 +164,12 @@ export default function SupportDashboard() {
                             </View>
                         ))}
                     </View>
+
+                    <Text
+                        style={styles.footer}
+                        fixed
+                        render={({pageNumber, totalPages}) => `Pagina ${pageNumber} van de ${totalPages}`}
+                    />
                 </Page>
             ))}
         </Document>
