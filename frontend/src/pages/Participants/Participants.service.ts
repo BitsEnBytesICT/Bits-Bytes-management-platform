@@ -24,8 +24,17 @@ export default class ParticipantsService {
         else return await response.json();
     };
 
-    updateParticipant = async (where: KeyValuePair<IAccount>, ...values: KeyValuePair<IAccount>[]) => {
+    updateParticipant = async (where: KeyValuePair<IParticipant>, ...values: KeyValuePair<IParticipant>[]) => {
         const response = await http("/api/participants/update", "POST", {
+            where: where,
+            values: values,
+        });
+        if (response.status === 200) return;
+        else return await response.json();
+    };
+
+    updateAccount = async (where: KeyValuePair<IAccount>, ...values: KeyValuePair<IAccount>[]) => {
+        const response = await http("/api/account/update", "POST", {
             where: where,
             values: values,
         });

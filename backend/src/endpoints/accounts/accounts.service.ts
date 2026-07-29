@@ -1,12 +1,11 @@
-import { decrypt } from "../../common/encryptorDecryptor";
+import { decrypt, encrypt } from "../../common/encryptorDecryptor";
 import serviceBase from "../../common/serviceBase";
-import { KeyValuePair } from "../../common/Validator";
+import { KeyValuePair, ValidatorTuple } from "../../common/Validator";
 import IAccount from "../../types/accounts/IAccount";
 import { ErrorCodes } from "../../types/error/ErrorCodes";
 import IError from "../../types/error/IError";
-import { AccountValidator } from "../../validators/accountValidator";
+import { AccountValidator, accountValidatorFunctors, partialAccountValidator } from "../../validators/accountValidator";
 import ParticipantDao from "../participants/participants.dao";
-import ParticipantService from "../participants/participants.service";
 import AccountDAO from "./accounts.dao";
 import jwt from "jsonwebtoken";
 
@@ -38,9 +37,32 @@ export default class AccountService implements serviceBase<IAccount> {
         await this.dao.create(account);
     }
 
-    update(...args: any[]): void {
-        throw new Error("Method not implemented.");
-        //when updating an account. Check if this account is connected to a participant. If so the first and last name of that perticipant should also change
+    async update(where: KeyValuePair<IAccount>, ...args: KeyValuePair<IAccount>[]) {
+        const validatorFunctors = args.map((item) => 
+                    [item[0], accountValidatorFunctors[item[0]][0], accountValidatorFunctors[item[0]][1]] as ValidatorTuple<IAccount>);
+        
+        const validationResult = partialAccountValidator(Object.fromEntries(args), validatorFunctors);
+        const errors = validationResult.filter((r) => r.kind === "error").map((r) => r.errorMSG);
+        if (errors.length > 0) throw errors;
+
+        const currentAccount = await this.dao.findOne(where);
+        if (!currentAccount?.id) throw {
+            date: new Date(),
+            errorMSG: new Error("cannot find participant"),
+            code: ErrorCodes.InvalidData
+        } satisfies IError
+
+        const participant = await this.participantDAO.findOne(["account", currentAccount.id]);
+        const firstname = args.find((value) => value[0] === "firstname");
+        const lastname = args.find((value) => value[0] === "lastname");
+        if ((firstname && firstname[1] !== participant?.firstname) || (lastname && lastname[1] !== participant?.lastname)) {
+            await this.participantDAO.update(["id", participant?.id], ["firstname", currentAccount.firstname], ["lastname", currentAccount.lastname]);
+        }
+
+        const item = args[args.indexOf(args.find((value) => value[0] === "password") as KeyValuePair<IAccount>)];
+        if (item) item[1] = encrypt(item[1]);
+
+        await this.dao.update(where, ...args);
     }
 
     async delete(id: number) {

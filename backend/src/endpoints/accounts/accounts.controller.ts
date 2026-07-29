@@ -32,4 +32,10 @@ export default class AccountController {
         await this.service.delete(req.body.id);
         res.sendStatus(200);
     }
+
+    @AuthenticationDecorator("account.update")
+    async update (req: Request, res: Response) {
+        await this.service.update(req.body.where, ...req.body.values);
+        res.sendStatus(200);
+    }
 }

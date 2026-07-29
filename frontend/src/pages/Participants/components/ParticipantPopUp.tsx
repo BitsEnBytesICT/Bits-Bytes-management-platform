@@ -28,7 +28,7 @@ const titles: Record<ParticipantPopUpMode, string> = {
 
 export default function ParticipantPopUp({mode, participant, account, onClose, setParticipants}: IParticipantPopUp) {
     const [currentParticipant, setCurrentParticipant] = useState(participant);
-    const [password, setPassword] = useState("");
+    const [password, setPassword] = useState(account?.password);
     const [error, setError] = useState([]);
     const isInfo = mode === "info";
 
@@ -59,10 +59,26 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
                 return;
             }
         } else if (mode === "edit") {
+            if (password !== account.password) {
+                const error = await service.updateAccount(["id", account.id], ["password", password]);
+                if (error) {
+                    setError(error);
+                    return;
+                }
+            }
+
+            const updatedFields = (Object.keys(currentParticipant) as Array<keyof IParticipant>)
+                .filter(key => currentParticipant[key] !== participant[key])
+                .map(key => [key, currentParticipant[key]]);
+            if (updatedFields.length < 1) {
+                onClose();
+                return;
+            }
             const error = await service.updateParticipant(
                 ["id", currentParticipant.id],
-                ...(Object.entries(currentParticipant) as KeyValuePair<IAccount>[]),
+                ...(updatedFields as KeyValuePair<IParticipant>[]),
             );
+
             if (error) {
                 setError(error);
                 return;
@@ -191,7 +207,7 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
                             onClick={async () => {
                                 isInfo ? onClose() : await save();
                             }}>
-                            {isInfo ? "Terug" : "Opslaan"}
+                            {isInfo ? "Terug" : mode === "edit" ? "bewerken" : "Opslaan"}
                         </Button>
                     </div>
                 </>

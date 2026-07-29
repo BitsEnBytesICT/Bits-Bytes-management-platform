@@ -48,7 +48,7 @@ export default class ParticipantService implements serviceBase<IParticipant> {
         }
 
         const allParticipants = await this.list();
-        if (allParticipants.filter(p => p.rfid == participant.rfid).length > 0) {
+        if (allParticipants.find(p => p.rfid == participant.rfid)) {
             if (accountID) await this.accountService.delete(accountID);
             throw {
                 date: new Date(),
@@ -68,20 +68,24 @@ export default class ParticipantService implements serviceBase<IParticipant> {
         } satisfies IError
 
         const oldParticipant = await this.findOne(where);
-        if (!oldParticipant) return;
-        const account = await this.accountService.findOne(["id", oldParticipant.id]);
+        if (!oldParticipant) throw {
+            date: new Date(),
+            errorMSG: new Error("cannot find participant to edit"),
+            code: ErrorCodes.InvalidData
+        } satisfies IError
 
+        const account = await this.accountService.findOne(["id", oldParticipant.account]);
+        if (!account) throw {
+            date: new Date(),
+            errorMSG: new Error("account not found"),
+            code: ErrorCodes.InvalidData
+        } satisfies IError
 
-        if (values.map((value) => value[0]).includes("account")) {
-            const account = await this.accountService.findOne(["id", values.find((value) => value[0] === "account")?.[1]]);
-            if (!account) throw {
+        if (values.find((value) => value[0] === "account")) {
+            const newAccount = await this.accountService.findOne(["id", values.find((value) => value[0] === "account")?.[1]]);
+            if (!newAccount) throw {
                 date: new Date(),
                 errorMSG: new Error("account not found"),
-                code: ErrorCodes.InvalidData
-            } satisfies IError
-            else if (account.firstname !== oldParticipant?.firstname || account.lastname !== oldParticipant?.lastname) throw {
-                date: new Date(),
-                errorMSG: new Error("firstname or lastname of the account and participant do not match"),
                 code: ErrorCodes.InvalidData
             } satisfies IError
         }
@@ -92,6 +96,32 @@ export default class ParticipantService implements serviceBase<IParticipant> {
         const validationResult = partialParticipantValidator(Object.fromEntries(values), validatorFunctors);
         const errors = validationResult.filter((r) => r.kind === "error").map((r) => r.errorMSG);
         if (errors.length > 0) throw errors;
+
+        const firstname = values.find((value) => value[0] === "firstname");
+        const lastname = values.find((value) => value[0] === "lastname");
+        if ((firstname && firstname[1] !== account.firstname) || (lastname && lastname[1] !== account.lastname)) {
+            const allAccounts = await this.accountService.list();
+            if (allAccounts.find((a) => a.firstname === (firstname ? firstname[1] : account.firstname) && a.lastname === (lastname ? lastname[1] : account.lastname))) throw {
+                    date: new Date(),
+                    errorMSG: new Error("firstname and lastname already exist"),
+                    code: ErrorCodes.InvalidData
+            } satisfies IError
+
+            let newUsername = `${account.firstname}${account.lastname.slice(0, 1)}`;
+            if (newUsername !== account.username && allAccounts.find((a) => a.username === newUsername)) newUsername = `${account.firstname}${account.lastname.slice(0, 2)}`;
+
+            await this.dao.update(where, ...values);
+            try {
+                await this.accountService.update(["id", account.id], ["firstname", (firstname ? firstname[1] : account.firstname)], ["lastname", (lastname ? lastname[1] : account.lastname)], ["username", newUsername]);
+            } catch (error: any) {
+                await this.dao.update(where, ...Object.entries(oldParticipant) as KeyValuePair<IParticipant>[]);
+                throw {
+                    date: new Date(),
+                    code: ErrorCodes.InvalidData,
+                    errorMSG: new Error(error)
+                } satisfies IError
+            }
+        }
 
         await this.dao.update(where, ...values);
     }
