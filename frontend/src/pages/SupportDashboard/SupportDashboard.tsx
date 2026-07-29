@@ -17,7 +17,6 @@ import type IParticipant from "../../types/compontents/IParticipant";
 import {IconAddUser, IconLink, IconExport, LogoDefaultPng} from "../../assets";
 
 import {Document, Page, StyleSheet, Text, View, Image} from "@react-pdf/renderer";
-import PDFDownload from "../../common/components/PDFDownload";
 import PDFDownloadButton from "../../common/components/PDFDownload";
 
 export default function SupportDashboard() {
