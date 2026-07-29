@@ -16,7 +16,7 @@ import type IParticipant from "../../types/compontents/IParticipant";
 
 import {IconAddUser, IconLink, IconExport} from "../../assets";
 
-import PDFDownloadButton from "../../common/components/PDFDownload";
+import PDFDownloadButton from "../../common/components/PDFDownloadButton";
 import PDFGenerator from "./components/PDFGenerator";
 
 export default function SupportDashboard() {
