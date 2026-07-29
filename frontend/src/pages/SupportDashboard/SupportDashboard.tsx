@@ -14,11 +14,10 @@ import SupportDashboardService from "./SupportDashboard.service";
 
 import type IParticipant from "../../types/compontents/IParticipant";
 
-import {IconAddUser, IconLink, IconExport, LogoDefaultPng} from "../../assets";
+import {IconAddUser, IconLink, IconExport} from "../../assets";
 
-import {Document, Page, StyleSheet, Text, View, Image} from "@react-pdf/renderer";
 import PDFDownloadButton from "../../common/components/PDFDownload";
-import PDFGenerator from "../../common/components/PDFGenerator";
+import PDFGenerator from "./components/PDFGenerator";
 
 export default function SupportDashboard() {
     const [totalParticipants, setTotalParticipants] = useState(0);

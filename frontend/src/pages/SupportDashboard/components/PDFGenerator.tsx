@@ -1,5 +1,5 @@
 import {Document, Page, StyleSheet, Text, View, Image} from "@react-pdf/renderer";
-import {LogoDefaultPng} from "../../assets";
+import {LogoDefaultPng} from "../../../assets";
 
 export default function PDFGenerator({data}) {
     const printDate = new Date();
