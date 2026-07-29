@@ -1,6 +1,6 @@
 import {PDFDownloadLink} from "@react-pdf/renderer";
 
-export default function PDFDownload({icon, active, document, filename}) {
+export default function PDFDownloadButton({icon, active, document, filename}) {
     return (
         <PDFDownloadLink
             document={document}
