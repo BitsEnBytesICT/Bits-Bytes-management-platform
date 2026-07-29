@@ -53,6 +53,7 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
                 password: password,
             };
 
+            currentParticipant.active = currentParticipant.active ? currentParticipant.active : 0;
             const error = await service.createParticipant(currentParticipant, newAccount);
             if (error) {
                 setError(error);
