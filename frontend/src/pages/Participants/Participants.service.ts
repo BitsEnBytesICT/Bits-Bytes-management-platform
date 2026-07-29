@@ -15,9 +15,19 @@ export default class ParticipantsService {
         return participants;
     };
 
-    createParticipant = async (participant: IParticipant): Promise<string[]> => {
+    createParticipant = async (participant: IParticipant, account: IAccount): Promise<string[]> => {
         const response = await http("/api/participants/create", "POST", {
             participant: participant,
+            account: account,
+        });
+        if (response.status === 200) return;
+        else return await response.json();
+    };
+
+    updateParticipant = async (where: KeyValuePair<IAccount>, ...values: KeyValuePair<IAccount>[]) => {
+        const response = await http("/api/participants/update", "POST", {
+            where: where,
+            values: values,
         });
         if (response.status === 200) return;
         else return await response.json();

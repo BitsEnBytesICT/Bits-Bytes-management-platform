@@ -21,23 +21,41 @@ export default class ParticipantService implements serviceBase<IParticipant> {
         return await this.dao.findOne(...where);
     }
 
-    async create(participant: IParticipant) {
+    async create(participant: IParticipant, account: IAccount) {
         if (!participant) throw {
             date: new Date(),
             errorMSG: new Error("participant required"),
             code: ErrorCodes.InvalidData
         } satisfies IError
-
-        const account = await this.accountService.findOne(["firstname", participant.firstname], ["lastname", participant.lastname]);
-        if (!account) throw {
+        else if (!account) throw {
             date: new Date(),
             errorMSG: new Error("account not found"),
             code: ErrorCodes.InvalidData
         } satisfies IError
 
-        if (account.id) participant.account = account.id;
+        const duplicateAccount = await this.accountService.findOne(["username", account.username]);
+        if (duplicateAccount) account.username = `${participant.firstname}${participant.lastname.slice(0, 2)}`;
+        participant.createdAt = new Date().toISOString();
+        await this.accountService.create(account);
+
+        const accountID = (await this.accountService.findOne(["username", account.username]))?.id;
+        if (accountID) participant.account = accountID;
+
         const errors = ParticipantValidator(participant).filter((result) => result.kind === "error").map((r) => r.errorMSG);
-        if (errors && errors.length > 0) throw errors;
+        if (errors && errors.length > 0) {
+            if (accountID) await this.accountService.delete(accountID);
+            throw errors;
+        }
+
+        const allParticipants = await this.list();
+        if (allParticipants.filter(p => p.rfid == participant.rfid).length > 0) {
+            if (accountID) await this.accountService.delete(accountID);
+            throw {
+                date: new Date(),
+                code: ErrorCodes.InvalidData,
+                errorMSG: new Error("rfid is not unique")
+            } satisfies IError
+        }
 
         await this.dao.create(participant);
     }
@@ -49,15 +67,19 @@ export default class ParticipantService implements serviceBase<IParticipant> {
             code: ErrorCodes.InvalidData
         } satisfies IError
 
+        const oldParticipant = await this.findOne(where);
+        if (!oldParticipant) return;
+        const account = await this.accountService.findOne(["id", oldParticipant.id]);
+
+
         if (values.map((value) => value[0]).includes("account")) {
-            const participant = await this.findOne(where);
             const account = await this.accountService.findOne(["id", values.find((value) => value[0] === "account")?.[1]]);
             if (!account) throw {
                 date: new Date(),
                 errorMSG: new Error("account not found"),
                 code: ErrorCodes.InvalidData
             } satisfies IError
-            else if (account.firstname !== participant?.firstname || account.lastname !== participant?.lastname) throw {
+            else if (account.firstname !== oldParticipant?.firstname || account.lastname !== oldParticipant?.lastname) throw {
                 date: new Date(),
                 errorMSG: new Error("firstname or lastname of the account and participant do not match"),
                 code: ErrorCodes.InvalidData

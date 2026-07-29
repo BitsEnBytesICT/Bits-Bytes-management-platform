@@ -8,6 +8,7 @@ import ParticipantsService from "../Participants.service";
 import type IAccount from "../../../types/accounts/IAccount";
 import {PermissionsList} from "../../../types/accounts/accountTypes";
 import {Roles} from "../../../types/permissions/rolesList";
+import type {KeyValuePair} from "../../../types/validation/keyvaluePair";
 
 type ParticipantPopUpMode = "info" | "add" | "edit";
 
@@ -42,30 +43,30 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
         )
             return;
 
-        let username = `${currentParticipant.firstname}${currentParticipant.lastname[0]}`;
-        const duplicateAccount = await service.findAccount(["username", username]);
-        if (duplicateAccount) username = `${currentParticipant.firstname}${currentParticipant.lastname.slice(0, 2)}`;
+        if (mode === "add") {
+            const newAccount: IAccount = {
+                type: PermissionsList.participant,
+                firstname: currentParticipant.firstname,
+                lastname: currentParticipant.lastname,
+                username: `${currentParticipant.firstname}${currentParticipant.lastname.slice(0, 1)}`,
+                role: Roles.admin,
+                password: password,
+            };
 
-        currentParticipant.createdAt = new Date().toISOString();
-        const newAccount: IAccount = {
-            type: PermissionsList.participant,
-            firstname: currentParticipant.firstname,
-            lastname: currentParticipant.lastname,
-            username: username,
-            role: Roles.admin,
-            password: password,
-        };
-        const error = await service.createAccount(newAccount);
-        if (error) {
-            setError(error);
-            return;
-        }
-        const error2 = await service.createParticipant(currentParticipant);
-        if (error2) {
-            const AccountID = (await service.findAccount(["username", newAccount.username])).id;
-            await service.deleteAccount(AccountID);
-            setError(error2);
-            return;
+            const error = await service.createParticipant(currentParticipant, newAccount);
+            if (error) {
+                setError(error);
+                return;
+            }
+        } else if (mode === "edit") {
+            const error = await service.updateParticipant(
+                ["id", currentParticipant.id],
+                ...(Object.entries(currentParticipant) as KeyValuePair<IAccount>[]),
+            );
+            if (error) {
+                setError(error);
+                return;
+            }
         }
 
         setParticipants(await service.getParticipants());
