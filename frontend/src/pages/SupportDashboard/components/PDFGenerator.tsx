@@ -1,7 +1,14 @@
 import {Document, Page, StyleSheet, Text, View, Image} from "@react-pdf/renderer";
+
+import type IParticipant from "../../../types/compontents/IParticipant";
+
 import {LogoDefaultPng} from "../../../assets";
 
-export default function PDFGenerator({data}) {
+interface IPDFGenerator {
+    data: IParticipant[];
+}
+
+export default function PDFGenerator({data}: IPDFGenerator) {
     const printDate = new Date();
     const formattedDate = `${printDate.getDate()}-${printDate.getMonth() + 1}-${printDate.getFullYear()}`;
 
