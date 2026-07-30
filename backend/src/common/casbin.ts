@@ -10,7 +10,7 @@ export async function createEnforcer(): Promise<Enforcer> {
     if (!enforcerInstance) {
         console.log("Creating new Enforcer");
         enforcerInstance = await newEnforcer('./src/casbin/model.conf', './src/casbin/policy.csv');
-        BuildEnforcerPolicies();
+        await BuildEnforcerPolicies();
     }
     return enforcerInstance;
 }
@@ -34,7 +34,7 @@ export async function BuildEnforcerPolicies() {
         }
         const apikeys = await authService.listApiKeys();
         for (const key of apikeys) {
-            const role = RolesAndPermissions.find((p) => p.id === key.id)?.role;
+            const role = RolesAndPermissions.find((p) => p.id === key.permissionId)?.role;
             if (role) await enforcerInstance.addRoleForUser(key.apikey, role);
         }
     } catch (e) {

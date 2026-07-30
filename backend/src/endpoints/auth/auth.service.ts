@@ -38,19 +38,29 @@ export default class AuthService {
         )
     }
 
-    verify = async (token: string) => {
+    verify = async (token: string, apikey?: string) => {
         try {
-            const payload = jwt.verify(token, String(process.env.JWT_SECRET));
-            let userName: string = !(typeof payload === "string") && "username" in payload ? payload.username : payload;
-            userName = decrypt<string>(userName);
-
-            const account = await this.accountService.findOne(["username", userName]);
-
-            if (!account) throw {
-                date: new Date(),
-                errorMSG: new Error("token is invalid"),
-                code: ErrorCodes.invalidCredentials
-            } satisfies IError
+            let userName: string;
+            if (!apikey){
+                const payload = jwt.verify(token, String(process.env.JWT_SECRET));
+                userName = !(typeof payload === "string") && "username" in payload ? payload.username : payload;
+                userName = decrypt<string>(userName);
+                const account = await this.accountService.findOne(["username", userName]);
+                if (!account) throw {
+                    date: new Date(),
+                    errorMSG: new Error("token is invalid"),
+                    code: ErrorCodes.invalidCredentials
+                } satisfies IError
+            }
+            else {
+                const key = (await this.dao.listApiKeys()).find((k) => k.apikey === apikey);
+                if (!key) throw {
+                    date: new Date(),
+                    errorMSG: new Error("api key is invalid"),
+                    code: ErrorCodes.invalidCredentials
+                } satisfies IError
+            }
+            
         } catch (error) {
             throw {
                 date: new Date(),
