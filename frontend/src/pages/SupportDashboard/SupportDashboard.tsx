@@ -16,9 +16,7 @@ import type IParticipant from "../../types/compontents/IParticipant";
 
 import {IconAddUser, IconLink, IconExport} from "../../assets";
 
-import PDFDownloadButton from "../../common/components/PDFDownloadButton";
-import PDFGenerator from "./components/PDFGenerator";
-import {ButtonType} from "../../types/compontents/ISmallButton";
+import {buildPDF} from "../../common/components/participantsPDF";
 
 export default function SupportDashboard() {
     const [totalParticipants, setTotalParticipants] = useState(0);
@@ -61,14 +59,12 @@ export default function SupportDashboard() {
                             <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconLink} />}
                                 label="Cliendo"
-                                type={ButtonType.REGULAR}
                                 onClick={() => window.open("https://www.google.nl", "_blank")}
                             />
 
                             <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconLink} />}
                                 label="ZilliZ"
-                                type={ButtonType.REGULAR}
                                 onClick={() => window.open("https://www.google.nl", "_blank")}
                             />
                         </div>
@@ -77,17 +73,14 @@ export default function SupportDashboard() {
                             <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconAddUser} />}
                                 label="Deelnemer toevoegen"
-                                type={ButtonType.REGULAR}
                                 onClick={() => setIsAddParticipantShown(true)}
                             />
 
                             <SmallButton
-                                document={<PDFGenerator data={participants} />}
-                                filename={"participant-export.pdf"}
                                 label="Export PDF"
-                                type={ButtonType.REGULAR}
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconExport} />}
                                 active={false}
+                                onClick={() => buildPDF(participants)}
                             />
                         </div>
                     </div>

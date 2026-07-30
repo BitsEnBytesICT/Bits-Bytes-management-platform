@@ -1,7 +1,19 @@
 import {Document, Page, StyleSheet, Text, View, Image} from "@react-pdf/renderer";
-import {LogoDefaultPng} from "../../../assets";
+import {LogoDefaultPng} from "../../assets";
+import {pdf} from "@react-pdf/renderer";
+import type IParticipant from "../../types/compontents/IParticipant";
 
-export default function PDFGenerator({data}) {
+export const buildPDF = async (data: IParticipant[]) => {
+    const blob = await pdf(<ParticipantsPDF data={data}></ParticipantsPDF>).toBlob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "participants-export.pdf";
+    document.body.append(link);
+    link.click();
+};
+
+export default function ParticipantsPDF({data}) {
     const printDate = new Date();
     const formattedDate = `${printDate.getDate()}-${printDate.getMonth() + 1}-${printDate.getFullYear()}`;
 
