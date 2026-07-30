@@ -7,7 +7,6 @@ import ParticipantsFilter from "./components/ParticipantsFilter";
 import ParticipantsTable from "./components/ParticipantsTable";
 
 import ParticipantsService from "./Participants.service";
-import useParticipantsFilter from "./useParticipantsFilter";
 
 import type IParticipant from "../../types/compontents/IParticipant";
 
@@ -19,13 +18,15 @@ export default function Participants() {
     const [participants, setParticipants] = useState<IParticipant[]>([]);
     const [isFilterShown, setIsFilterShown] = useState(false);
     const [isAddParticipantShown, setIsAddParticipantShown] = useState(false);
-
-    const {filteredParticipants, filters, search} = useParticipantsFilter(participants);
+    const [filteredParticipants, setFilteredParticipants] = useState<IParticipant[]>([]);
 
     useEffect(() => {
         const service = new ParticipantsService();
 
-        service.getParticipants().then(setParticipants);
+        service.getParticipants().then(participants => {
+            setParticipants(participants);
+            setFilteredParticipants(participants);
+        });
     }, []);
 
     return (
@@ -55,9 +56,12 @@ export default function Participants() {
                 </div>
             </div>
 
-            <ParticipantsFilter filters={filters} search={search} isShown={isFilterShown} />
-
-            <ParticipantsTable participants={filteredParticipants} />
+            <ParticipantsFilter
+                participants={participants}
+                isShown={isFilterShown}
+                setFilteredParticipants={setFilteredParticipants}>
+                {filteredParticipants => <ParticipantsTable participants={filteredParticipants} />}
+            </ParticipantsFilter>
 
             {isAddParticipantShown && <ParticipantPopUp mode="add" onClose={() => setIsAddParticipantShown(false)} />}
         </div>
