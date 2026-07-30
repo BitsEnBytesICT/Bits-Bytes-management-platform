@@ -77,7 +77,7 @@ export default function SupportDashboard() {
                             />
 
                             <SmallButton
-                                label="Export PDF"
+                                label="Exporteer"
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconExport} />}
                                 active={false}
                                 onClick={() => buildPDF(participants)}
