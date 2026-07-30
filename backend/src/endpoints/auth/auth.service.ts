@@ -3,11 +3,18 @@ import { ErrorCodes } from "../../types/error/ErrorCodes";
 import IError from "../../types/error/IError";
 import AccountService from "../accounts/accounts.service";
 import jwt from "jsonwebtoken";
+import AuthDAO from "./auth.dao";
 
 export const FIFTEEN_MINUES_IN_SECONDS = 900;
 
 export default class AuthService {
     private accountService: AccountService = new AccountService();
+
+    dao: AuthDAO;
+    
+    constructor() {
+        this.dao = new AuthDAO();
+    }
 
     login = async (username: string, password: string) => {
         if (!username || !password) throw {
@@ -32,7 +39,6 @@ export default class AuthService {
     }
 
     verify = async (token: string) => {
-        console.log(token)
         try {
             const payload = jwt.verify(token, String(process.env.JWT_SECRET));
             let userName: string = !(typeof payload === "string") && "username" in payload ? payload.username : payload;
@@ -80,5 +86,9 @@ export default class AuthService {
                 code: ErrorCodes.invalidCredentials
             } satisfies IError
         }
+    }
+
+    listApiKeys = async () => {
+        return await this.dao.listApiKeys();
     }
 }

@@ -6,11 +6,13 @@ export const setupDatabase = () => {
     try {
         db.prepare('DELETE FROM Participants WHERE id > ?').run(-1);
         db.prepare('DELETE FROM Accounts WHERE id > ?').run(-1);
+        db.prepare('DELETE FROM ApiKeys WHERE id > ?').run(-1);
         db.prepare('DELETE FROM Permissions WHERE id > ?').run(-1);
 
         db.pragma('foreign_keys = ON');
 
         db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('admin', '*');
+        db.prepare("INSERT INTO ApiKeys (apikey, permissionId) VALUES (?, ?)").run('test-api-key', 1);
 
         db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('support', 'support', 'support', 'support', 'admin', encrypt('test123'));
         db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('it', 'it', 'it', 'it', 'admin', encrypt('test123'));
