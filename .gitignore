@@ -432,7 +432,7 @@ FodyWeavers.xsd
 *.msp
 
 # Jetbrains files
-.idea
+.idea/
 
 .DS_Store
 backend/.env.local

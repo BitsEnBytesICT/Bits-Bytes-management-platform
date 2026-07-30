@@ -16,7 +16,7 @@ import type IParticipant from "../../types/compontents/IParticipant";
 
 import {IconAddUser, IconLink, IconExport} from "../../assets";
 
-import {buildPDF} from "../../common/components/participantsPDF";
+import buildPDF from "../../common/buildPDF";
 
 export default function SupportDashboard() {
     const [totalParticipants, setTotalParticipants] = useState(0);
