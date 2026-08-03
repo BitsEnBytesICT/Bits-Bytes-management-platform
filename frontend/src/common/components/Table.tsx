@@ -78,8 +78,8 @@ export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
 
                 {tooltipKey === cellKey && (
                     <div
-                        className="absolute top-full left-2 z-10 px-2 py-1 text-xs text-(--color-white) rounded-md
-                            bg-(--color-darkblue) shadow-lg">
+                        className="px-2 py-1 absolute top-full left-2 z-10 text-xs text-(--color-white)
+                            bg-(--color-darkblue) rounded-md shadow-lg">
                         {value}
                     </div>
                 )}
@@ -89,14 +89,14 @@ export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
 
     return (
         <div className="relative overflow-auto w-full h-full">
-            <table className="table-fixed w-full text-left text-sm">
+            <table className="table-fixed w-full text-sm text-left" id="data-table">
                 <thead>
-                    <tr className="sticky top-0 rounded-lg bg-(--color-lightwhite)">
+                    <tr className="sticky top-0 bg-(--color-lightwhite) rounded-lg">
                         {columns.map(column => (
                             <th
                                 key={String(column.key)}
                                 onClick={() => handleHeaderClick(column)}
-                                className={`px-4 py-3 truncate font-medium text-(--color-darkblue)/50 ${
+                                className={`px-4 py-3 font-medium text-(--color-darkblue)/50 truncate ${
                                     column.sortable !== false ? "cursor-pointer select-none" : ""
                                 }`}>
                                 {column.label} {getSortIndicator(column)}

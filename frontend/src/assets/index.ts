@@ -21,7 +21,9 @@ export {default as IconEdit} from "./ui/icon-edit.svg";
 export {default as IconDelete} from "./ui/icon-delete.svg";
 export {default as IconInfo} from "./ui/icon-info.svg";
 export {default as IconFilter} from "./ui/icon-filter.svg";
+export {default as IconClose} from "./ui/icon-close.svg";
 
 // logo
 export {default as LogoWhite} from "./logo/logo-white.svg";
 export {default as LogoDefault} from "./logo/logo-default.svg";
+export {default as LogoDefaultPng} from "./logo/logo-default.png";
