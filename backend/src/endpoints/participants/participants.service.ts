@@ -33,8 +33,12 @@ export default class ParticipantService implements serviceBase<IParticipant> {
             code: ErrorCodes.InvalidData
         } satisfies IError
 
-        const duplicateAccount = await this.accountService.findOne(["username", account.username]);
-        if (duplicateAccount) account.username = `${participant.firstname}${participant.lastname.slice(0, 2)}`;
+        const allAccounts = await this.accountService.list();
+        let count = 1;
+        do {
+            account.username = `${participant.firstname}${participant.lastname.slice(0, count)}`;
+            count++;
+        } while (count < participant.lastname.length && allAccounts.find((a) => a.username === account.username));
         participant.createdAt = new Date().toISOString();
         await this.accountService.create(account);
 
@@ -107,8 +111,12 @@ export default class ParticipantService implements serviceBase<IParticipant> {
                     code: ErrorCodes.InvalidData
             } satisfies IError
 
-            let newUsername = `${account.firstname}${account.lastname.slice(0, 1)}`;
-            if (newUsername !== account.username && allAccounts.find((a) => a.username === newUsername)) newUsername = `${account.firstname}${account.lastname.slice(0, 2)}`;
+            let newUsername: string;
+            let count = 1;
+            do {
+                newUsername = `${firstname ? firstname[1] : account.firstname}${(lastname ? lastname[1] : account.lastname).slice(0, count)}`;
+                count++;
+            } while (count < (lastname ? lastname[1].length : account.lastname.length) && (newUsername === account.username || allAccounts.find((a) => a.username === newUsername)));
 
             await this.dao.update(where, ...values);
             try {

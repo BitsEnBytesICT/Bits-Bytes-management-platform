@@ -217,7 +217,10 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
                     <div className="flex flex-col h-6">
                         {error &&
                             error.map(e => (
-                                <span key={e} className="text-[16px] font-semibold text-(--color-red)">
+                                <span
+                                    key={e}
+                                    className="text-[16px] font-semibold text-(--color-red)
+                                        animate-[fade-in_0.3s_ease-in-out]">
                                     {e}
                                 </span>
                             ))}
