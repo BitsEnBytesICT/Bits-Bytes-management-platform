@@ -1,5 +1,9 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "drogon/drogon.h"
 #include "BackendAPI.hpp"
+
+#include <cstdlib> 
 
 void BackendAPI::RunBackend()
 {
