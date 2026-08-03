@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Button from "../../../common/components/Button";
 import Input from "../../../common/components/Input";
 import PopUp from "../../../common/components/PopUp";
@@ -34,12 +34,31 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
 
     const service: ParticipantsService = new ParticipantsService();
 
+    useEffect(() => {
+        if (isInfo) {
+            return;
+        }
+
+        if (
+            !currentParticipant?.firstname ||
+            !currentParticipant?.lastname ||
+            !currentParticipant?.organisation ||
+            (!account?.password && !password) ||
+            !currentParticipant?.rfid
+        ) {
+            setError(["* De rode velden zijn verplicht"]);
+        } else {
+            setError([]);
+        }
+    }, [currentParticipant]);
+
     async function save() {
         if (
-            !currentParticipant.firstname ||
-            !currentParticipant.lastname ||
-            !currentParticipant.organisation ||
-            !password
+            !currentParticipant?.firstname ||
+            !currentParticipant?.lastname ||
+            !currentParticipant?.organisation ||
+            (!account?.password && !password) ||
+            !currentParticipant?.rfid
         )
             return;
 
@@ -160,6 +179,7 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
                             type="text"
                             value={currentParticipant?.rfid}
                             readOnly={isInfo}
+                            required={!isInfo}
                             onChange={(value: string) => setCurrentParticipant({...currentParticipant, rfid: value})}
                         />
                         {isInfo && (
@@ -194,15 +214,14 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
                         )}
                     </div>
 
-                    {error.length > 0 && (
-                        <div className="flex flex-col">
-                            {error.map(e => (
+                    <div className="flex flex-col h-6">
+                        {error &&
+                            error.map(e => (
                                 <span key={e} className="text-[16px] font-semibold text-(--color-red)">
                                     {e}
                                 </span>
                             ))}
-                        </div>
-                    )}
+                    </div>
                     <div className="mt-auto">
                         <Button
                             onClick={async () => {

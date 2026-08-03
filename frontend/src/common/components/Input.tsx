@@ -43,9 +43,14 @@ const Input = forwardRef<HTMLInputElement, IInput>(
 
                 <input
                     className={`px-5 py-3 text-[16px] text-(--color-offblack) bg-(--color-offwhite) outline-none
-                        rounded-xl shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
-                        transition-colors focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]
-                        ${readOnly ? "cursor-default" : ""}`}
+                        rounded-xl transition-colors focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]
+                        ${readOnly ? "cursor-default" : ""} ${
+                            !isFilledIn && required
+                                ? `shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-red)_50%,transparent)]
+                                    focus:shadow-[inset_0_0_0_1px_var(--color-red)]`
+                                : `shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
+                                    focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]`
+                        }`}
                     id={id}
                     placeholder={placeholder}
                     defaultValue={value}
@@ -54,12 +59,9 @@ const Input = forwardRef<HTMLInputElement, IInput>(
                     type={type}
                     onChange={e => {
                         setIsFilledIn(Boolean(e.target.value));
-                        onChange(e.target.value || value);
+                        onChange(e.target.value);
                     }}
                 />
-                {!isFilledIn && required && (
-                    <span className="ml-1.5 text-[16px] font-semibold text-(--color-red)">Dit veld is verplicht</span>
-                )}
             </div>
         );
     },
