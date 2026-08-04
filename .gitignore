@@ -430,6 +430,10 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Jetbrains files
+.idea/
+
 .DS_Store
 backend/.env.local
 /KnowledgeBase/KnowledgeBaseBNB/XMLFile.xml

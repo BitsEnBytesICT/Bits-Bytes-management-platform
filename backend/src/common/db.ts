@@ -6,47 +6,58 @@ import sleep from './sleep';
 import { runMigrations } from './migrationsLoader';
 
 const db = new Database('database.db', { verbose: console.log });
-export let managementDB: mysql.Connection;
-let inventoryDB: mysql.Connection;
+export let managementDB: mysql.Pool;
+let inventoryDB: mysql.Pool;
 
 export const createConnection = async () => {
-    try {
-        managementDB = await mysql.createConnection({
-        host: process.env.DATABASE_URL,
-        user: process.env.DATABASE_USERNAME,
-        port: Number(process.env.DATABASE_PORT),
-        password: process.env.DATABASE_PASSWORD,
-        database: process.env.DATABASE_NAME,
-        keepAliveInitialDelay: 10000,
-        enableKeepAlive: true,
-    });
+    while (true) {
+        let managementPool: mysql.Pool | undefined;
+        let inventoryPool: mysql.Pool | undefined;
 
-    inventoryDB = await mysql.createConnection({
-        host: process.env.DATABASE_URL,
-        user: process.env.DATABASE_USERNAME,
-        port: Number(process.env.DATABASE_PORT),
-        password: process.env.DATABASE_PASSWORD,
-        database: process.env.INVENTORYDB_NAME,
-        keepAliveInitialDelay: 10000,
-        enableKeepAlive: true,
-    });
-
-    console.log("connected to databases");
-    if (process.env.NODE_ENV !== "DEVELOPMENT") {
-        await runMigrations();
-        console.log("finished migrations");
-    }
-    } catch (error) {
-        console.log("cannot create db connection or run migrations!");
-        console.log(`error: ${error}`);
         try {
-            managementDB.end();
-            inventoryDB.end();
+            const poolOptions = {
+                host: process.env.DATABASE_URL,
+                user: process.env.DATABASE_USERNAME,
+                port: Number(process.env.DATABASE_PORT),
+                password: process.env.DATABASE_PASSWORD,
+                waitForConnections: true,
+                queueLimit: 0,
+                keepAliveInitialDelay: 10000,
+                enableKeepAlive: true,
+            };
+
+            managementPool = mysql.createPool({
+                ...poolOptions,
+                database: process.env.DATABASE_NAME,
+            });
+            inventoryPool = mysql.createPool({
+                ...poolOptions,
+                database: process.env.INVENTORYDB_NAME,
+            });
+
+            await Promise.all([
+                managementPool.query("SELECT 1"),
+                inventoryPool.query("SELECT 1"),
+            ]);
+
+            managementDB = managementPool;
+            inventoryDB = inventoryPool;
+
+            console.log("connected to databases");
+            if (process.env.NODE_ENV !== "DEVELOPMENT") {
+                await runMigrations();
+                console.log("finished migrations");
+            }
+            return;
         } catch (error) {
-            
+            console.log("cannot create db connection or run migrations!");
+            console.log(`error: ${error}`);
+            await Promise.allSettled([
+                managementPool?.end(),
+                inventoryPool?.end(),
+            ]);
+            await sleep(5000);
         }
-        await sleep(5000);
-        createConnection();
     }
 }
 

@@ -27,7 +27,7 @@ const prepareDB = async() => {
             console.log(error);
         }
     } 
-    else if (process.env.DATABASE_TYPE === "mysql") createConnection();
+    else if (process.env.DATABASE_TYPE === "mysql") await createConnection();
 }
 prepareDB().then(createEnforcer);
 

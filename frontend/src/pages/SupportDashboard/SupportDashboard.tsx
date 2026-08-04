@@ -14,7 +14,9 @@ import SupportDashboardService from "./SupportDashboard.service";
 
 import type IParticipant from "../../types/compontents/IParticipant";
 
-import {IconAddUser, IconExport, IconLink} from "../../assets";
+import {IconAddUser, IconLink, IconExport} from "../../assets";
+
+import buildPDF from "../../common/buildPDF";
 
 export default function SupportDashboard() {
     const [totalParticipants, setTotalParticipants] = useState(0);
@@ -31,7 +33,7 @@ export default function SupportDashboard() {
             await service.getParticipants().then(setParticipants);
         };
 
-        getData();
+        Promise.all([getData()]);
     }, []);
 
     return (
@@ -75,14 +77,17 @@ export default function SupportDashboard() {
                             />
 
                             <SmallButton
-                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconExport} />}
                                 label="Exporteer"
-                                onClick={() => console.log("Exporteer")}
+                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconExport} />}
+                                active={false}
+                                onClick={() => buildPDF(participants)}
                             />
                         </div>
                     </div>
 
-                    <SupportDashboardTable participants={participants} />
+                    <div>
+                        <SupportDashboardTable participants={participants} />
+                    </div>
                 </div>
 
                 <FloorPlans />
@@ -90,7 +95,13 @@ export default function SupportDashboard() {
                 <Calendar />
             </div>
 
-            {isAddParticipantShown && <ParticipantPopUp mode="add" onClose={() => setIsAddParticipantShown(false)} />}
+            {isAddParticipantShown && (
+                <ParticipantPopUp
+                    mode="add"
+                    setParticipants={setParticipants}
+                    onClose={() => setIsAddParticipantShown(false)}
+                />
+            )}
         </>
     );
 }

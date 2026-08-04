@@ -11,9 +11,15 @@ interface IParticipantsFilter {
     participants: IParticipant[];
     isShown: boolean;
     children: (filteredParticipants: IParticipant[]) => ReactNode;
+    setFilteredParticipants: (value: IParticipant[]) => void;
 }
 
-export default function ParticipantsFilter({participants, isShown, children}: IParticipantsFilter) {
+export default function ParticipantsFilter({
+    participants,
+    isShown,
+    children,
+    setFilteredParticipants,
+}: IParticipantsFilter) {
     const [searchTerm, setSearchTerm] = useLocalStorage("participants.searchTerm", "");
     const [organisationFilter, setOrganisationFilter] = useLocalStorage("participants.organisationFilter", "");
     const [activeFilter, setActiveFilter] = useLocalStorage("participants.activeFilter", "");
@@ -26,6 +32,10 @@ export default function ParticipantsFilter({participants, isShown, children}: IP
     useEffect(() => {
         setFilterHeight(isShown ? (filterContentRef.current?.scrollHeight ?? 0) : 0);
     }, [isShown]);
+
+    useEffect(() => {
+        setFilteredParticipants(filteredParticipants);
+    }, [organisationFilter, activeFilter, presentFilter, financingFilter]);
 
     const organisations = [...new Set(participants.map(participant => participant.organisation))];
     const financingOptions = [...new Set(participants.map(participant => participant.financing).filter(Boolean))];

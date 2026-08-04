@@ -89,7 +89,7 @@ export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
 
     return (
         <div className="relative overflow-auto w-full h-full">
-            <table className="table-fixed w-full text-sm text-left">
+            <table className="table-fixed w-full text-sm text-left" id="data-table">
                 <thead>
                     <tr className="sticky top-0 bg-(--color-lightwhite) rounded-lg">
                         {columns.map(column => (
