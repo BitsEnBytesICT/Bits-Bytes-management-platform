@@ -4,10 +4,23 @@ import type IInput from "../../types/compontents/IInput";
 
 const Input = forwardRef<HTMLInputElement, IInput>(
     (
-        {label, placeholder, id, type, value = "", checked = false, readOnly = false, required = false, onChange},
+        {
+            label,
+            placeholder,
+            id,
+            type,
+            value = "",
+            checked = false,
+            readOnly = false,
+            required = false,
+            forceTouched = false,
+            onChange,
+        },
         ref,
     ) => {
         const [isFilledIn, setIsFilledIn] = useState(Boolean(value));
+        const [touched, setTouched] = useState(false);
+        const showError = (touched || forceTouched) && !isFilledIn && required;
 
         if (type === "checkbox") {
             return (
@@ -45,7 +58,7 @@ const Input = forwardRef<HTMLInputElement, IInput>(
                     className={`px-5 py-3 text-[16px] text-(--color-offblack) bg-(--color-offwhite) outline-none
                         rounded-xl transition-colors focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]
                         ${readOnly ? "cursor-default" : ""} ${
-                            !isFilledIn && required
+                            showError
                                 ? `shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-red)_50%,transparent)]
                                     focus:shadow-[inset_0_0_0_1px_var(--color-red)]`
                                 : `shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
@@ -61,6 +74,7 @@ const Input = forwardRef<HTMLInputElement, IInput>(
                         setIsFilledIn(Boolean(e.target.value));
                         onChange(e.target.value);
                     }}
+                    onBlur={() => setTouched(true)}
                 />
             </div>
         );

@@ -30,6 +30,7 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
     const [currentParticipant, setCurrentParticipant] = useState(participant);
     const [password, setPassword] = useState(account?.password);
     const [error, setError] = useState([]);
+    const [submitAttempted, setSubmitAttempted] = useState(false);
     const isInfo = mode === "info";
 
     const service: ParticipantsService = new ParticipantsService();
@@ -59,8 +60,10 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
             !currentParticipant?.organisation ||
             (!account?.password && !password) ||
             !currentParticipant?.rfid
-        )
+        ) {
+            setSubmitAttempted(true);
             return;
+        }
 
         if (mode === "add") {
             const newAccount: IAccount = {
@@ -124,6 +127,7 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
                             value={currentParticipant?.firstname}
                             readOnly={isInfo}
                             required={!isInfo}
+                            forceTouched={submitAttempted}
                             onChange={(value: string) =>
                                 setCurrentParticipant({...currentParticipant, firstname: value})
                             }
@@ -136,6 +140,7 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
                             value={currentParticipant?.lastname}
                             readOnly={isInfo}
                             required={!isInfo}
+                            forceTouched={submitAttempted}
                             onChange={(value: string) =>
                                 setCurrentParticipant({...currentParticipant, lastname: value})
                             }
@@ -148,6 +153,7 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
                             value={currentParticipant?.organisation}
                             readOnly={isInfo}
                             required={!isInfo}
+                            forceTouched={submitAttempted}
                             onChange={(value: string) =>
                                 setCurrentParticipant({...currentParticipant, organisation: value})
                             }
@@ -171,6 +177,7 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
                             readOnly={isInfo}
                             onChange={(value: string) => setPassword(value)}
                             required={!isInfo}
+                            forceTouched={submitAttempted}
                         />
                         <Input
                             label="RFID Tag"
@@ -180,6 +187,7 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
                             value={currentParticipant?.rfid}
                             readOnly={isInfo}
                             required={!isInfo}
+                            forceTouched={submitAttempted}
                             onChange={(value: string) => setCurrentParticipant({...currentParticipant, rfid: value})}
                         />
                         {isInfo && (
