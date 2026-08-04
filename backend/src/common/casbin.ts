@@ -8,6 +8,7 @@ let enforcerInstance: Enforcer;
 
 export async function createEnforcer(): Promise<Enforcer> {
     if (!enforcerInstance) {
+        
         console.log("Creating new Enforcer");
         enforcerInstance = await newEnforcer('./src/casbin/model.conf', './src/casbin/policy.csv');
         await BuildEnforcerPolicies();

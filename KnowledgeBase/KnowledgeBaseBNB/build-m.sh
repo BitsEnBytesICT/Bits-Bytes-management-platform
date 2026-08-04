@@ -20,6 +20,12 @@ if ! command -v pkg-config >/dev/null 2>&1; then
     brew install pkg-config
 fi
 
+# Install autotools if missing (required by vcpkg to build cppunit)
+if ! command -v autoconf >/dev/null 2>&1 || ! command -v automake >/dev/null 2>&1 || ! command -v libtoolize >/dev/null 2>&1; then
+    echo "Installing autoconf, autoconf-archive, automake, libtool..."
+    brew install autoconf autoconf-archive automake libtool
+fi
+
 # Check Homebrew exists
 if ! command -v brew >/dev/null 2>&1; then
     echo "Homebrew is not installed."
