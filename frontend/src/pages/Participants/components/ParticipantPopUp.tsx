@@ -230,7 +230,7 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
                             onClick={async () => {
                                 isInfo ? onClose() : await save();
                             }}>
-                            {isInfo ? "Terug" : mode === "edit" ? "bewerken" : "Opslaan"}
+                            {isInfo ? "Terug" : mode === "edit" ? "Bewerken" : "Opslaan"}
                         </Button>
                     </div>
                 </>
