@@ -12,15 +12,21 @@ import type IParticipant from "../../types/compontents/IParticipant";
 
 import {IconAddUser, IconExport, IconFilter} from "../../assets";
 
+import buildPDF from "../../common/buildPDF";
+
 export default function Participants() {
     const [participants, setParticipants] = useState<IParticipant[]>([]);
     const [isFilterShown, setIsFilterShown] = useState(false);
     const [isAddParticipantShown, setIsAddParticipantShown] = useState(false);
+    const [filteredParticipants, setFilteredParticipants] = useState<IParticipant[]>([]);
 
     useEffect(() => {
         const service = new ParticipantsService();
 
-        service.getParticipants().then(setParticipants);
+        service.getParticipants().then(participants => {
+            setParticipants(participants);
+            setFilteredParticipants(participants);
+        });
     }, []);
 
     return (
@@ -43,14 +49,17 @@ export default function Participants() {
                     />
 
                     <SmallButton
-                        onClick={() => console.log("exporteer")}
+                        onClick={() => buildPDF(filteredParticipants)}
                         icon={<img src={IconExport} className="select-none [-webkit-user-drag:none]" />}
                         label="Exporteer"
                     />
                 </div>
             </div>
 
-            <ParticipantsFilter participants={participants} isShown={isFilterShown}>
+            <ParticipantsFilter
+                participants={participants}
+                isShown={isFilterShown}
+                setFilteredParticipants={setFilteredParticipants}>
                 {filteredParticipants => (
                     <ParticipantsTable participants={filteredParticipants} setParticipants={setParticipants} />
                 )}

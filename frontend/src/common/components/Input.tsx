@@ -7,7 +7,7 @@ const Input = forwardRef<HTMLInputElement, IInput>(
         {label, placeholder, id, type, value = "", checked = false, readOnly = false, required = false, onChange},
         ref,
     ) => {
-        const [isFilledIn, setIsFilledIn] = useState(Boolean(value));
+        const [isFilledIn, setIsFilledIn] = useState(true);
 
         if (type === "checkbox") {
             return (

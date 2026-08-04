@@ -46,7 +46,7 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
             (!account?.password && !password) ||
             !currentParticipant?.rfid
         ) {
-            setError(["* De rode velden zijn verplicht"]);
+            setError(["De velden met * zijn verplicht"]);
         } else {
             setError([]);
         }
@@ -162,6 +162,17 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
                                 setCurrentParticipant({...currentParticipant, active: value ? 1 : 0})
                             }
                         />
+                        {isInfo && (
+                            <Input
+                                label="Username"
+                                placeholder="Username"
+                                id="username"
+                                type="text"
+                                value={account.username}
+                                readOnly={true}
+                                required={false}
+                            />
+                        )}
                         <Input
                             label="Password"
                             placeholder="Password"
