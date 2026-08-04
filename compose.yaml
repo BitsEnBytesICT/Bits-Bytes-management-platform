@@ -2,8 +2,8 @@ name: bitsenbytes
 
 services:
   bitsenbytesfrontend:
-    mem_limit: 512m
-    memswap_limit: 512m
+    mem_limit: 1024m
+    memswap_limit: 1024m
     container_name: bitsenbytesfrontend
     working_dir: /usr/src
     command: |

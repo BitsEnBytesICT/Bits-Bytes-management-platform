@@ -29,7 +29,7 @@ export default class ParticipantController {
 
     @AuthenticationDecorator("participant.create")
     async create (req: Request, res: Response) {
-        await this.service.create(req.body.participant);
+        await this.service.create(req.body.participant, req.body.account);
         res.sendStatus(200);
     }
 
