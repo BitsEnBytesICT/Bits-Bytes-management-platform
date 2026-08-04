@@ -32,7 +32,6 @@ export default class AuthService {
     }
 
     verify = async (token: string) => {
-        console.log(token)
         try {
             const payload = jwt.verify(token, String(process.env.JWT_SECRET));
             let userName: string = !(typeof payload === "string") && "username" in payload ? payload.username : payload;

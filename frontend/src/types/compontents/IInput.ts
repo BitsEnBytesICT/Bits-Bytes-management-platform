@@ -6,4 +6,6 @@ export default interface IInput {
     value?: string;
     checked?: boolean;
     readOnly?: boolean;
+    required?: boolean;
+    onChange?: (input: string | Boolean | undefined) => void;
 }

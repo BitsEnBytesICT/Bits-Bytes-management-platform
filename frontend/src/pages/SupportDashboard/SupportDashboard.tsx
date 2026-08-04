@@ -95,7 +95,13 @@ export default function SupportDashboard() {
                 <Calendar />
             </div>
 
-            {isAddParticipantShown && <ParticipantPopUp mode="add" onClose={() => setIsAddParticipantShown(false)} />}
+            {isAddParticipantShown && (
+                <ParticipantPopUp
+                    mode="add"
+                    setParticipants={setParticipants}
+                    onClose={() => setIsAddParticipantShown(false)}
+                />
+            )}
         </>
     );
 }

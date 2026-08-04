@@ -13,8 +13,10 @@ class AccountRouter {
 
     initializeRoutes() {
         this.router.get('/api/account/current', this.controller.current.bind(this.controller));
-        this.router.get('/api/account/create', this.controller.create.bind(this.controller));
-        this.router.get('/api/account/findOne', this.controller.findOne.bind(this.controller));
+        this.router.post('/api/account/create', this.controller.create.bind(this.controller));
+        this.router.post('/api/account/findOne', this.controller.findOne.bind(this.controller));
+        this.router.delete('/api/account/delete', this.controller.delete.bind(this.controller));
+        this.router.post('/api/account/update', this.controller.update.bind(this.controller));
     }
 
     getRouter() {
