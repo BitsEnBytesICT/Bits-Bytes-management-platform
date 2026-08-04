@@ -2,36 +2,11 @@ import {forwardRef, useState} from "react";
 
 import type IInput from "../../types/compontents/IInput";
 
-const Input = forwardRef<HTMLInputElement, IInput>(
-    (
-        {label, placeholder, id, type, value = "", checked = false, readOnly = false, required = false, onChange},
-        ref,
-    ) => {
-        const [isFilledIn, setIsFilledIn] = useState(true);
+const Input = forwardRef<HTMLInputElement, IInput>((props, ref) => {
+    const [isFilledIn, setIsFilledIn] = useState(true);
 
-        if (type === "checkbox") {
-            return (
-                <div className="flex flex-col gap-2">
-                    {label && (
-                        <label className="ml-1.5 text-[16px] font-semibold text-(--color-darkblue)" htmlFor={id}>
-                            {`${label} ${required ? "*" : ""}`}
-                        </label>
-                    )}
-
-                    <div className="py-3 flex items-center">
-                        <input
-                            className="ml-1.5 w-5 h-5 accent-(--color-darkblue)"
-                            id={id}
-                            checked={checked}
-                            disabled={readOnly}
-                            ref={ref}
-                            type="checkbox"
-                            onChange={e => onChange(e.target.checked)}
-                        />
-                    </div>
-                </div>
-            );
-        }
+    if (props.type === "checkbox") {
+        const {label, id, className, checked = false, readOnly = false, required = false, onChange} = props;
 
         return (
             <div className="flex flex-col gap-2">
@@ -41,30 +16,57 @@ const Input = forwardRef<HTMLInputElement, IInput>(
                     </label>
                 )}
 
-                <input
-                    className={`px-5 py-3 text-[16px] text-(--color-offblack) bg-(--color-offwhite) outline-none
-                        rounded-xl transition-colors focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]
-                        ${readOnly ? "cursor-default" : ""} ${
-                            !isFilledIn && required
-                                ? `shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-red)_50%,transparent)]
-                                    focus:shadow-[inset_0_0_0_1px_var(--color-red)]`
-                                : `shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
-                                    focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]`
-                        }`}
-                    id={id}
-                    placeholder={placeholder}
-                    defaultValue={value}
-                    readOnly={readOnly}
-                    ref={ref}
-                    type={type}
-                    onChange={e => {
-                        setIsFilledIn(Boolean(e.target.value));
-                        onChange(e.target.value);
-                    }}
-                />
+                <div className="py-3 flex items-center">
+                    <input
+                        className={className ?? "ml-1.5 w-5 h-5 accent-(--color-darkblue)"}
+                        id={id}
+                        checked={checked}
+                        disabled={readOnly}
+                        ref={ref}
+                        type="checkbox"
+                        onChange={e => onChange?.(e.target.checked)}
+                    />
+                </div>
             </div>
         );
-    },
-);
+    }
+
+    const {label, placeholder, id, type, className, value = "", readOnly = false, required = false, onChange} = props;
+
+    return (
+        <div className="flex flex-col gap-2">
+            {label && (
+                <label className="ml-1.5 text-[16px] font-semibold text-(--color-darkblue)" htmlFor={id}>
+                    {`${label} ${required ? "*" : ""}`}
+                </label>
+            )}
+
+            <input
+                className={
+                    className ??
+                    `px-5 py-3 text-[16px] text-(--color-offblack) bg-(--color-offwhite) outline-none rounded-xl
+                    transition-colors focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]
+                    ${readOnly ? "cursor-default" : ""} ${
+                        !isFilledIn && required
+                            ? `shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-red)_50%,transparent)]
+                                focus:shadow-[inset_0_0_0_1px_var(--color-red)]`
+                            : `shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
+                                focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]`
+                    }`
+                }
+                id={id}
+                placeholder={placeholder}
+                defaultValue={value}
+                readOnly={readOnly}
+                ref={ref}
+                type={type}
+                onChange={e => {
+                    setIsFilledIn(Boolean(e.target.value));
+                    onChange?.(e.target.value);
+                }}
+            />
+        </div>
+    );
+});
 
 export default Input;

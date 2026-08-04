@@ -1,12 +1,19 @@
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 
 import type ITable from "../../types/compontents/ITable";
 import type {ITableColumn, SortDirection} from "../../types/compontents/ITable";
+import Input from "./Input";
 
-export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
+export default function Table<T>({columns, rows, rowKey, checkBox}: ITable<T>) {
     const [tooltipKey, setTooltipKey] = useState<string | null>(null);
     const [sortKey, setSortKey] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+    const [checked, setChecked] = useState<(T & {checked: boolean})[]>();
+    const [allChecked, setAllChecked] = useState<boolean>();
+
+    useEffect(() => {
+        setChecked(rows.map(row => ({...row, checked: false})));
+    }, [rows]);
 
     const sortedRows = useMemo(() => {
         if (!sortKey) return rows;
@@ -92,6 +99,21 @@ export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
             <table className="table-fixed w-full text-sm text-left" id="data-table">
                 <thead>
                     <tr className="sticky top-0 bg-(--color-lightwhite) rounded-lg">
+                        {checkBox && (
+                            <th
+                                key="checkBox"
+                                className="x-4 py-3 w-10 font-medium text-(--color-darkblue)/50 truncate">
+                                <Input
+                                    id="checkBox"
+                                    type="checkbox"
+                                    checked={allChecked}
+                                    className="ml-1.5 accent-(--color-darkblue)"
+                                    onChange={(value: boolean) => {
+                                        setAllChecked(value);
+                                        setChecked(checked.map(c => ({...c, checked: value})));
+                                    }}></Input>
+                            </th>
+                        )}
                         {columns.map(column => (
                             <th
                                 key={String(column.key)}
@@ -106,8 +128,24 @@ export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
                 </thead>
 
                 <tbody>
-                    {sortedRows.map(row => (
-                        <tr key={String(row[rowKey])}>{columns.map(column => renderCell(column, row))}</tr>
+                    {sortedRows.map((row, index) => (
+                        <tr key={String(row[rowKey])}>
+                            {checkBox && (
+                                <td>
+                                    <Input
+                                        id="checkBox"
+                                        type="checkbox"
+                                        checked={(checked && checked[index]?.checked) ?? false}
+                                        className="ml-1.5 accent-(--color-darkblue)"
+                                        onChange={(value: boolean) => {
+                                            checked[index].checked = value;
+                                            setChecked([...checked]);
+                                            setAllChecked(checked.find(c => c.checked == false) ? false : true);
+                                        }}></Input>
+                                </td>
+                            )}
+                            {columns.map(column => renderCell(column, row))}
+                        </tr>
                     ))}
                 </tbody>
             </table>

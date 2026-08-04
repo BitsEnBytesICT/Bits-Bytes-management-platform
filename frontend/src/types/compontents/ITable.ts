@@ -14,4 +14,6 @@ export default interface ITable<T> {
     columns: ITableColumn<T>[];
     rows: T[];
     rowKey: keyof T;
+    checkBox?: boolean;
+    checked?: (T & {checked: boolean})[];
 }
