@@ -7,6 +7,5 @@ export default interface IInput {
     checked?: boolean;
     readOnly?: boolean;
     required?: boolean;
-    forceTouched?: boolean;
     onChange?: (input: string | Boolean | undefined) => void;
 }
