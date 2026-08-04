@@ -8,6 +8,16 @@ cd ../backend || exit 1
 npm run build || exit 1
 
 cd ../KnowledgeBase/KnowledgeBaseBNB || exit 1
-./build.sh || exit 1
+case "$(uname -s)" in   
+    Linux*)
+        ./build-l.sh || exit 1
+        ;;
+    Darwin*)
+        ./build-m.sh || exit 1
+        ;;
+    MINGW*|MSYS*)
+        powershell.exe -ExecutionPolicy Bypass -File build-w.ps1 || exit 1
+        ;;
+esac
 
 exit $?
