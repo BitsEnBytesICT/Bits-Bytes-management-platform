@@ -3,11 +3,18 @@ import { ErrorCodes } from "../../types/error/ErrorCodes";
 import IError from "../../types/error/IError";
 import AccountService from "../accounts/accounts.service";
 import jwt from "jsonwebtoken";
+import AuthDAO from "./auth.dao";
 
 export const FIFTEEN_MINUES_IN_SECONDS = 900;
 
 export default class AuthService {
     private accountService: AccountService = new AccountService();
+
+    dao: AuthDAO;
+    
+    constructor() {
+        this.dao = new AuthDAO();
+    }
 
     login = async (username: string, password: string) => {
         if (!username || !password) throw {
@@ -31,19 +38,29 @@ export default class AuthService {
         )
     }
 
-    verify = async (token: string) => {
+    verify = async (token: string, apikey?: string) => {
         try {
-            const payload = jwt.verify(token, String(process.env.JWT_SECRET));
-            let userName: string = !(typeof payload === "string") && "username" in payload ? payload.username : payload;
-            userName = decrypt<string>(userName);
-
-            const account = await this.accountService.findOne(["username", userName]);
-
-            if (!account) throw {
-                date: new Date(),
-                errorMSG: new Error("token is invalid"),
-                code: ErrorCodes.invalidCredentials
-            } satisfies IError
+            let userName: string;
+            if (!apikey){
+                const payload = jwt.verify(token, String(process.env.JWT_SECRET));
+                userName = !(typeof payload === "string") && "username" in payload ? payload.username : payload;
+                userName = decrypt<string>(userName);
+                const account = await this.accountService.findOne(["username", userName]);
+                if (!account) throw {
+                    date: new Date(),
+                    errorMSG: new Error("token is invalid"),
+                    code: ErrorCodes.invalidCredentials
+                } satisfies IError
+            }
+            else {
+                const key = (await this.dao.listApiKeys()).find((k) => k.apikey === apikey);
+                if (!key) throw {
+                    date: new Date(),
+                    errorMSG: new Error("api key is invalid"),
+                    code: ErrorCodes.invalidCredentials
+                } satisfies IError
+            }
+            
         } catch (error) {
             throw {
                 date: new Date(),
@@ -79,5 +96,9 @@ export default class AuthService {
                 code: ErrorCodes.invalidCredentials
             } satisfies IError
         }
+    }
+
+    listApiKeys = async () => {
+        return await this.dao.listApiKeys();
     }
 }

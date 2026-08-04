@@ -34,7 +34,7 @@ describe("login", () => {
             { expiresIn: 900 },
         );
         await assert.doesNotReject(async () => {
-            await service.verify(token);
+            await service.verify(token, "");
         });
     });
 
@@ -45,5 +45,11 @@ describe("login", () => {
             { expiresIn: -1 },
         );
         assert.ok(await service.refresh(token));
+    });
+
+    it("verify api key", async () => {
+        await assert.doesNotReject(async () => {
+            await service.verify("", "test-api-key");
+        });
     });
 })

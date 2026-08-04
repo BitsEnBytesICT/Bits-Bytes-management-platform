@@ -15,7 +15,7 @@ export default class AuthController {
     }
 
     verify = async (req: Request, res: Response) => {
-        await this.service.verify(req.cookies["login"]);
+        await this.service.verify(req.cookies["login"], req.headers.authorization);
         res.sendStatus(200);
     }
 
