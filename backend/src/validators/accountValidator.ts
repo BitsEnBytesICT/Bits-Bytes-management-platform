@@ -3,12 +3,10 @@ import { ValidatorMap, validatorPipe, validatorPipePartial, ValidatorTuple } fro
 import { PermissionsList } from "../types/accounts/accountTypes";
 import IAccount from "../types/accounts/IAccount";
 import { Roles } from "../types/permissions/rolesList";
+import { validateNotNegativeOrUndefined, validateStringNotEmpty, validateStringNotEmptyAndLenBelow50Char } from "./globalValidators";
 
-const validateNotNegativeOrUndefined = Fun<number | undefined, boolean>(id => id === undefined ? true : id >= 0);
-const validateStringNotEmptyAndLenBelow50Char = Fun<string, boolean>(str => str.length > 0 && str.length < 51);
 const validateType = Fun<PermissionsList, boolean>((str) => Object.values(PermissionsList).includes(str as PermissionsList));
 const validateRole = Fun<Roles, boolean>((str) => Object.values(Roles).includes(str as Roles));
-const validateStringNotEmpty = Fun<string, boolean>(name => name.length > 0);
 
 
 export const accountValidatorFunctors: ValidatorMap<IAccount> = {

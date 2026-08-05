@@ -10,6 +10,7 @@ import IAccount from "../src/types/accounts/IAccount";
 import { PermissionsList } from "../src/types/accounts/accountTypes";
 import { Roles } from "../src/types/permissions/rolesList";
 import { encrypt } from "../src/common/encryptorDecryptor";
+import { getCurrentDate } from "../src/common/dateFunctions";
 
 describe("ParticipantService", () => {
     const service = new ParticipantService();
@@ -99,7 +100,7 @@ describe("ParticipantValidator", () => {
         organisation: "IT Afdeling",
         account: 1,
         rfid: "11F3EF12",
-        createdAt: new Date().toISOString(),
+        createdAt: getCurrentDate(),
         active: 1,
         clockedin: 0,
         financing: "Develop",

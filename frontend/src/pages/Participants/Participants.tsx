@@ -61,7 +61,11 @@ export default function Participants() {
                 isShown={isFilterShown}
                 setFilteredParticipants={setFilteredParticipants}>
                 {filteredParticipants => (
-                    <ParticipantsTable participants={filteredParticipants} setParticipants={setParticipants} />
+                    <ParticipantsTable
+                        participants={filteredParticipants}
+                        checkBox={true}
+                        setParticipants={setParticipants}
+                    />
                 )}
             </ParticipantsFilter>
 

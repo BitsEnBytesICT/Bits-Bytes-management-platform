@@ -14,6 +14,7 @@ import type IAccount from "../../../types/accounts/IAccount";
 
 interface IParticipantsTable {
     participants: IParticipant[];
+    checkBox?: boolean;
     setParticipants: (value: IParticipant[]) => void;
 }
 
@@ -62,7 +63,7 @@ function ActionIcons(
     );
 }
 
-export default function ParticipantsTable({participants, setParticipants}: IParticipantsTable) {
+export default function ParticipantsTable({participants, checkBox, setParticipants}: IParticipantsTable) {
     const [infoParticipant, setInfoParticipant] = useState<[IParticipant, IAccount] | null>(null);
     const [editParticipant, setEditParticipant] = useState<[IParticipant, IAccount] | null>(null);
     const [deleteParticipant, setDeleteParticipant] = useState<IParticipant | null>(null);
@@ -101,7 +102,7 @@ export default function ParticipantsTable({participants, setParticipants}: IPart
 
     return (
         <div className="flex-1 min-h-0">
-            <Table columns={participantColumns} rows={participants} rowKey="id" />
+            <Table columns={participantColumns} rows={participants} rowKey="id" checkBox={checkBox} />
 
             {infoParticipant && (
                 <ParticipantPopUp
