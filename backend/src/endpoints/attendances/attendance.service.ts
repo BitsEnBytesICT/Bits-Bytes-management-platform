@@ -9,6 +9,7 @@ import { KeyValuePair, ValidatorTuple } from '../../common/Validator';
 import SignatureService from '../signatures/signatures.service';
 import serviceBase from '../../common/serviceBase';
 import { attendanceValidator, attendanceValidatorFunctors, partialAttendanceValidator } from '../../validators/attendanceValidator';
+import { getCurrentDate } from '../../common/dateFunctions';
 
 export default class AttendanceService implements serviceBase<IAttendance> {
     dao: ScanDao;
@@ -65,7 +66,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
         const openAttendance = await this.dao.findOne(["participantID", participant.id!], ["clockoutDate", undefined]);
 
         if (openAttendance) {
-            const now = new Date().toISOString();
+            const now = getCurrentDate();
             const clockin = new Date(openAttendance.clockinDate).getTime();
             const clockout = new Date(now).getTime();
             const durationMinutes = Math.round((clockout - clockin) / 60000);
@@ -144,7 +145,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
             } as IError;
         }
 
-        const now = new Date().toISOString();
+        const now = getCurrentDate();
         const attendance: IAttendance = {
             participantID: participant.id!,
             clockinDate: now,

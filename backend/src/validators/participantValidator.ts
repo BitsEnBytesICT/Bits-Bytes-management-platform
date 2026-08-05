@@ -1,13 +1,11 @@
 import { Fun } from "../common/functor";
 import { ValidatorMap, validatorPipe, validatorPipePartial, ValidatorTuple } from "../common/Validator";
 import IParticipant from "../types/participant/IParticipant";
+import { validateDate, validateNotNegativeOrUndefined, validateStringNotEmptyAndLenBelow50Char } from "./globalValidators";
 
-const validateNotNegativeOrUndefined = Fun<number | undefined, boolean>(id => id === undefined ? true : id >= 0);
 const validateNotNegative = Fun<number, boolean>(id => id >= 0);
-const validateDate = Fun<string, boolean>(s => !isNaN(Date.parse(s)));
 const validateOneorZero = Fun<number, boolean>(id => id === 0 || id === 1);
 const validateOneorZeroUndefined = Fun<number | undefined, boolean>(id => id === undefined ? true : id === 0 || id === 1);
-const validateStringNotEmptyAndLenBelow50Char = Fun<string, boolean>(str => str.length > 0 && str.length < 51);
 const validateStringNotEmptyAndLenBelow50CharAndUndefined = Fun<string | undefined, boolean>(str => str === undefined ? true : str.length > 0 && str.length < 51);
 
 export const participantValidatorFunctors: ValidatorMap<IParticipant> = {

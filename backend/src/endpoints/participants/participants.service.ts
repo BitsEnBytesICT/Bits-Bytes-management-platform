@@ -1,3 +1,4 @@
+import { getCurrentDate } from "../../common/dateFunctions";
 import serviceBase from "../../common/serviceBase";
 import { KeyValuePair, ValidatorTuple } from "../../common/Validator";
 import IAccount from "../../types/accounts/IAccount";
@@ -39,7 +40,7 @@ export default class ParticipantService implements serviceBase<IParticipant> {
             account.username = `${participant.firstname}${participant.lastname.slice(0, count)}`;
             count++;
         } while (count < participant.lastname.length && allAccounts.find((a) => a.username === account.username));
-        participant.createdAt = new Date().toISOString();
+        participant.createdAt = getCurrentDate();
         await this.accountService.create(account);
 
         const accountID = (await this.accountService.findOne(["username", account.username]))?.id;
@@ -61,7 +62,12 @@ export default class ParticipantService implements serviceBase<IParticipant> {
             } satisfies IError
         }
 
-        await this.dao.create(participant);
+        try {
+            await this.dao.create(participant);
+        } catch (error) {
+            await this.accountService.delete(participant.account);
+            throw error;
+        }
     }
 
     async update(where: KeyValuePair<IParticipant>, ...values: KeyValuePair<IParticipant>[]) {
