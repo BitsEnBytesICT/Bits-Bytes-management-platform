@@ -1,32 +1,36 @@
-import {useEffect, useMemo, useState} from "react";
-
-import type ITable from "../../types/compontents/ITable";
+import {useEffect, useState} from "react";
 import type {ITableColumn, SortDirection} from "../../types/compontents/ITable";
 import Input from "./Input";
+import type ITable from "../../types/compontents/ITable";
 
-export default function Table<T>({columns, rows, rowKey, checkBox}: ITable<T>) {
+export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITable<T>) {
     const [tooltipKey, setTooltipKey] = useState<string | null>(null);
     const [sortKey, setSortKey] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-    const [checked, setChecked] = useState<(T & {checked: boolean})[]>();
     const [allChecked, setAllChecked] = useState<boolean>();
 
-    useEffect(() => {
-        setChecked(rows.map(row => ({...row, checked: false})));
-    }, [rows]);
-
-    const sortedRows = useMemo(() => {
-        if (!sortKey) return rows;
-
+    function sortRows<R>(rows: readonly R[]): R[] {
         const sorted = [...rows].sort((a, b) => {
-            const valueA = String(a[sortKey as unknown as keyof T]);
-            const valueB = String(b[sortKey as unknown as keyof T]);
+            const valueA = String(a[sortKey as unknown as keyof R]);
+            const valueB = String(b[sortKey as unknown as keyof R]);
 
             return valueA.localeCompare(valueB, undefined, {numeric: true, sensitivity: "base"});
         });
 
         return sortDirection === "asc" ? sorted : sorted.reverse();
-    }, [rows, sortKey, sortDirection]);
+    }
+
+    useEffect(() => {
+        if (!checkBox) return;
+        setAllChecked(rows.find(r => r.checked == false) ? false : true);
+    }, [rows]);
+
+    useEffect(() => {
+        if (!sortKey) return;
+
+        if (checkBox === true) setRows(sortRows(rows));
+        else setRows(sortRows(rows));
+    }, [sortKey, sortDirection]);
 
     function getSortIndicator(column: ITableColumn<T>): string {
         if (column.sortable === false || sortKey !== String(column.key)) return "";
@@ -109,8 +113,7 @@ export default function Table<T>({columns, rows, rowKey, checkBox}: ITable<T>) {
                                     checked={allChecked}
                                     className="ml-1.5 accent-(--color-darkblue)"
                                     onChange={(value: boolean) => {
-                                        setAllChecked(value);
-                                        setChecked(checked.map(c => ({...c, checked: value})));
+                                        setRows?.(rows.map(c => ({...c, checked: value})));
                                     }}></Input>
                             </th>
                         )}
@@ -128,19 +131,18 @@ export default function Table<T>({columns, rows, rowKey, checkBox}: ITable<T>) {
                 </thead>
 
                 <tbody>
-                    {sortedRows.map((row, index) => (
+                    {rows.map((row, index) => (
                         <tr key={String(row[rowKey])}>
                             {checkBox && (
                                 <td>
                                     <Input
                                         id="checkBox"
                                         type="checkbox"
-                                        checked={(checked && checked[index]?.checked) ?? false}
+                                        checked={(rows && rows[index]?.checked) ?? false}
                                         className="ml-1.5 accent-(--color-darkblue)"
                                         onChange={(value: boolean) => {
-                                            checked[index].checked = value;
-                                            setChecked([...checked]);
-                                            setAllChecked(checked.find(c => c.checked == false) ? false : true);
+                                            rows[index].checked = value;
+                                            setRows?.([...rows]);
                                         }}></Input>
                                 </td>
                             )}

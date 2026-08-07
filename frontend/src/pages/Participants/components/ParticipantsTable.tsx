@@ -13,9 +13,10 @@ import ParticipantsService from "../Participants.service";
 import type IAccount from "../../../types/accounts/IAccount";
 
 interface IParticipantsTable {
-    participants: IParticipant[];
-    checkBox?: boolean;
+    filteredParticipants: (IParticipant & {checked: boolean})[];
+    checkBox?: true;
     setParticipants: (value: IParticipant[]) => void;
+    setFilteredParticipants: (value: (IParticipant & {checked: boolean})[]) => void;
 }
 
 function ActionIcons(
@@ -63,7 +64,12 @@ function ActionIcons(
     );
 }
 
-export default function ParticipantsTable({participants, checkBox, setParticipants}: IParticipantsTable) {
+export default function ParticipantsTable({
+    filteredParticipants,
+    checkBox,
+    setParticipants,
+    setFilteredParticipants,
+}: IParticipantsTable) {
     const [infoParticipant, setInfoParticipant] = useState<[IParticipant, IAccount] | null>(null);
     const [editParticipant, setEditParticipant] = useState<[IParticipant, IAccount] | null>(null);
     const [deleteParticipant, setDeleteParticipant] = useState<IParticipant | null>(null);
@@ -102,7 +108,13 @@ export default function ParticipantsTable({participants, checkBox, setParticipan
 
     return (
         <div className="flex-1 min-h-0">
-            <Table columns={participantColumns} rows={participants} rowKey="id" checkBox={checkBox} />
+            <Table
+                columns={participantColumns}
+                rows={filteredParticipants}
+                setRows={setFilteredParticipants}
+                rowKey="id"
+                checkBox={checkBox}
+            />
 
             {infoParticipant && (
                 <ParticipantPopUp

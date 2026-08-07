@@ -10,8 +10,8 @@ import type IParticipant from "../../../types/compontents/IParticipant";
 interface IParticipantsFilter {
     participants: IParticipant[];
     isShown: boolean;
-    children: (filteredParticipants: IParticipant[]) => ReactNode;
-    setFilteredParticipants: (value: IParticipant[]) => void;
+    children: (filteredParticipants: (IParticipant & {checked: boolean})[]) => ReactNode;
+    setFilteredParticipants: (value: (IParticipant & {checked: boolean})[]) => void;
 }
 
 export default function ParticipantsFilter({
@@ -29,13 +29,16 @@ export default function ParticipantsFilter({
 
     const filterContentRef = useRef<HTMLDivElement>(null);
 
+    let filteredParticipants: (IParticipant & {checked: boolean})[];
+
     useEffect(() => {
         setFilterHeight(isShown ? (filterContentRef.current?.scrollHeight ?? 0) : 0);
     }, [isShown]);
 
     useEffect(() => {
+        filteredParticipants = participants.filter(matchesFilters).map(p => ({...p, checked: false}));
         setFilteredParticipants(filteredParticipants);
-    }, [organisationFilter, activeFilter, presentFilter, financingFilter]);
+    }, [participants, searchTerm, organisationFilter, activeFilter, presentFilter, financingFilter]);
 
     const organisations = [...new Set(participants.map(participant => participant.organisation))];
     const financingOptions = [...new Set(participants.map(participant => participant.financing).filter(Boolean))];
@@ -50,6 +53,7 @@ export default function ParticipantsFilter({
                     .toLowerCase()
                     .includes(term),
             );
+
         const matchesOrganisation = !organisationFilter || participant.organisation === organisationFilter;
         const matchesActive = !activeFilter || (participant.active ? "Actief" : "Inactief") === activeFilter;
         const matchesPresence =
@@ -58,8 +62,6 @@ export default function ParticipantsFilter({
 
         return matchesSearch && matchesOrganisation && matchesActive && matchesPresence && matchesFinancing;
     }
-
-    const filteredParticipants = participants.filter(matchesFilters);
 
     const filterGroups = [
         {

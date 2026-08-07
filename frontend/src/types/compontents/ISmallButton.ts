@@ -3,4 +3,5 @@ export default interface ISmallButton {
     label: string;
     active?: boolean;
     onClick?: () => void;
+    classNameExtra?: string;
 }
