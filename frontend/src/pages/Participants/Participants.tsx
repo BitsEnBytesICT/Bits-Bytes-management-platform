@@ -10,24 +10,38 @@ import ParticipantsService from "./Participants.service";
 
 import type IParticipant from "../../types/compontents/IParticipant";
 
-import {IconAddUser, IconExport, IconFilter} from "../../assets";
+import {IconAddUser, IconDelete, IconExport, IconFilter} from "../../assets";
 
 import buildPDF from "../../common/buildPDF";
+import SmallPopUp from "../../common/components/SmallPopUp";
 
 export default function Participants() {
     const [participants, setParticipants] = useState<IParticipant[]>([]);
     const [isFilterShown, setIsFilterShown] = useState(false);
     const [isAddParticipantShown, setIsAddParticipantShown] = useState(false);
-    const [filteredParticipants, setFilteredParticipants] = useState<IParticipant[]>([]);
+    const [filteredParticipants, setFilteredParticipants] = useState<(IParticipant & {checked: boolean})[]>([]);
+    const [hasSelected, setHasSelected] = useState<boolean>();
+    const [deleteParticipants, setDeleteParticipants] = useState<boolean>();
+
+    const service = new ParticipantsService();
 
     useEffect(() => {
-        const service = new ParticipantsService();
+        setHasSelected(filteredParticipants.some(p => p.checked));
+    }, [filteredParticipants]);
 
+    useEffect(() => {
         service.getParticipants().then(participants => {
             setParticipants(participants);
-            setFilteredParticipants(participants);
         });
     }, []);
+
+    async function bulkDeleteParticipants() {
+        const checkedParticipants = filteredParticipants.filter(p => p.checked);
+        for (const participant of checkedParticipants) {
+            await service.deleteAccount(participant.account);
+        }
+        service.getParticipants().then(setParticipants);
+    }
 
     return (
         <div className="flex flex-col h-[calc(100vh-10rem)]">
@@ -42,6 +56,22 @@ export default function Participants() {
                 </div>
 
                 <div className="flex flex-row gap-6">
+                    {hasSelected && (
+                        <>
+                            <SmallButton
+                                classNameExtra="animate-[fade-in_0.3s_ease-in-out]"
+                                onClick={() => setDeleteParticipants(true)}
+                                icon={<img src={IconDelete} className="select-none [-webkit-user-drag:none]" />}
+                                label="Selectie verwijderen"
+                            />
+                            <SmallButton
+                                classNameExtra="animate-[fade-in_0.3s_ease-in-out]"
+                                onClick={() => buildPDF(filteredParticipants.filter(p => p.checked))}
+                                icon={<img src={IconExport} className="select-none [-webkit-user-drag:none]" />}
+                                label="Selectie exporteren"
+                            />
+                        </>
+                    )}
                     <SmallButton
                         onClick={() => setIsAddParticipantShown(true)}
                         icon={<img src={IconAddUser} className="select-none [-webkit-user-drag:none]" />}
@@ -60,11 +90,12 @@ export default function Participants() {
                 participants={participants}
                 isShown={isFilterShown}
                 setFilteredParticipants={setFilteredParticipants}>
-                {filteredParticipants => (
+                {() => (
                     <ParticipantsTable
-                        participants={filteredParticipants}
+                        filteredParticipants={filteredParticipants}
                         checkBox={true}
                         setParticipants={setParticipants}
+                        setFilteredParticipants={setFilteredParticipants}
                     />
                 )}
             </ParticipantsFilter>
@@ -74,6 +105,18 @@ export default function Participants() {
                     mode="add"
                     setParticipants={setParticipants}
                     onClose={() => setIsAddParticipantShown(false)}
+                />
+            )}
+
+            {deleteParticipants && (
+                <SmallPopUp
+                    title="Verwijderen"
+                    message={`Weet je zeker dat je ${filteredParticipants.filter(p => p.checked).length} deelnemers wil verwijderen?`}
+                    onCancel={() => setDeleteParticipants(false)}
+                    onConfirm={async () => {
+                        bulkDeleteParticipants();
+                        setDeleteParticipants(false);
+                    }}
                 />
             )}
         </div>

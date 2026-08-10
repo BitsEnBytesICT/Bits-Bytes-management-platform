@@ -86,7 +86,7 @@ export default function SupportDashboard() {
                     </div>
 
                     <div>
-                        <SupportDashboardTable participants={participants} />
+                        <SupportDashboardTable participants={participants} setParticipants={setParticipants} />
                     </div>
                 </div>
 

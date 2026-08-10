@@ -10,10 +10,22 @@ export interface ITableColumn<T> {
     sortable?: boolean;
 }
 
-export default interface ITable<T> {
+interface ITableBase<T> {
     columns: ITableColumn<T>[];
-    rows: T[];
     rowKey: keyof T;
-    checkBox?: boolean;
-    checked?: (T & {checked: boolean})[];
 }
+
+interface ITableUnchecked<T> extends ITableBase<T> {
+    rows: T[];
+    checkBox: false;
+    setRows: (value: T[]) => void;
+}
+
+interface ITableChecked<T> extends ITableBase<T> {
+    rows: (T & {checked: boolean})[];
+    checkBox: true;
+    setRows: (value: (T & {checked: boolean})[]) => void;
+}
+
+type ITable<T> = ITableUnchecked<T> | ITableChecked<T>;
+export type {ITable as default};
