@@ -21,9 +21,21 @@ export default class AttendanceController {
         res.json(result);
     }
 
+    @AuthenticationDecorator("attendance.list")
+    async list (req: Request, res: Response) {
+        const attendances = await this.service.list();
+        res.json(attendances);
+    }
+
+    @AuthenticationDecorator("attendance.delete")
+    async delete (req: Request, res: Response) {
+        await this.service.delete(req.body.where);
+        res.sendStatus(200);
+    }
+
     @AuthenticationDecorator('attendance.clock_in')
-    async clockInWithSignature(req: Request, res: Response) {
-        await this.service.processClockInWithSignature(req.body.rfid_uid, req.body.signature);
+    async create(req: Request, res: Response) {
+        await this.service.create(req.body.rfid_uid, req.body.signature);
         res.sendStatus(200);
     }
 

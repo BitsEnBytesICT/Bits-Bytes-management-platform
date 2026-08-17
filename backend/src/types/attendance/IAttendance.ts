@@ -4,4 +4,5 @@ export default interface IAttendance {
     clockinDate: string;
     clockoutDate?: string;
     workDuration?: number;
+    signature: string;
 }
