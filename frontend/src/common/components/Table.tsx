@@ -1,25 +1,36 @@
-import {useMemo, useState} from "react";
-
-import type ITable from "../../types/compontents/ITable";
+import {useEffect, useState} from "react";
 import type {ITableColumn, SortDirection} from "../../types/compontents/ITable";
+import Input from "./Input";
+import type ITable from "../../types/compontents/ITable";
 
-export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
+export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITable<T>) {
     const [tooltipKey, setTooltipKey] = useState<string | null>(null);
     const [sortKey, setSortKey] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+    const [allChecked, setAllChecked] = useState<boolean>();
 
-    const sortedRows = useMemo(() => {
-        if (!sortKey) return rows;
-
+    function sortRows<R>(rows: readonly R[]): R[] {
         const sorted = [...rows].sort((a, b) => {
-            const valueA = String(a[sortKey as unknown as keyof T]);
-            const valueB = String(b[sortKey as unknown as keyof T]);
+            const valueA = String(a[sortKey as unknown as keyof R]);
+            const valueB = String(b[sortKey as unknown as keyof R]);
 
             return valueA.localeCompare(valueB, undefined, {numeric: true, sensitivity: "base"});
         });
 
         return sortDirection === "asc" ? sorted : sorted.reverse();
-    }, [rows, sortKey, sortDirection]);
+    }
+
+    useEffect(() => {
+        if (!checkBox) return;
+        setAllChecked(rows.find(r => r.checked == false) ? false : true);
+    }, [rows]);
+
+    useEffect(() => {
+        if (!sortKey) return;
+
+        if (checkBox === true) setRows(sortRows(rows));
+        else setRows(sortRows(rows));
+    }, [sortKey, sortDirection]);
 
     function getSortIndicator(column: ITableColumn<T>): string {
         if (column.sortable === false || sortKey !== String(column.key)) return "";
@@ -92,6 +103,20 @@ export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
             <table className="table-fixed w-full text-sm text-left" id="data-table">
                 <thead>
                     <tr className="sticky top-0 bg-(--color-lightwhite) rounded-lg">
+                        {checkBox && (
+                            <th
+                                key="checkBox"
+                                className="x-4 py-3 w-10 font-medium text-(--color-darkblue)/50 truncate">
+                                <Input
+                                    id="checkBox"
+                                    type="checkbox"
+                                    checked={allChecked}
+                                    className="ml-1.5 accent-(--color-darkblue)"
+                                    onChange={(value: boolean) => {
+                                        setRows?.(rows.map(c => ({...c, checked: value})));
+                                    }}></Input>
+                            </th>
+                        )}
                         {columns.map(column => (
                             <th
                                 key={String(column.key)}
@@ -106,8 +131,23 @@ export default function Table<T>({columns, rows, rowKey}: ITable<T>) {
                 </thead>
 
                 <tbody>
-                    {sortedRows.map(row => (
-                        <tr key={String(row[rowKey])}>{columns.map(column => renderCell(column, row))}</tr>
+                    {rows.map((row, index) => (
+                        <tr key={String(row[rowKey])}>
+                            {checkBox && (
+                                <td>
+                                    <Input
+                                        id="checkBox"
+                                        type="checkbox"
+                                        checked={(rows && rows[index]?.checked) ?? false}
+                                        className="ml-1.5 accent-(--color-darkblue)"
+                                        onChange={(value: boolean) => {
+                                            rows[index].checked = value;
+                                            setRows?.([...rows]);
+                                        }}></Input>
+                                </td>
+                            )}
+                            {columns.map(column => renderCell(column, row))}
+                        </tr>
                     ))}
                 </tbody>
             </table>

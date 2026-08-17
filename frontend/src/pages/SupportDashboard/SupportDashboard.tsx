@@ -86,7 +86,7 @@ export default function SupportDashboard() {
                     </div>
 
                     <div>
-                        <SupportDashboardTable participants={participants} />
+                        <SupportDashboardTable participants={participants} setParticipants={setParticipants} />
                     </div>
                 </div>
 
@@ -95,7 +95,13 @@ export default function SupportDashboard() {
                 <Calendar />
             </div>
 
-            {isAddParticipantShown && <ParticipantPopUp mode="add" onClose={() => setIsAddParticipantShown(false)} />}
+            {isAddParticipantShown && (
+                <ParticipantPopUp
+                    mode="add"
+                    setParticipants={setParticipants}
+                    onClose={() => setIsAddParticipantShown(false)}
+                />
+            )}
         </>
     );
 }

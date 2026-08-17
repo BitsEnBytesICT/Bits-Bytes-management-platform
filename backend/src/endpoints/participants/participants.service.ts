@@ -1,3 +1,4 @@
+import { getCurrentDate } from "../../common/dateFunctions";
 import serviceBase from "../../common/serviceBase";
 import { KeyValuePair, ValidatorTuple } from "../../common/Validator";
 import IAccount from "../../types/accounts/IAccount";
@@ -21,29 +22,52 @@ export default class ParticipantService implements serviceBase<IParticipant> {
         return await this.dao.findOne(...where);
     }
 
-    async create(participant: IParticipant) {
+    async create(participant: IParticipant, account: IAccount) {
         if (!participant) throw {
             date: new Date(),
             errorMSG: new Error("participant required"),
             code: ErrorCodes.InvalidData
         } satisfies IError
-
-        const account = await this.accountService.findOne(["id", participant.account]);
-        if (!account) throw {
+        else if (!account) throw {
             date: new Date(),
             errorMSG: new Error("account not found"),
             code: ErrorCodes.InvalidData
         } satisfies IError
-        else if (account.firstname !== participant.firstname || account.lastname !== participant.lastname) throw {
-            date: new Date(),
-            errorMSG: new Error("firstname or lastname of the account and participant do not match"),
-            code: ErrorCodes.InvalidData
-        } satisfies IError
+
+        const allAccounts = await this.accountService.list();
+        let count = 1;
+        do {
+            account.username = `${participant.firstname}${participant.lastname.slice(0, count)}`;
+            count++;
+        } while (count < participant.lastname.length && allAccounts.find((a) => a.username === account.username));
+        participant.createdAt = getCurrentDate();
+        await this.accountService.create(account);
+
+        const accountID = (await this.accountService.findOne(["username", account.username]))?.id;
+        if (accountID) participant.account = accountID;
 
         const errors = ParticipantValidator(participant).filter((result) => result.kind === "error").map((r) => r.errorMSG);
-        if (errors && errors.length > 0) throw errors;
+        if (errors && errors.length > 0) {
+            if (accountID) await this.accountService.delete(accountID);
+            throw errors;
+        }
 
-        await this.dao.create(participant);
+        const allParticipants = await this.list();
+        if (allParticipants.find(p => p.rfid == participant.rfid)) {
+            if (accountID) await this.accountService.delete(accountID);
+            throw {
+                date: new Date(),
+                code: ErrorCodes.InvalidData,
+                errorMSG: new Error("rfid is not unique")
+            } satisfies IError
+        }
+
+        try {
+            await this.dao.create(participant);
+        } catch (error) {
+            await this.accountService.delete(participant.account);
+            throw error;
+        }
     }
 
     async update(where: KeyValuePair<IParticipant>, ...values: KeyValuePair<IParticipant>[]) {
@@ -53,17 +77,25 @@ export default class ParticipantService implements serviceBase<IParticipant> {
             code: ErrorCodes.InvalidData
         } satisfies IError
 
-        if (values.map((value) => value[0]).includes("account")) {
-            const participant = await this.findOne(where);
-            const account = await this.accountService.findOne(["id", values.find((value) => value[0] === "account")?.[1]]);
-            if (!account) throw {
+        const oldParticipant = await this.findOne(where);
+        if (!oldParticipant) throw {
+            date: new Date(),
+            errorMSG: new Error("cannot find participant to edit"),
+            code: ErrorCodes.InvalidData
+        } satisfies IError
+
+        const account = await this.accountService.findOne(["id", oldParticipant.account]);
+        if (!account) throw {
+            date: new Date(),
+            errorMSG: new Error("account not found"),
+            code: ErrorCodes.InvalidData
+        } satisfies IError
+
+        if (values.find((value) => value[0] === "account")) {
+            const newAccount = await this.accountService.findOne(["id", values.find((value) => value[0] === "account")?.[1]]);
+            if (!newAccount) throw {
                 date: new Date(),
                 errorMSG: new Error("account not found"),
-                code: ErrorCodes.InvalidData
-            } satisfies IError
-            else if (account.firstname !== participant?.firstname || account.lastname !== participant?.lastname) throw {
-                date: new Date(),
-                errorMSG: new Error("firstname or lastname of the account and participant do not match"),
                 code: ErrorCodes.InvalidData
             } satisfies IError
         }
@@ -74,6 +106,36 @@ export default class ParticipantService implements serviceBase<IParticipant> {
         const validationResult = partialParticipantValidator(Object.fromEntries(values), validatorFunctors);
         const errors = validationResult.filter((r) => r.kind === "error").map((r) => r.errorMSG);
         if (errors.length > 0) throw errors;
+
+        const firstname = values.find((value) => value[0] === "firstname");
+        const lastname = values.find((value) => value[0] === "lastname");
+        if ((firstname && firstname[1] !== account.firstname) || (lastname && lastname[1] !== account.lastname)) {
+            const allAccounts = await this.accountService.list();
+            if (allAccounts.find((a) => a.firstname === (firstname ? firstname[1] : account.firstname) && a.lastname === (lastname ? lastname[1] : account.lastname))) throw {
+                    date: new Date(),
+                    errorMSG: new Error("firstname and lastname already exist"),
+                    code: ErrorCodes.InvalidData
+            } satisfies IError
+
+            let newUsername: string;
+            let count = 1;
+            do {
+                newUsername = `${firstname ? firstname[1] : account.firstname}${(lastname ? lastname[1] : account.lastname).slice(0, count)}`;
+                count++;
+            } while (count < (lastname ? lastname[1].length : account.lastname.length) && (newUsername === account.username || allAccounts.find((a) => a.username === newUsername)));
+
+            await this.dao.update(where, ...values);
+            try {
+                await this.accountService.update(["id", account.id], ["firstname", (firstname ? firstname[1] : account.firstname)], ["lastname", (lastname ? lastname[1] : account.lastname)], ["username", newUsername]);
+            } catch (error: any) {
+                await this.dao.update(where, ...Object.entries(oldParticipant) as KeyValuePair<IParticipant>[]);
+                throw {
+                    date: new Date(),
+                    code: ErrorCodes.InvalidData,
+                    errorMSG: new Error(error)
+                } satisfies IError
+            }
+        }
 
         await this.dao.update(where, ...values);
     }

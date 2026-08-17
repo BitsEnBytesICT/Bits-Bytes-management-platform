@@ -5,9 +5,16 @@ import ParticipantService from "../src/endpoints/participants/participants.servi
 import { ParticipantValidator } from "../src/validators/participantValidator";
 import IParticipant from "../src/types/participant/IParticipant";
 import { runMigrations } from "../src/common/migrationsLoader";
+import AccountService from "../src/endpoints/accounts/accounts.service";
+import IAccount from "../src/types/accounts/IAccount";
+import { PermissionsList } from "../src/types/accounts/accountTypes";
+import { Roles } from "../src/types/permissions/rolesList";
+import { encrypt } from "../src/common/encryptorDecryptor";
+import { getCurrentDate } from "../src/common/dateFunctions";
 
 describe("ParticipantService", () => {
     const service = new ParticipantService();
+    const accountService = new AccountService();
 
     before(async () => {
         process.env.DATABASE_TYPE = "sqllite";
@@ -49,18 +56,27 @@ describe("ParticipantService", () => {
             createdAt: new Date().toDateString(),
             active: 1
         }
+        const account: IAccount = {
+            type: PermissionsList.participant,
+            firstname: participant.firstname,
+            lastname: participant.lastname,
+            username: "participantp",
+            role: Roles.admin,
+            password: encrypt("test123"),
+        };
 
         await assert.doesNotReject(async () => {
-            await service.create(participant);
+            await service.create(participant, account);
         });
     });
 
     it("update participant", async () => {
         await assert.doesNotReject(async () => {
-            service.update(["rfid", "AAAA"], ["firstname", "participantUpdated"], ["lastname", "participantUpdated"]);
+            await service.update(["rfid", "AAAA"], ["firstname", "participantUpdated"], ["lastname", "participantUpdated"]);
         });
 
         const updatedParticipant = await service.findOne(["rfid", "AAAA"]);
+        console.log(updatedParticipant)
 
         assert.equal(updatedParticipant?.firstname, "participantUpdated");
         assert.equal(updatedParticipant?.lastname, "participantUpdated");
@@ -84,7 +100,7 @@ describe("ParticipantValidator", () => {
         organisation: "IT Afdeling",
         account: 1,
         rfid: "11F3EF12",
-        createdAt: new Date().toISOString(),
+        createdAt: getCurrentDate(),
         active: 1,
         clockedin: 0,
         financing: "Develop",

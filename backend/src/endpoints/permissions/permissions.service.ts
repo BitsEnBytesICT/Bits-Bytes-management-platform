@@ -37,7 +37,7 @@ export default class PermissionsService implements serviceBase<object> {
 
     async list(): Promise<IPermissions[]> {
         return (await this.dao.list()).map((item) => 
-            ({role: item.role, permissions: item.permissions.split(";").map((permission) => 
+            ({id: item.id, role: item.role, permissions: item.permissions.split(";").map((permission) => 
                 permission)} as IPermissions));
     }
 }

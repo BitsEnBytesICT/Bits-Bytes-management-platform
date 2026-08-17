@@ -5,6 +5,7 @@ import type {ITableColumn} from "../../../types/compontents/ITable";
 
 interface ISupportDashboardTable {
     participants: IParticipant[];
+    setParticipants: (value: IParticipant[]) => void;
 }
 
 const participantColumns: ITableColumn<IParticipant>[] = [
@@ -23,6 +24,14 @@ const participantColumns: ITableColumn<IParticipant>[] = [
     },
 ];
 
-export default function SupportDashboardTable({participants}: ISupportDashboardTable) {
-    return <Table columns={participantColumns} rows={participants} rowKey="id" />;
+export default function SupportDashboardTable({participants, setParticipants}: ISupportDashboardTable) {
+    return (
+        <Table
+            columns={participantColumns}
+            rows={participants}
+            setRows={setParticipants}
+            checkBox={false}
+            rowKey="id"
+        />
+    );
 }

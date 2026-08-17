@@ -1,9 +1,24 @@
-export default interface IInput {
+interface InputBase {
     label?: string;
-    placeholder?: string;
     id: string;
-    type: string;
-    value?: string;
-    checked?: boolean;
+    className?: string;
     readOnly?: boolean;
+    required?: boolean;
 }
+
+interface CheckboxInput extends InputBase {
+    type: "checkbox";
+    checked?: boolean;
+    onChange?: (input: boolean) => void;
+}
+
+interface TextInput extends InputBase {
+    type: "text" | "password";
+    placeholder?: string;
+    value?: string;
+    onChange?: (input: string) => void;
+}
+
+type IInput = CheckboxInput | TextInput;
+
+export type {IInput as default};
