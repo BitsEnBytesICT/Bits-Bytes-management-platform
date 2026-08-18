@@ -6,19 +6,21 @@ import { Tables } from '../../types/tables/tablesList';
 
 export default class AttendanceDao extends daoBase<IAttendance> implements daoBaseType<IAttendance> {
     async create(attendance: IAttendance) {
-        await dbQuery('INSERT INTO Attendances (participantID, clockinDate) VALUES (?, ?)', [attendance.participantID, attendance.clockinDate]);
+        await dbQuery('INSERT INTO Attendances (participantID, clockinDate, signature) VALUES (?, ?, ?)',
+            [attendance.participantID, attendance.clockinDate, attendance.signature],
+        );
     }
 
     async update(where: KeyValuePair<IAttendance>, ...values: KeyValuePair<IAttendance>[]) {
         await this.updateFunc(Tables.Attendances, where, ...values);
     }
     
-    delete(...args: any[]): void {
-        throw new Error('Method not implemented.');
+    async delete(where: KeyValuePair<IAttendance>) {
+        await this.deleteFunc(Tables.Attendances, where);
     }
     
-    async list(...args: any[]): Promise<IAttendance[]> {
-        throw new Error('Method not implemented.');
+    async list(): Promise<IAttendance[]> {
+        return await dbAll<IAttendance>(`SELECT * FROM ${Tables.Attendances}`);
     }
     
     async findOne(...where: KeyValuePair<IAttendance>[]): Promise<IAttendance | undefined> {

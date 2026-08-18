@@ -1,12 +1,10 @@
 import { ErrorCodes } from '../../types/error/ErrorCodes';
 import IError from '../../types/error/IError';
 import IAttendance from '../../types/attendance/IAttendance';
-import ISignature from '../../types/signature/ISignature';
 import IScanResult from '../../types/scan/IScanResult';
 import ScanDao from './attendance.dao';
 import ParticipantService from '../participants/participants.service';
 import { KeyValuePair, ValidatorTuple } from '../../common/Validator';
-import SignatureService from '../signatures/signatures.service';
 import serviceBase from '../../common/serviceBase';
 import { attendanceValidator, attendanceValidatorFunctors, partialAttendanceValidator } from '../../validators/attendanceValidator';
 import { getCurrentDate } from '../../common/dateFunctions';
@@ -14,19 +12,52 @@ import { getCurrentDate } from '../../common/dateFunctions';
 export default class AttendanceService implements serviceBase<IAttendance> {
     dao: ScanDao;
     private participantService: ParticipantService;
-    private signatureService: SignatureService;
 
     constructor() {
         this.dao = new ScanDao();
         this.participantService = new ParticipantService();
-        this.signatureService = new SignatureService();
     }
 
-    create(...args: any[]): void {
-        throw new Error('Method not implemented.');
+    async create(rfid_uid: string, signature: string) {
+        this.validateRfid(rfid_uid);
+        this.validateSignature(signature);
+
+        const participant = await this.participantService.findOne(["rfid", rfid_uid], ["active", 1]);
+
+        if (!participant) {
+            throw {
+                date: new Date(),
+                errorMSG: new Error('Kaart niet geregistreerd'),
+                code: ErrorCodes.InvalidData,
+            } as IError;
+        }
+
+        const now = getCurrentDate();
+        const attendance: IAttendance = {
+            participantID: participant.id!,
+            clockinDate: now,
+            signature
+        };
+
+        const attendanceCheck = attendanceValidator(attendance);
+        if (attendanceCheck.find((r) => r.kind === 'error') !== undefined) {
+            const errors = attendanceCheck
+                .filter((r) => r.kind === 'error')
+                .map((error) => error.errorMSG);
+            throw errors;
+        }
+
+        await this.dao.create(attendance);
+        await this.participantService.update(["id", participant.id!], ["clockedin", 1]);
     }
 
-    update(where: KeyValuePair<IAttendance>, ...values: KeyValuePair<IAttendance>[]): void {
+    async update(where: KeyValuePair<IAttendance>, ...values: KeyValuePair<IAttendance>[]): Promise<void> {
+        if (!where || !values) throw {
+            date: new Date(),
+            errorMSG: new Error("where clause and values are required"),
+            code: ErrorCodes.InvalidData
+        } satisfies IError
+
         const validatorFunctors = values.map((item) => 
                     [item[0], attendanceValidatorFunctors[item[0]][0], attendanceValidatorFunctors[item[0]][1]] as ValidatorTuple<IAttendance>);
         
@@ -34,15 +65,15 @@ export default class AttendanceService implements serviceBase<IAttendance> {
         const errors = validationResult.filter((r) => r.kind === "error").map((r) => r.errorMSG);
         if (errors.length > 0) throw errors;
 
-        this.dao.update(where, ...values);
+        await this.dao.update(where, ...values);
     }
 
-    delete(...args: any[]): void {
-        throw new Error('Method not implemented.');
+    async delete(where: KeyValuePair<IAttendance>): Promise<void> {
+        await this.dao.delete(where);
     }
     
-    async list(...args: any[]): Promise<IAttendance[]> {
-        throw new Error('Method not implemented.');
+    async list(): Promise<IAttendance[]> {
+        return await this.dao.list();
     }
 
     async findOne(...where: KeyValuePair<IAttendance>[]): Promise<IAttendance> {
@@ -76,18 +107,11 @@ export default class AttendanceService implements serviceBase<IAttendance> {
                 clockinDate: openAttendance.clockinDate,
                 clockoutDate: now,
                 workDuration: durationMinutes,
+                signature: openAttendance.signature
             };
 
-            const validationResult = attendanceValidator(attendanceUpdate);
-            if (validationResult.find((r) => r.kind === 'error') === undefined) {
-                await this.dao.update(["id", openAttendance.id], ...Object.entries(attendanceUpdate) as KeyValuePair<IAttendance>[]);
-                await this.participantService.update(["id", participant.id!], ["clockedin", 0]);
-            } else {
-                const errors = validationResult
-                    .filter((r) => r.kind === 'error')
-                    .map((error) => error.errorMSG);
-                throw errors;
-            }
+            await this.update(["id", openAttendance.id], ...Object.entries(attendanceUpdate) as KeyValuePair<IAttendance>[]);
+            await this.participantService.update(["id", participant.id!], ["clockedin", 0]);
 
             return {
                 success: true,
@@ -129,46 +153,6 @@ export default class AttendanceService implements serviceBase<IAttendance> {
                 code: ErrorCodes.InvalidData,
             } as IError;
         }
-    }
-
-    async processClockInWithSignature(rfid_uid: string, signature: string) {
-        this.validateRfid(rfid_uid);
-        this.validateSignature(signature);
-
-        const participant = await this.participantService.findOne(["rfid", rfid_uid], ["active", 1]);
-
-        if (!participant) {
-            throw {
-                date: new Date(),
-                errorMSG: new Error('Kaart niet geregistreerd'),
-                code: ErrorCodes.InvalidData,
-            } as IError;
-        }
-
-        const now = getCurrentDate();
-        const attendance: IAttendance = {
-            participantID: participant.id!,
-            clockinDate: now,
-        };
-
-        const attendanceCheck = attendanceValidator(attendance);
-        if (attendanceCheck.find((r) => r.kind === 'error') !== undefined) {
-            const errors = attendanceCheck
-                .filter((r) => r.kind === 'error')
-                .map((error) => error.errorMSG);
-            throw errors;
-        }
-
-        await this.dao.create(attendance);
-        await this.participantService.update(["id", participant.id!], ["clockedin", 1]);
-
-        const sig: ISignature = {
-            participantID: participant.id!,
-            date: now,
-            signature,
-        };
-
-        await this.signatureService.create(sig);
     }
 
     async fetchLast30Days(rfid_uid: string): Promise<string[]> {
