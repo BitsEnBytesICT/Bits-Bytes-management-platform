@@ -72,7 +72,14 @@ describe("AttendanceService", () => {
         });
     });
 
-    it("clocks out an open attendance", async () => {
+    it("clocks out an open attendance returned with a MySQL date", async (context) => {
+        const originalAttendance = (await service.list())[0]!;
+        const findOne = service.dao.findOne.bind(service.dao);
+        context.mock.method(service.dao, "findOne", async (...where: Parameters<typeof findOne>) => {
+            const attendance = await findOne(...where);
+            return attendance ? { ...attendance, clockinDate: new Date(attendance.clockinDate) as unknown as string } : undefined;
+        });
+
         const result = await service.scan(rfid);
         const attendance = (await service.list())[0];
         const participant = await participantService.findOne(["rfid", rfid]);
@@ -82,6 +89,8 @@ describe("AttendanceService", () => {
         assert.equal(result.message, "Tot ziens, Jan!");
         assert.ok(attendance?.clockoutDate);
         assert.ok(attendance?.workDuration !== null);
+        assert.equal(attendance?.participantID, originalAttendance.participantID);
+        assert.equal(attendance?.clockinDate, originalAttendance.clockinDate);
         assert.equal(attendance?.signature, signature);
         assert.equal(participant?.clockedin, 0);
     });

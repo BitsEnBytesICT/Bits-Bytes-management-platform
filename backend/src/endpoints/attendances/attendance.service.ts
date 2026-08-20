@@ -102,15 +102,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
             const clockout = new Date(now).getTime();
             const durationMinutes = Math.round((clockout - clockin) / 60000);
 
-            const attendanceUpdate: IAttendance = {
-                participantID: participant.id!,
-                clockinDate: openAttendance.clockinDate,
-                clockoutDate: now,
-                workDuration: durationMinutes,
-                signature: openAttendance.signature
-            };
-
-            await this.update(["id", openAttendance.id], ...Object.entries(attendanceUpdate) as KeyValuePair<IAttendance>[]);
+            await this.update(["id", openAttendance.id], ["clockoutDate", now], ["workDuration", durationMinutes]);
             await this.participantService.update(["id", participant.id!], ["clockedin", 0]);
 
             return {
