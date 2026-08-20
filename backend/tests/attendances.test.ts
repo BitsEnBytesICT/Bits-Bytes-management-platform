@@ -73,12 +73,10 @@ describe("AttendanceService", () => {
     });
 
     it("clocks out an open attendance returned with a MySQL date", async (context) => {
-        const originalAttendance = (await service.list())[0]!;
-        const findOne = service.dao.findOne.bind(service.dao);
-        context.mock.method(service.dao, "findOne", async (...where: Parameters<typeof findOne>) => {
-            const attendance = await findOne(...where);
-            return attendance ? { ...attendance, clockinDate: new Date(attendance.clockinDate) as unknown as string } : undefined;
-        });
+        const mysqlAttendance = (await service.list())[0]!;
+        const originalClockinDate = mysqlAttendance.clockinDate;
+        Reflect.set(mysqlAttendance, "clockinDate", new Date(originalClockinDate));
+        context.mock.method(service.dao, "findOne", async () => mysqlAttendance);
 
         const result = await service.scan(rfid);
         const attendance = (await service.list())[0];
@@ -89,8 +87,8 @@ describe("AttendanceService", () => {
         assert.equal(result.message, "Tot ziens, Jan!");
         assert.ok(attendance?.clockoutDate);
         assert.ok(attendance?.workDuration !== null);
-        assert.equal(attendance?.participantID, originalAttendance.participantID);
-        assert.equal(attendance?.clockinDate, originalAttendance.clockinDate);
+        assert.equal(attendance?.participantID, mysqlAttendance.participantID);
+        assert.equal(attendance?.clockinDate, originalClockinDate);
         assert.equal(attendance?.signature, signature);
         assert.equal(participant?.clockedin, 0);
     });
