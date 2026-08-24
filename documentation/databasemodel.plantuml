@@ -24,17 +24,11 @@ entity Participant {
     financing: string
 }
 
-entity Signatures {
-    * id: number <<primary key>>
-    * participantID: number <<foreign key Participant.id>>
-    * date: Date
-    * signature: string
-}
-
 entity Attendance {
     * id: number <<primary key>>
     * participantID: number <<foreign key Participant.id>>
     * clockinDate: Date
+    * signature: string
     --
     clockoutDate: Date
     workDuration: number
@@ -51,6 +45,7 @@ entity Room {
     * name: string
     * width: number
     * height: number
+    * scale: number
 }
 
 entity Wall {
@@ -87,7 +82,6 @@ entity ScheduleParticipant {
 
 Account ||--|| Permission
 Account ||--|| Participant
-Participant ||--o{ Signatures
 Participant ||--o{ Attendance
 Participant ||--o{ ScheduleParticipant
 Schedule ||--o{ ScheduleParticipant
