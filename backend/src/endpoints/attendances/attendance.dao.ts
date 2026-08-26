@@ -28,12 +28,15 @@ export default class AttendanceDao extends daoBase<IAttendance> implements daoBa
     }
 
     async getAttendanceLast30Days(participantID: number): Promise<string[]> {
+        const cutoff = new Date();
+        cutoff.setUTCDate(cutoff.getUTCDate() - 30);
+
         const rows = await dbAll<{date: string}>(
             `SELECT DISTINCT date(clockinDate) as date
              FROM Attendances
-             WHERE participantID = ? AND clockinDate >= date('now', '-30 days')
+             WHERE participantID = ? AND clockinDate >= ?
              ORDER BY date DESC`,
-            [participantID]
+            [participantID, cutoff.toISOString().slice(0, 10)]
         )
         return rows.map(r => r.date);
     }
