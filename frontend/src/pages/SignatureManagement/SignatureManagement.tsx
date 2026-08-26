@@ -1,38 +1,29 @@
 import {useState} from "react";
 
 import SmallButton from "../../common/components/SmallButton";
-import SmallPopUp from "../../common/components/SmallPopUp";
+// import SmallPopUp from "../../common/components/SmallPopUp";
 import Table from "../../common/components/Table";
 
 import type {ITableColumn} from "../../types/compontents/ITable";
 
 import {IconAddUser, IconCalendar, IconDelete, IconEdit, IconExport, IconFilter, IconInfo} from "../../assets";
+import http from "../../common/http";
 
 interface ISignature {
-    id?: number;
-    date: string;
-    firstname: string;
-    lastname: string;
-    organisation: string;
-    clockedin: string;
-    clockedout: string;
-    duration: string;
-    signature: string;
+    id: number;
+    participantId: number;
+    date: Date;
+    signature?: string;
     checked: boolean;
 }
 
 const initialSignatures: ISignature[] = [
     {
         id: 1,
-        date: "07-29-2026",
-        firstname: "P",
-        lastname: "Diddy",
-        organisation: "Epstein island",
-        clockedin: "10:15",
-        clockedout: "3:55",
-        duration: "10:15 - 3:55",
-        signature: "Plaatje hier",
-        checked: true,
+        participantId: 1,
+        date: new Date(),
+        signature: "test",
+        checked: false,
     },
 ];
 
@@ -76,26 +67,15 @@ function ActionIcons(
 export default function SignatureManagement() {
     const [signatures, setSignatures] = useState<ISignature[]>(initialSignatures);
 
-    const [infoSignature, setInfoSignature] = useState<ISignature | null>(null);
-    const [editSignature, setEditSignature] = useState<ISignature | null>(null);
-    const [deleteSignature, setDeleteSignature] = useState<ISignature | null>(null);
+    const [_infoSignature, setInfoSignature] = useState<ISignature | null>(null);
+    const [_editSignature, setEditSignature] = useState<ISignature | null>(null);
+    const [_deleteSignature, setDeleteSignature] = useState<ISignature | null>(null);
 
     const signatureColumns: ITableColumn<ISignature>[] = [
-        {
-            key: "select",
-            label: "",
-            copyable: false,
-            sortable: false,
-            render: () => <SelectCheckbox />,
-        },
-        {key: "date", label: "Datum"},
-        {key: "firstname", label: "Naam"},
-        {key: "lastname", label: "Achternaam"},
-        {key: "organisation", label: "Organisatie"},
-        {key: "clockedin", label: "Clocked-In"},
-        {key: "clockedout", label: "Clocked-Out"},
-        {key: "duration", label: "Duratie"},
-        {key: "signature", label: "Handtekening"},
+        {key: "id", label: "id"},
+        {key: "participantId", label: "participantId"},
+        {key: "date", label: "date"},
+        {key: "signature", label: "signature"},
         {
             key: "acties",
             label: "Acties",
@@ -105,7 +85,7 @@ export default function SignatureManagement() {
                 ActionIcons(
                     row,
                     setEditSignature,
-                    signature => {
+                    _signature => {
                         //signature hier exporten?
                     },
                     setDeleteSignature,
@@ -114,7 +94,11 @@ export default function SignatureManagement() {
         },
     ];
 
-    // const selectedCount = signatures.filter(signature => signature.checked).length;
+    const fetchData = async () => {
+        const request = await http("/api/attendance", "GET");
+        const response = await request.json();
+        console.log(response);
+    };
 
     return (
         <div className="flex flex-col h-[calc(100vh-10rem)]">
@@ -130,7 +114,7 @@ export default function SignatureManagement() {
                     <SmallButton
                         icon={<img src={IconDelete} className="select-none [-webkit-user-drag:none]" />}
                         label="Verwijder Selectie"
-                        onClick={() => setSignatures(signatures.filter(signature => !signature.checked))}
+                        onClick={() => fetchData()}
                     />
 
                     <SmallButton
@@ -178,7 +162,7 @@ export default function SignatureManagement() {
                 />
             </div>
 
-            {infoSignature && (
+            {/* {infoSignature && (
                 <SmallPopUp
                     title="Details"
                     message={`${infoSignature.firstname} ${infoSignature.lastname} — ${infoSignature.organisation}, ${infoSignature.date} (${infoSignature.duration})`}
@@ -194,8 +178,8 @@ export default function SignatureManagement() {
                     onCancel={() => setEditSignature(null)}
                     onConfirm={() => setEditSignature(null)}
                 />
-            )}
-
+            )} */}
+            {/* 
             {deleteSignature && (
                 <SmallPopUp
                     title="Verwijderen"
@@ -206,7 +190,7 @@ export default function SignatureManagement() {
                         setDeleteSignature(null);
                     }}
                 />
-            )}
+            )} */}
         </div>
     );
 }
