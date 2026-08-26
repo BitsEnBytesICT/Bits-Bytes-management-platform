@@ -1,4 +1,7 @@
+import {useState} from "react";
+
 import SmallButton from "../../common/components/SmallButton";
+import SmallPopUp from "../../common/components/SmallPopUp";
 import Table from "../../common/components/Table";
 
 import type {ITableColumn} from "../../types/compontents/ITable";
@@ -6,7 +9,7 @@ import type {ITableColumn} from "../../types/compontents/ITable";
 import {IconAddUser, IconCalendar, IconDelete, IconEdit, IconExport, IconFilter, IconInfo} from "../../assets";
 
 interface ISignature {
-    id: number;
+    id?: number;
     date: string;
     firstname: string;
     lastname: string;
@@ -15,9 +18,10 @@ interface ISignature {
     clockedout: string;
     duration: string;
     signature: string;
+    checked: boolean;
 }
 
-const signatures: ISignature[] = [
+const initialSignatures: ISignature[] = [
     {
         id: 1,
         date: "07-29-2026",
@@ -28,6 +32,7 @@ const signatures: ISignature[] = [
         clockedout: "3:55",
         duration: "10:15 - 3:55",
         signature: "Plaatje hier",
+        checked: true,
     },
 ];
 
@@ -35,43 +40,82 @@ function SelectCheckbox() {
     return <input type="checkbox" className="w-4 h-4 accent-(--color-darkblue) align-middle cursor-pointer" />;
 }
 
-function ActionIcons() {
+function ActionIcons(
+    signature: ISignature,
+    onEditClick: (signature: ISignature) => void,
+    onExportClick: (signature: ISignature) => void,
+    onDeleteClick: (signature: ISignature) => void,
+    onInfoClick: (signature: ISignature) => void,
+) {
     return (
         <div className="flex flex-row gap-2 items-center">
-            <img src={IconEdit} className="size-4 shrink-0 cursor-pointer select-none [-webkit-user-drag:none]" />
-            <img src={IconExport} className="size-4 shrink-0 cursor-pointer select-none [-webkit-user-drag:none]" />
-            <img src={IconDelete} className="size-4 shrink-0 cursor-pointer select-none [-webkit-user-drag:none]" />
-            <img src={IconInfo} className="size-4 shrink-0 cursor-pointer select-none [-webkit-user-drag:none]" />
+            <img
+                onClick={() => onEditClick(signature)}
+                src={IconEdit}
+                className="size-4 shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+            />
+            <img
+                onClick={() => onExportClick(signature)}
+                src={IconExport}
+                className="size-4 shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+            />
+            <img
+                onClick={() => onDeleteClick(signature)}
+                src={IconDelete}
+                className="size-4 shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+            />
+            <img
+                onClick={() => onInfoClick(signature)}
+                src={IconInfo}
+                className="size-4 shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+            />
         </div>
     );
 }
 
-const signatureColumns: ITableColumn<ISignature>[] = [
-    {
-        key: "select",
-        label: "",
-        copyable: false,
-        sortable: false,
-        render: () => <SelectCheckbox />,
-    },
-    {key: "date", label: "Datum"},
-    {key: "firstname", label: "Naam"},
-    {key: "lastname", label: "Achternaam"},
-    {key: "organisation", label: "Organisatie"},
-    {key: "clockedin", label: "Clocked-In"},
-    {key: "clockedout", label: "Clocked-Out"},
-    {key: "duration", label: "Duratie"},
-    {key: "signature", label: "Handtekening"},
-    {
-        key: "acties",
-        label: "Acties",
-        copyable: false,
-        sortable: false,
-        render: () => <ActionIcons />,
-    },
-];
-
 export default function SignatureManagement() {
+    const [signatures, setSignatures] = useState<ISignature[]>(initialSignatures);
+
+    const [infoSignature, setInfoSignature] = useState<ISignature | null>(null);
+    const [editSignature, setEditSignature] = useState<ISignature | null>(null);
+    const [deleteSignature, setDeleteSignature] = useState<ISignature | null>(null);
+
+    const signatureColumns: ITableColumn<ISignature>[] = [
+        {
+            key: "select",
+            label: "",
+            copyable: false,
+            sortable: false,
+            render: () => <SelectCheckbox />,
+        },
+        {key: "date", label: "Datum"},
+        {key: "firstname", label: "Naam"},
+        {key: "lastname", label: "Achternaam"},
+        {key: "organisation", label: "Organisatie"},
+        {key: "clockedin", label: "Clocked-In"},
+        {key: "clockedout", label: "Clocked-Out"},
+        {key: "duration", label: "Duratie"},
+        {key: "signature", label: "Handtekening"},
+        {
+            key: "acties",
+            label: "Acties",
+            copyable: false,
+            sortable: false,
+            render: row =>
+                ActionIcons(
+                    row,
+                    setEditSignature,
+                    signature => {
+                        //signature hier exporten?
+                    },
+                    setDeleteSignature,
+                    setInfoSignature,
+                ),
+        },
+    ];
+
+    // const selectedCount = signatures.filter(signature => signature.checked).length;
+
     return (
         <div className="flex flex-col h-[calc(100vh-10rem)]">
             <div className="mb-4 flex flex-row justify-between">
@@ -86,6 +130,7 @@ export default function SignatureManagement() {
                     <SmallButton
                         icon={<img src={IconDelete} className="select-none [-webkit-user-drag:none]" />}
                         label="Verwijder Selectie"
+                        onClick={() => setSignatures(signatures.filter(signature => !signature.checked))}
                     />
 
                     <SmallButton
@@ -124,8 +169,44 @@ export default function SignatureManagement() {
                 className="flex-1 min-h-0 [&_td:first-child]:w-12 [&_td:first-child]:overflow-hidden
                     [&_td:last-child]:w-32 [&_td:last-child]:overflow-hidden [&_th:first-child]:w-12
                     [&_th:last-child]:w-32">
-                <Table columns={signatureColumns} rows={signatures} rowKey="id" />
+                <Table
+                    columns={signatureColumns}
+                    rows={signatures}
+                    setRows={setSignatures}
+                    rowKey="id"
+                    checkBox={true}
+                />
             </div>
+
+            {infoSignature && (
+                <SmallPopUp
+                    title="Details"
+                    message={`${infoSignature.firstname} ${infoSignature.lastname} — ${infoSignature.organisation}, ${infoSignature.date} (${infoSignature.duration})`}
+                    onCancel={() => setInfoSignature(null)}
+                    onConfirm={() => setInfoSignature(null)}
+                />
+            )}
+
+            {editSignature && (
+                <SmallPopUp
+                    title="Bewerken"
+                    message={`Bewerken van ${editSignature.firstname} ${editSignature.lastname} nog niet geïmplementeerd.`}
+                    onCancel={() => setEditSignature(null)}
+                    onConfirm={() => setEditSignature(null)}
+                />
+            )}
+
+            {deleteSignature && (
+                <SmallPopUp
+                    title="Verwijderen"
+                    message={`Weet je zeker dat je de handtekening van ${deleteSignature.firstname} ${deleteSignature.lastname} wil verwijderen?`}
+                    onCancel={() => setDeleteSignature(null)}
+                    onConfirm={() => {
+                        setSignatures(signatures.filter(signature => signature.id !== deleteSignature.id));
+                        setDeleteSignature(null);
+                    }}
+                />
+            )}
         </div>
     );
 }
