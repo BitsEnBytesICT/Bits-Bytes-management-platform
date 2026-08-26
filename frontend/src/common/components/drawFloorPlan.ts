@@ -17,8 +17,6 @@ export default function drawFloorPlan(
 
     if (canvas.width !== canvas.clientWidth) canvas.width = canvas.clientWidth;
 
-    console.log(`width: ${canvas.width} height: ${canvas.height}`);
-
     const context = canvas.getContext("2d");
 
     if (!context) return;
@@ -28,7 +26,7 @@ export default function drawFloorPlan(
     context.strokeStyle = "black";
 
     context.beginPath();
-    context.rect(context.lineWidth / 2, context.lineWidth / 2, room.width / room.scale, room.height / room.scale);
+    context.rect(context.lineWidth, context.lineWidth, room.width / room.scale, room.height / room.scale);
     context.stroke();
     if (walls) {
         context.rect(walls[0].xpos / room.scale, walls[0].ypos / room.scale, walls[0].height / room.scale, 5);
