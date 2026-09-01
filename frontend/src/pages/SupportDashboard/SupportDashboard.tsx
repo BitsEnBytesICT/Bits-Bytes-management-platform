@@ -13,6 +13,7 @@ import ParticipantPopUp from "../Participants/components/ParticipantPopUp";
 import SupportDashboardService from "./SupportDashboard.service";
 
 import type IParticipant from "../../types/compontents/IParticipant";
+import type {IRoom} from "../../types/floorPlans/IRoom";
 
 import {IconAddUser, IconLink, IconExport} from "../../assets";
 
@@ -22,6 +23,7 @@ export default function SupportDashboard() {
     const [totalParticipants, setTotalParticipants] = useState(0);
     const [presentParticipants, setPresentParticipants] = useState(0);
     const [participants, setParticipants] = useState<IParticipant[]>([]);
+    const [rooms, setRooms] = useState<IRoom[]>([]);
     const [isAddParticipantShown, setIsAddParticipantShown] = useState(false);
 
     useEffect(() => {
@@ -31,6 +33,7 @@ export default function SupportDashboard() {
             await service.getTotalParticipants().then(setTotalParticipants);
             await service.getPresentParticipants().then(setPresentParticipants);
             await service.getParticipants().then(setParticipants);
+            await service.getRooms().then(setRooms);
         };
 
         Promise.all([getData()]);
@@ -90,7 +93,7 @@ export default function SupportDashboard() {
                     </div>
                 </div>
 
-                <FloorPlans />
+                <FloorPlans rooms={rooms} />
 
                 <Calendar />
             </div>

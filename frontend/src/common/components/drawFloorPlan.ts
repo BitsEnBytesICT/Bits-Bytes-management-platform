@@ -11,7 +11,7 @@ export default function drawFloorPlan(
 ): void {
     const canvas = canvasRef.current;
 
-    if (!canvas) return;
+    if (!canvas || !room) return;
 
     canvas.style.width = `${room.width / room.scale + 2}px`;
     canvas.style.height = `${room.height / room.scale + 2}px`;

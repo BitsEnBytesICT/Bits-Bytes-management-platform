@@ -23,7 +23,7 @@ export default class AttendanceController {
 
     @AuthenticationDecorator("attendance.list")
     async list (req: Request, res: Response) {
-        const attendances = await this.service.list();
+        const attendances = await this.service.list(...(req.body?.where ?? []));
         res.json(attendances);
     }
 

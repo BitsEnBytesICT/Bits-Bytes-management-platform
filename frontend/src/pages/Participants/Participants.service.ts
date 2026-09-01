@@ -8,7 +8,7 @@ export default class ParticipantsService {
     getParticipants = async (): Promise<IParticipant[]> => {
         let participants: IParticipant[] = [];
 
-        await http("/api/participants", "GET").then(async res => {
+        await http("/api/participants", "POST").then(async res => {
             if (res.status === 200) participants = await res.json();
         });
 

@@ -1,6 +1,7 @@
 import http from "../../common/http";
 
 import type IParticipant from "../../types/compontents/IParticipant";
+import type {IRoom} from "../../types/floorPlans/IRoom";
 
 export default class SupportDashboardService {
     getTotalParticipants = async () => {
@@ -26,10 +27,20 @@ export default class SupportDashboardService {
     getParticipants = async (): Promise<IParticipant[]> => {
         let participants: IParticipant[] = [];
 
-        await http("/api/participants", "GET").then(async res => {
+        await http("/api/participants", "POST").then(async res => {
             if (res.status === 200) participants = await res.json();
         });
 
         return participants;
+    };
+
+    getRooms = async (): Promise<IRoom[]> => {
+        let rooms: IRoom[] = [];
+
+        await http("/api/rooms", "POST").then(async res => {
+            if (res.status === 200) rooms = await res.json();
+        });
+
+        return rooms;
     };
 }

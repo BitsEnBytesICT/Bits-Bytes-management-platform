@@ -19,8 +19,14 @@ export default class AttendanceDao extends daoBase<IAttendance> implements daoBa
         await this.deleteFunc(Tables.Attendances, where);
     }
     
-    async list(): Promise<IAttendance[]> {
-        return await dbAll<IAttendance>(`SELECT * FROM ${Tables.Attendances}`);
+    async list(...where: KeyValuePair<IAttendance>[]): Promise<IAttendance[]> {
+        if (where.length === 0) return await dbAll<IAttendance>(`SELECT * FROM ${Tables.Attendances}`);
+
+        return await dbAll<IAttendance>(
+            `SELECT * FROM ${Tables.Attendances} WHERE ${where.map(([key, value]) =>
+            value === undefined ? `${String(key)} IS NULL` : `${String(key)} = ?`).join(' AND ')}`,
+            where.filter(([, value]) => value !== undefined).map(([, value]) => value),
+        );
     }
     
     async findOne(...where: KeyValuePair<IAttendance>[]): Promise<IAttendance | undefined> {

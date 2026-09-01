@@ -18,8 +18,14 @@ export default class ParticipantDao extends daoBase<IParticipant> implements dao
         await this.deleteFunc(Tables.Participants, where);
     }
 
-    async list(): Promise<IParticipant[]> {
-        return await dbAll<IParticipant>(`SELECT * FROM ${Tables.Participants}`);
+    async list(...where: KeyValuePair<IParticipant>[]): Promise<IParticipant[]> {
+        if (where.length === 0) return await dbAll<IParticipant>(`SELECT * FROM ${Tables.Participants}`);
+
+        return await dbAll<IParticipant>(
+            `SELECT * FROM ${Tables.Participants} WHERE ${where.map(([key, value]) =>
+            value === undefined ? `${String(key)} IS NULL` : `${String(key)} = ?`).join(' AND ')}`,
+            where.filter(([, value]) => value !== undefined).map(([, value]) => value),
+        );
     }
 
     async findOne(...where: KeyValuePair<IParticipant>[]): Promise<IParticipant | undefined> {
