@@ -4,4 +4,5 @@ export interface IWall {
     ypos: number;
     height: number;
     RoomID: number;
+    rotation?: 0 | 90;
 }

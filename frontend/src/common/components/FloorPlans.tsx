@@ -8,7 +8,7 @@ import type {IRoom} from "../../types/floorPlans/IRoom";
 import type {IWall} from "../../types/floorPlans/IWall";
 import type {IWorkplace} from "../../types/floorPlans/IWorkplace";
 
-const floorPlans = [{label: "Server ruimte"}, {label: "Gymzaal"}, {label: "Stille ruimte"}];
+//const floorPlans = [{label: "Server ruimte"}, {label: "Gymzaal"}, {label: "Stille ruimte"}];
 
 export default function FloorPlans() {
     const [active, setActive] = useState(0);
@@ -18,12 +18,14 @@ export default function FloorPlans() {
     const canvas = useRef<HTMLCanvasElement>(null);
     const popup = useRef<HTMLDivElement>(null);
 
-    const room: IRoom = {
-        name: "Gymzaal",
-        width: 21000,
-        height: 7000,
-        scale: 18,
-    };
+    const rooms: IRoom[] = [
+        {
+            name: "Gymzaal",
+            width: 21000,
+            height: 7000,
+            scale: 18,
+        },
+    ];
 
     const walls: IWall[] = [
         {
@@ -37,6 +39,7 @@ export default function FloorPlans() {
             ypos: 10,
             RoomID: 0,
             height: 7000,
+            rotation: 90,
         },
     ];
 
@@ -49,10 +52,18 @@ export default function FloorPlans() {
             name: "c2",
             extraInfo: "test info",
         },
+        {
+            xpos: 19000,
+            ypos: 5200,
+            height: 50,
+            RoomID: 0,
+            name: "c3",
+            extraInfo: "test info 2",
+        },
     ];
 
     useEffect(() => {
-        drawFloorPlan(canvas, room, workplaces, walls);
+        drawFloorPlan(canvas, rooms[0], workplaces, walls);
     }, [canvas]);
 
     function onMouseHover(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
@@ -66,15 +77,20 @@ export default function FloorPlans() {
         };
         for (const workplace of workplaces) {
             if (
-                x >= workplace.xpos / room.scale &&
-                x <= (workplace.xpos + 800) / room.scale &&
-                y >= workplace.ypos / room.scale &&
-                y <= (workplace.ypos + 1600) / room.scale
+                x >= workplace.xpos / rooms[0].scale &&
+                x <= (workplace.xpos + 800) / rooms[0].scale &&
+                y >= workplace.ypos / rooms[0].scale &&
+                y <= (workplace.ypos + 1600) / rooms[0].scale
             ) {
                 canvas.style.cursor = "pointer";
                 setCurrentWorkPlace(workplace);
-                popupPos.x = (workplace.xpos + 800) / room.scale;
-                popupPos.y = workplace.ypos / room.scale;
+                if (x + 250 < canvas.width) {
+                    popupPos.x = (workplace.xpos + 800) / rooms[0].scale;
+                    popupPos.y = workplace.ypos / rooms[0].scale;
+                } else {
+                    popupPos.x = workplace.xpos / rooms[0].scale - 250;
+                    popupPos.y = workplace.ypos / rooms[0].scale;
+                }
                 setPopupPosition({
                     left: popupPos.x,
                     top: popupPos.y,
@@ -105,15 +121,15 @@ export default function FloorPlans() {
                     if (e.relatedTarget instanceof Node && popup.current?.contains(e.relatedTarget)) return;
                     setShowPopUp(false);
                 }}
-                className="p-1 flex items-center justify-center h-100 bg-(--color-white) rounded-lg
+                className="p-1 flex items-center justify-center max-h-100 max-w-full bg-(--color-white) rounded-lg
                     shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]"></canvas>
 
             <div className="flex flex-row gap-6">
-                {floorPlans.map((plan, i) => (
+                {rooms.map((plan, i) => (
                     <SmallButton
-                        key={plan.label}
+                        key={plan.name}
                         icon={<img className="select-none [-webkit-user-drag:none]" src={IconProduct} />}
-                        label={plan.label}
+                        label={plan.name}
                         active={active === i}
                         onClick={() => setActive(i)}
                     />
@@ -131,7 +147,7 @@ export default function FloorPlans() {
                     }}>
                     <div
                         className="relative px-10 py-8 flex flex-col gap-6 justify-between w-full max-w-100 h-full
-                            bg-(--color-white) rounded-2xl
+                            bg-white rounded-2xl
                             shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
                         <img
                             src={IconClose}
@@ -144,9 +160,17 @@ export default function FloorPlans() {
                         <div className="flex flex-col text-center text-(--color-darkblue)">
                             <span>Pleknummer: {currentWorkPlace.name}</span>
                             <span className="my-5 text-[18px]">Bezetting</span>
+                            <span>ochtend</span>
                             <select>
                                 <option value="deelnemer 1">deelnemer 1</option>
+                                <option value="leeg">leeg</option>
                             </select>
+                            <span className="mt-2.5">middag</span>
+                            <select>
+                                <option value="deelnemer 2">deelnemer 2</option>
+                                <option value="leeg">leeg</option>
+                            </select>
+                            <span className="mt-2.5">{currentWorkPlace.extraInfo}</span>
                         </div>
                     </div>
                 </div>

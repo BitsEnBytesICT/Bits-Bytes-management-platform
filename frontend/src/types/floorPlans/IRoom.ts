@@ -4,4 +4,5 @@ export interface IRoom {
     width: number;
     height: number;
     scale: number;
+    rotation?: number;
 }

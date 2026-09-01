@@ -6,4 +6,5 @@ export interface IWorkplace {
     RoomID: number;
     name: string;
     extraInfo?: string;
+    rotation?: 0 | 90;
 }
