@@ -47,18 +47,10 @@ export default function drawFloorPlan(
     workplaces.forEach(workplace => {
         if (!workplace.rotation) {
             context.rect(workplace.xpos / room.scale, workplace.ypos / room.scale, 800 / room.scale, 1600 / room.scale);
-            context.strokeText(
-                workplace.name,
-                (workplace.xpos + 400) / room.scale,
-                (workplace.ypos + 800) / room.scale,
-            );
+            context.fillText(workplace.name, (workplace.xpos + 400) / room.scale, (workplace.ypos + 800) / room.scale);
         } else if (workplace.rotation === 90) {
             context.rect(workplace.xpos / room.scale, workplace.ypos / room.scale, 1600 / room.scale, 800 / room.scale);
-            context.strokeText(
-                workplace.name,
-                (workplace.xpos + 800) / room.scale,
-                (workplace.ypos + 400) / room.scale,
-            );
+            context.fillText(workplace.name, (workplace.xpos + 800) / room.scale, (workplace.ypos + 400) / room.scale);
         }
         context.stroke();
     });

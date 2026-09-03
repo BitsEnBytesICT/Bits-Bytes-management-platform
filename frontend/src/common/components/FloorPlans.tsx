@@ -129,7 +129,7 @@ export default function FloorPlans({rooms}: IFloorPlans) {
                             onClick={() => setActive(i)}
                         />
                     ))}
-                {!rooms && <>geen ruimtes gemaakt</>}
+                {rooms.length === 0 && <>geen ruimtes gemaakt</>}
             </div>
 
             {showPopUp && (
@@ -154,8 +154,28 @@ export default function FloorPlans({rooms}: IFloorPlans) {
                         <div className="text-[20px] font-extrabold text-center text-(--color-darkblue)">info</div>
 
                         <div className="flex flex-col text-center text-(--color-darkblue)">
-                            <span>Pleknummer: {currentWorkPlace.name}</span>
-                            <span className="my-5 text-[18px]">Bezetting</span>
+                            <div className="container_top">
+                                <span className="text-[18px]">Plek {currentWorkPlace?.name}</span>
+
+                                <span></span>
+                            </div>
+
+                            <div className="container_divider"></div>
+
+                            <div className="container_bottom">
+                                <div>
+                                    <img src="" />
+
+                                    <span>Ochtend</span>
+
+                                    <select>
+                                        {/* alle andere options moeten uit deelnemers komen */}
+                                        <option value="geen">Geen</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* <span className="my-5 text-[18px]">Bezetting</span>
                             <span>ochtend</span>
                             <select>
                                 <option value="deelnemer 1">deelnemer 1</option>
@@ -166,7 +186,7 @@ export default function FloorPlans({rooms}: IFloorPlans) {
                                 <option value="deelnemer 2">deelnemer 2</option>
                                 <option value="leeg">leeg</option>
                             </select>
-                            <span className="mt-2.5">{currentWorkPlace.extraInfo}</span>
+                            <span className="mt-2.5">{currentWorkPlace?.extraInfo}</span> */}
                         </div>
                     </div>
                 </div>
