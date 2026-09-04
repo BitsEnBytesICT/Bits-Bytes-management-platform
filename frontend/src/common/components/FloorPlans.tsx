@@ -10,25 +10,40 @@ import type {IWorkplace} from "../../types/floorPlans/IWorkplace";
 import http from "../http";
 import type {KeyValuePair} from "../../types/validation/keyvaluePair";
 
-//const floorPlans = [{label: "Server ruimte"}, {label: "Gymzaal"}, {label: "Stille ruimte"}];
-
 export default function FloorPlans({rooms}: IFloorPlans) {
     const [active, setActive] = useState(0);
     const [showPopUp, setShowPopUp] = useState(false);
     const [popupPosition, setPopupPosition] = useState({left: 0, top: 0});
     const [currentWorkPlace, setCurrentWorkPlace] = useState<IWorkplace>();
     const [workplaces, setWorkplaces] = useState<IWorkplace[]>([]);
+    const [walls, setWalls] = useState<IWall[]>([]);
     const canvas = useRef<HTMLCanvasElement>(null);
     const popup = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        getWorkplaces().then(workplaces => {
-            setWorkplaces(workplaces);
-            getWalls().then(walls => {
-                drawFloorPlan(canvas, rooms[active], workplaces, walls);
-            });
-        });
+        if (!rooms[active]) return;
+        getWorkplaces().then(setWorkplaces);
+        getWalls().then(setWalls);
     }, [rooms, active]);
+
+    useEffect(() => {
+        const element = canvas.current;
+        if (!element) return;
+
+        let timer: ReturnType<typeof setTimeout>;
+
+        const observer = new ResizeObserver(() => {
+            clearTimeout(timer);
+            timer = setTimeout(() => drawFloorPlan(canvas, rooms[active], workplaces, walls), 200);
+        });
+
+        observer.observe(element);
+
+        return () => {
+            clearTimeout(timer);
+            observer.disconnect();
+        };
+    }, [rooms, workplaces, walls]);
 
     async function getWorkplaces(): Promise<IWorkplace[]> {
         let workplacesData: IWorkplace[] = [];
@@ -78,8 +93,14 @@ export default function FloorPlans({rooms}: IFloorPlans) {
             ) {
                 canvas.style.cursor = "pointer";
                 setCurrentWorkPlace(workplace);
-                if (workplace.xpos / rooms[active].scale + 300 < canvas.width) {
+                if (!workplace.rotation && workplace.xpos / rooms[active].scale + 300 < canvas.width) {
                     popupPos.x = (workplace.xpos + 800) / rooms[active].scale;
+                    popupPos.y = workplace.ypos / rooms[active].scale;
+                } else if (
+                    workplace.rotation === 90 &&
+                    (workplace.xpos + 1600) / rooms[active].scale + 300 < canvas.width
+                ) {
+                    popupPos.x = (workplace.xpos + 1600) / rooms[active].scale;
                     popupPos.y = workplace.ypos / rooms[active].scale;
                 } else {
                     popupPos.x = workplace.xpos / rooms[active].scale - 250;

@@ -31,6 +31,8 @@ export const setupDatabase = () => {
 
         const roomResult = db.prepare("INSERT INTO Rooms (name, width, height, scale) VALUES (?, ?, ?, ?)").run('Gymzaal', 21000, 7000, 16);
         const roomId = Number(roomResult.lastInsertRowid);
+        const quietRoomResult = db.prepare("INSERT INTO Rooms (name, width, height, scale) VALUES (?, ?, ?, ?)").run('Stilte ruimte', 7000, 7000, 16);
+        const quietRoomId = Number(quietRoomResult.lastInsertRowid);
 
         const insertWall = db.prepare("INSERT INTO Walls (xpos, ypos, RoomID, height, rotation) VALUES (?, ?, ?, ?, ?)");
         insertWall.run(10, 3000, roomId, 5000, null);
@@ -70,6 +72,14 @@ export const setupDatabase = () => {
                 workplace.rotation ?? null,
             );
         }
+
+        insertWorkplace.run(3500, 200, quietRoomId, 'B1', 'test info', 90);
+        insertWorkplace.run(5200, 2650, quietRoomId, 'B2', 'test info', 90);
+        insertWorkplace.run(3500, 2650, quietRoomId, 'B3', 'test info', 90);
+        insertWorkplace.run(5200, 3550, quietRoomId, 'B4', 'test info', 90);
+        insertWorkplace.run(3500, 3550, quietRoomId, 'B5', 'test info', 90);
+        insertWorkplace.run(200, 1850, quietRoomId, 'B6', 'test info', null);
+        insertWorkplace.run(200, 3550, quietRoomId, 'B7', 'test info', null);
 
         console.log('Seed data inserted');
     } catch (error) {
