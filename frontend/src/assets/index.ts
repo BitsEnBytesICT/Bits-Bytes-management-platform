@@ -2,6 +2,7 @@
 export {default as ShapeLeft} from "./ui/shape-left.svg";
 export {default as ShapeRight} from "./ui/shape-right.svg";
 export {default as ButtonMenu} from "./ui/button-menu.svg";
+export {default as ArrowBox} from "./ui/arrow-box.svg";
 export {default as IconDashboard} from "./ui/icon-dashboard.svg";
 export {default as IconSignature} from "./ui/icon-signature.svg";
 export {default as IconInventory} from "./ui/icon-inventory.svg";

@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from "react";
 
 import SmallButton from "./SmallButton";
 
-import {IconClose, IconProduct} from "../../assets";
+import {ArrowBox, IconProduct} from "../../assets";
 import drawFloorPlan from "./drawFloorPlan";
 import type IFloorPlans from "../../types/compontents/IFloorPlans";
 import type {IWall} from "../../types/floorPlans/IWall";
@@ -10,11 +10,23 @@ import type {IWorkplace} from "../../types/floorPlans/IWorkplace";
 import http from "../http";
 import type {KeyValuePair} from "../../types/validation/keyvaluePair";
 
+const popupWidth = 300;
+
+const arrowClassName = {
+    left: "-left-1.75 top-1/2 -translate-y-1/2 -rotate-90",
+    right: "-right-1.75 top-1/2 -translate-y-1/2 rotate-90",
+    top: "-top-1",
+    bottom: "-bottom-1 rotate-180",
+};
+
 export default function FloorPlans({rooms}: IFloorPlans) {
     const [active, setActive] = useState(0);
     const [showPopUp, setShowPopUp] = useState(false);
     const [popupPosition, setPopupPosition] = useState({left: 0, top: 0});
-    const [currentWorkPlace, setCurrentWorkPlace] = useState<IWorkplace>();
+    const [arrowSide, setArrowSide] = useState<keyof typeof arrowClassName>("left");
+    const [arrowOffset, setArrowOffset] = useState(0);
+    const [currentWorkplace, setCurrentWorkplace] = useState<IWorkplace>();
+    const [occupancy, setOccupancy] = useState({Ochtend: "Vrij", Middag: "Vrij"});
     const [workplaces, setWorkplaces] = useState<IWorkplace[]>([]);
     const [walls, setWalls] = useState<IWall[]>([]);
     const canvas = useRef<HTMLCanvasElement>(null);
@@ -74,58 +86,58 @@ export default function FloorPlans({rooms}: IFloorPlans) {
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX - rect.left) * (canvas.width / rect.width);
         const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-        let popupPos = {
-            x: 0,
-            y: 0,
-        };
+
+        if (!rooms[active]) return;
+
         for (const workplace of workplaces) {
-            if (
-                (!workplace.rotation &&
-                    x >= workplace.xpos / rooms[active].scale &&
-                    x <= (workplace.xpos + 800) / rooms[active].scale &&
-                    y >= workplace.ypos / rooms[active].scale &&
-                    y <= (workplace.ypos + 1600) / rooms[active].scale) ||
-                (workplace.rotation == 90 &&
-                    x >= workplace.xpos / rooms[active].scale &&
-                    x <= (workplace.xpos + 1600) / rooms[active].scale &&
-                    y >= workplace.ypos / rooms[active].scale &&
-                    y <= (workplace.ypos + 800) / rooms[active].scale)
-            ) {
-                canvas.style.cursor = "pointer";
-                setCurrentWorkPlace(workplace);
-                if (!workplace.rotation && workplace.xpos / rooms[active].scale + 300 < canvas.width) {
-                    popupPos.x = (workplace.xpos + 800) / rooms[active].scale;
-                    popupPos.y = workplace.ypos / rooms[active].scale;
-                } else if (
-                    workplace.rotation === 90 &&
-                    (workplace.xpos + 1600) / rooms[active].scale + 300 < canvas.width
-                ) {
-                    popupPos.x = (workplace.xpos + 1600) / rooms[active].scale;
-                    popupPos.y = workplace.ypos / rooms[active].scale;
-                } else {
-                    popupPos.x = workplace.xpos / rooms[active].scale - 250;
-                    popupPos.y = workplace.ypos / rooms[active].scale;
-                }
-                setPopupPosition({
-                    left: popupPos.x,
-                    top: popupPos.y,
-                });
-                setShowPopUp(true);
-                return;
+            const left = workplace.xpos / rooms[active].scale;
+            const top = workplace.ypos / rooms[active].scale;
+            const width = (workplace.rotation === 90 ? 1600 : 800) / rooms[active].scale;
+            const height = (workplace.rotation === 90 ? 800 : 1600) / rooms[active].scale;
+            const popupHeight = popup.current?.clientHeight ?? 200;
+
+            if (x < left || x > left + width || y < top || y > top + height) continue;
+
+            canvas.style.cursor = "pointer";
+            setCurrentWorkplace(workplace);
+
+            if (left + width + popupWidth < canvas.width) {
+                setPopupPosition({left: left + width, top: top + height / 2 - popupHeight / 2});
+                setArrowSide("left");
+            } else if (left - popupWidth > 0) {
+                setPopupPosition({left: left - popupWidth, top: top + height / 2 - popupHeight / 2});
+                setArrowSide("right");
+            } else {
+                const popupLeft = Math.min(Math.max(left + width / 2 - popupWidth / 2, 0), canvas.width - popupWidth);
+                const underneath = top + height + popupHeight < canvas.height;
+
+                setPopupPosition({left: popupLeft, top: underneath ? top + height : top - popupHeight});
+                setArrowSide(underneath ? "top" : "bottom");
+                setArrowOffset(Math.min(Math.max(left + width / 2 - popupLeft - 8, 20), popupWidth - 36));
             }
+
+            setShowPopUp(true);
+            return;
         }
+
         canvas.style.cursor = "default";
 
         if (
             !popup.current ||
-            !showPopUp ||
-            x < popupPos.x ||
-            x > popupPos.x + popup.current.clientWidth ||
-            y < popupPos.y ||
-            y > popupPos.y + popup.current.clientHeight
+            x < popupPosition.left ||
+            x > popupPosition.left + popup.current.clientWidth ||
+            y < popupPosition.top ||
+            y > popupPosition.top + popup.current.clientHeight
         )
             setShowPopUp(false);
     }
+
+    const occupied = Object.values(occupancy).filter(participant => participant !== "Vrij").length;
+    const status = [
+        {label: "Vrij", color: "text-(--color-green)"},
+        {label: "Deels", color: "text-(--color-yellow)"},
+        {label: "Bezet", color: "text-(--color-red)"},
+    ][occupied];
 
     return (
         <div className="flex flex-col gap-4 relative">
@@ -155,60 +167,50 @@ export default function FloorPlans({rooms}: IFloorPlans) {
 
             {showPopUp && (
                 <div
-                    className="absolute flex items-center justify-center z-50 w-[250px] min-h-50 p-1"
+                    className="p-1 absolute z-50 w-75"
                     style={popupPosition}
                     ref={popup}
                     onMouseLeave={e => {
                         if (e.relatedTarget instanceof Node && canvas.current?.contains(e.relatedTarget)) return;
                         setShowPopUp(false);
                     }}>
+                    <img
+                        src={ArrowBox}
+                        style={arrowSide === "top" || arrowSide === "bottom" ? {left: arrowOffset} : undefined}
+                        className={`absolute z-10 select-none [-webkit-user-drag:none] ${arrowClassName[arrowSide]}`}
+                    />
+
                     <div
-                        className="relative px-10 py-8 flex flex-col gap-6 justify-between w-full max-w-100 h-full
-                            bg-white rounded-2xl
+                        className="px-8 py-6 flex flex-col gap-4 text-(--color-darkblue) bg-(--color-white) rounded-2xl
                             shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
-                        <img
-                            src={IconClose}
-                            onClick={() => setShowPopUp(false)}
-                            className="absolute top-9.5 right-10 cursor-pointer select-none [-webkit-user-drag:none]"
-                        />
+                        <div className="flex flex-row justify-between text-[20px] font-extrabold">
+                            <span>Plek {currentWorkplace?.name}</span>
 
-                        <div className="text-[20px] font-extrabold text-center text-(--color-darkblue)">info</div>
-
-                        <div className="flex flex-col text-center text-(--color-darkblue)">
-                            <div className="container_top">
-                                <span className="text-[18px]">Plek {currentWorkPlace?.name}</span>
-
-                                <span></span>
-                            </div>
-
-                            <div className="container_divider"></div>
-
-                            <div className="container_bottom">
-                                <div>
-                                    <img src="" />
-
-                                    <span>Ochtend</span>
-
-                                    <select>
-                                        {/* alle andere options moeten uit deelnemers komen */}
-                                        <option value="geen">Geen</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            {/* <span className="my-5 text-[18px]">Bezetting</span>
-                            <span>ochtend</span>
-                            <select>
-                                <option value="deelnemer 1">deelnemer 1</option>
-                                <option value="leeg">leeg</option>
-                            </select>
-                            <span className="mt-2.5">middag</span>
-                            <select>
-                                <option value="deelnemer 2">deelnemer 2</option>
-                                <option value="leeg">leeg</option>
-                            </select>
-                            <span className="mt-2.5">{currentWorkPlace?.extraInfo}</span> */}
+                            <span className={status.color}>{status.label}</span>
                         </div>
+
+                        <div className="h-px bg-(--color-black)/5"></div>
+
+                        {Object.entries(occupancy).map(([dayPart, participant]) => (
+                            <div key={dayPart} className="flex flex-row gap-3 items-center">
+                                <span
+                                    className={`size-3 shrink-0 rounded-full
+                                    ${participant === "Vrij" ? "bg-(--color-black)/15" : "bg-(--color-red)"}`}></span>
+
+                                <span className="w-20 text-(--color-darkblue)/50">{dayPart}</span>
+
+                                <select
+                                    value={participant}
+                                    onChange={event => setOccupancy({...occupancy, [dayPart]: event.target.value})}
+                                    className={`bg-transparent outline-none cursor-pointer
+                                    ${participant === "Vrij" ? "text-(--color-darkblue)/50" : "font-extrabold"}`}>
+                                    <option value="Vrij">Vrij</option>
+
+                                    {/* alle andere options moeten uit deelnemers komen */}
+                                    <option value="Derk & Remon">Derk & Remon</option>
+                                </select>
+                            </div>
+                        ))}
                     </div>
                 </div>
             )}
