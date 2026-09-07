@@ -54,11 +54,10 @@ export default function Navigation({isOpen, setIsOpen}) {
                     className={`flex flex-row grow-0 relative top-0 h-screen transition-[left] duration-400
                         ${isNavOpen ? "left-0" : "-left-62"}`}
                     onMouseEnter={() => !isLoginPage && setIsOpen(true)}
-                    onMouseLeave={() => !isLoginPage && setIsOpen(false)}
-                    style={{pointerEvents: "auto"}}>
+                    onMouseLeave={() => !isLoginPage && setIsOpen(false)}>
                     <div
                         className="flex flex-row gap-16 min-[1000px]:gap-16 [@media(min-height:670px)]:gap-20 absolute
-                            top-5 left-6">
+                            top-5 left-6 z-10 pointer-events-auto">
                         <img
                             alt="Bits & Bytes"
                             src={LogoWhite}
@@ -100,7 +99,7 @@ export default function Navigation({isOpen, setIsOpen}) {
                         <nav
                             className="pl-6! pt-29.5! min-[1000px]:pr-8! [@media(min-height:740px)]:pt-37.5! flex
                                 flex-col gap-6! [@media(min-height:740px)]:gap-12! bg-(--color-darkblue)
-                                shadow-[2px_0_0_var(--color-darkblue)]">
+                                shadow-[2px_0_0_var(--color-darkblue)] pointer-events-auto">
                             <div className="flex flex-col gap-3.5">
                                 <div
                                     className="block font-medium text-(--color-lightblue) transition-colors duration-300
@@ -132,7 +131,11 @@ export default function Navigation({isOpen, setIsOpen}) {
                             </div>
                         </nav>
 
-                        <img src={ShapeLeft} className="shrink-0 h-auto w-auto select-none [-webkit-user-drag:none]" />
+                        <img
+                            src={ShapeLeft}
+                            className="shrink-0 h-auto w-auto select-none [-webkit-user-drag:none] pointer-events-auto
+                                [clip-path:polygon(0_0,100%_0,6.45%_100%,0_100%)]"
+                        />
                     </div>
                 </div>
 
