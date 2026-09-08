@@ -13,6 +13,7 @@ export default function Navigation({isOpen, setIsOpen}) {
     const navigate = useNavigate();
     const isLoginPage = location.pathname === "/login";
     const isNavOpen = isOpen && !isLoginPage;
+    const canHover = window.matchMedia("(hover: hover)").matches;
 
     const versionNumber =
         import.meta.env.VITE_FRONTEND_SNAPSHOT_VERSION && Number(import.meta.env.VITE_FRONTEND_SNAPSHOT_VERSION) > 0
@@ -53,8 +54,8 @@ export default function Navigation({isOpen, setIsOpen}) {
                 <div
                     className={`flex flex-row grow-0 relative top-0 h-screen transition-[left] duration-400
                         ${isNavOpen ? "left-0" : "-left-62"}`}
-                    onMouseEnter={() => !isLoginPage && setIsOpen(true)}
-                    onMouseLeave={() => !isLoginPage && setIsOpen(false)}>
+                    onMouseEnter={() => canHover && !isLoginPage && setIsOpen(true)}
+                    onMouseLeave={() => canHover && !isLoginPage && setIsOpen(false)}>
                     <div
                         className="flex flex-row gap-16 min-[1000px]:gap-16 [@media(min-height:670px)]:gap-20 absolute
                             top-5 left-6 z-10 pointer-events-auto">
@@ -66,7 +67,7 @@ export default function Navigation({isOpen, setIsOpen}) {
                         />
 
                         <div
-                            className="mt-6! flex overflow-y-hidden"
+                            className="mt-6! flex"
                             onClick={() => {
                                 !isLoginPage && setIsOpen((prev: boolean) => !prev);
                             }}>
