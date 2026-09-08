@@ -183,7 +183,7 @@ export default function FloorPlans({rooms}: IFloorPlans) {
                     <div
                         className="px-8 py-6 flex flex-col gap-4 text-(--color-darkblue) bg-(--color-white) rounded-2xl
                             shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
-                        <div className="flex flex-row justify-between text-[20px] font-extrabold">
+                        <div className="flex flex-row justify-between text-[20px] font-semibold">
                             <span>Plek {currentWorkplace?.name}</span>
 
                             <span className={status.color}>{status.label}</span>
@@ -195,7 +195,7 @@ export default function FloorPlans({rooms}: IFloorPlans) {
                             <div key={dayPart} className="flex flex-row gap-3 items-center">
                                 <span
                                     className={`size-3 shrink-0 rounded-full
-                                    ${participant === "Vrij" ? "bg-(--color-black)/15" : "bg-(--color-red)"}`}></span>
+                                    ${participant === "Vrij" ? "bg-(--color-green)" : "bg-(--color-red)"}`}></span>
 
                                 <span className="w-20 text-(--color-darkblue)/50">{dayPart}</span>
 
@@ -203,7 +203,7 @@ export default function FloorPlans({rooms}: IFloorPlans) {
                                     value={participant}
                                     onChange={event => setOccupancy({...occupancy, [dayPart]: event.target.value})}
                                     className={`bg-transparent outline-none cursor-pointer
-                                    ${participant === "Vrij" ? "text-(--color-darkblue)/50" : "font-extrabold"}`}>
+                                    ${participant === "Vrij" ? "text-(--color-darkblue)/50" : "font-semibold"}`}>
                                     <option value="Vrij">Vrij</option>
 
                                     {/* alle andere options moeten uit deelnemers komen */}
