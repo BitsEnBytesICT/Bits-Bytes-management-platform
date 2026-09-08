@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 import SmallButton from "../../common/components/SmallButton";
 // import SmallPopUp from "../../common/components/SmallPopUp";
@@ -9,34 +9,23 @@ import type {ITableColumn} from "../../types/compontents/ITable";
 import {IconAddUser, IconCalendar, IconDelete, IconEdit, IconExport, IconFilter, IconInfo} from "../../assets";
 import http from "../../common/http";
 
-interface ISignature {
-    id: number;
-    participantId: number;
-    date: Date;
-    signature?: string;
-    checked: boolean;
+interface IAttendance {
+    id?: number;
+    participantID: number;
+    clockinDate: string;
+    clockoutDate?: string;
+    workDuration?: number;
+    signature: string;
 }
 
-const initialSignatures: ISignature[] = [
-    {
-        id: 1,
-        participantId: 1,
-        date: new Date(),
-        signature: "test",
-        checked: false,
-    },
-];
-
-function SelectCheckbox() {
-    return <input type="checkbox" className="w-4 h-4 accent-(--color-darkblue) align-middle cursor-pointer" />;
-}
+type AttendanceRow = IAttendance & {checked: boolean};
 
 function ActionIcons(
-    signature: ISignature,
-    onEditClick: (signature: ISignature) => void,
-    onExportClick: (signature: ISignature) => void,
-    onDeleteClick: (signature: ISignature) => void,
-    onInfoClick: (signature: ISignature) => void,
+    signature: IAttendance,
+    onEditClick: (signature: IAttendance) => void,
+    onExportClick: (signature: IAttendance) => void,
+    onDeleteClick: (signature: IAttendance) => void,
+    onInfoClick: (signature: IAttendance) => void,
 ) {
     return (
         <div className="flex flex-row gap-2 items-center">
@@ -65,16 +54,18 @@ function ActionIcons(
 }
 
 export default function SignatureManagement() {
-    const [signatures, setSignatures] = useState<ISignature[]>(initialSignatures);
+    const [signatures, setSignatures] = useState<AttendanceRow[]>([]);
 
-    const [_infoSignature, setInfoSignature] = useState<ISignature | null>(null);
-    const [_editSignature, setEditSignature] = useState<ISignature | null>(null);
-    const [_deleteSignature, setDeleteSignature] = useState<ISignature | null>(null);
+    const [_infoSignature, setInfoSignature] = useState<IAttendance | null>(null);
+    const [_editSignature, setEditSignature] = useState<IAttendance | null>(null);
+    const [_deleteSignature, setDeleteSignature] = useState<IAttendance | null>(null);
 
-    const signatureColumns: ITableColumn<ISignature>[] = [
+    const signatureColumns: ITableColumn<IAttendance>[] = [
         {key: "id", label: "id"},
-        {key: "participantId", label: "participantId"},
-        {key: "date", label: "date"},
+        {key: "participantID", label: "participantID"},
+        {key: "clockinDate", label: "clockinDate"},
+        {key: "clockoutDate", label: "clockoutDate"},
+        {key: "workDuration", label: "workDuration"},
         {key: "signature", label: "signature"},
         {
             key: "acties",
@@ -96,9 +87,13 @@ export default function SignatureManagement() {
 
     const fetchData = async () => {
         const request = await http("/api/attendance", "GET");
-        const response = await request.json();
-        console.log(response);
+        const response: IAttendance[] = await request.json();
+        setSignatures(response.map(row => ({...row, checked: false})));
     };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     return (
         <div className="flex flex-col h-[calc(100vh-10rem)]">
