@@ -49,8 +49,8 @@ export default function FloorPlans({rooms}: IFloorPlans) {
                     workplaces.map(wp => ({
                         ...wp,
                         timeslots: [
-                            {name: "morning", occupancy: "Vrij"},
-                            {name: "evening", occupancy: "Vrij"},
+                            {name: "ochtend", occupancy: "Vrij"},
+                            {name: "middag", occupancy: "Vrij"},
                         ],
                     })),
                 ),
