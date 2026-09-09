@@ -13,7 +13,9 @@ export default function Navigation({isOpen, setIsOpen}) {
     const navigate = useNavigate();
     const isLoginPage = location.pathname === "/login";
     const isNavOpen = isOpen && !isLoginPage;
-    const canHover = window.matchMedia("(hover: hover)").matches;
+    let canHover = window.matchMedia("(hover: hover)").matches;
+
+    window.matchMedia("(hover: hover)").addEventListener("change", event => (canHover = event.matches));
 
     const versionNumber =
         import.meta.env.VITE_FRONTEND_SNAPSHOT_VERSION && Number(import.meta.env.VITE_FRONTEND_SNAPSHOT_VERSION) > 0
@@ -69,7 +71,7 @@ export default function Navigation({isOpen, setIsOpen}) {
                         <div
                             className="mt-6! flex"
                             onClick={() => {
-                                !isLoginPage && setIsOpen((prev: boolean) => !prev);
+                                !isLoginPage && setIsOpen(!isOpen);
                             }}>
                             <img
                                 src={ButtonMenu}
