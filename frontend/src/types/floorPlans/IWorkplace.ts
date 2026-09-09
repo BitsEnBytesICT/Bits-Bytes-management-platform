@@ -7,3 +7,9 @@ export interface IWorkplace {
     extraInfo?: string;
     rotation?: 0 | 90;
 }
+
+export interface IOccupancy {
+    timeslots: {name: "morning" | "evening"; occupancy: string}[];
+}
+
+export type WorkplaceWithOccupancy = IWorkplace & IOccupancy;

@@ -1,17 +1,17 @@
 import type {RefObject} from "react";
 import type {IRoom} from "../../types/floorPlans/IRoom";
 import type {IWall} from "../../types/floorPlans/IWall";
-import type {IWorkplace} from "../../types/floorPlans/IWorkplace";
+import type {WorkplaceWithOccupancy} from "../../types/floorPlans/IWorkplace";
 
 export default function drawFloorPlan(
     canvasRef: RefObject<HTMLCanvasElement | null>,
     room: IRoom,
-    workplaces: IWorkplace[],
+    workplaces: WorkplaceWithOccupancy[],
     walls?: IWall[],
-): void {
+): number {
     const canvas = canvasRef.current;
 
-    if (!canvas || !room) return;
+    if (!canvas || !room) return room.scale;
 
     let currentScale = room.scale;
 
@@ -26,7 +26,7 @@ export default function drawFloorPlan(
 
     const context = canvas.getContext("2d");
 
-    if (!context) return;
+    if (!context) return room.scale;
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.lineWidth = 1;
@@ -49,33 +49,42 @@ export default function drawFloorPlan(
     }
 
     workplaces.forEach(workplace => {
-        if (!workplace.rotation) {
-            context.roundRect(
-                workplace.xpos / currentScale,
-                workplace.ypos / currentScale,
-                800 / currentScale,
-                1600 / currentScale,
-                6,
-            );
-            context.fillText(
-                workplace.name,
-                (workplace.xpos + 400) / currentScale,
-                (workplace.ypos + 800) / currentScale,
-            );
-        } else if (workplace.rotation === 90) {
-            context.roundRect(
-                workplace.xpos / currentScale,
-                workplace.ypos / currentScale,
-                1600 / currentScale,
-                800 / currentScale,
-                6,
-            );
-            context.fillText(
-                workplace.name,
-                (workplace.xpos + 800) / currentScale,
-                (workplace.ypos + 400) / currentScale,
-            );
+        const rotated = workplace.rotation === 90;
+        const width = rotated ? 1600 : 800;
+        const height = rotated ? 800 : 1600;
+
+        context.beginPath();
+        context.roundRect(
+            workplace.xpos / currentScale,
+            workplace.ypos / currentScale,
+            width / currentScale,
+            height / currentScale,
+            6,
+        );
+
+        switch (workplace.timeslots.filter(timeslot => timeslot.occupancy !== "Vrij").length) {
+            case 1:
+                context.fillStyle = "#ffd641";
+                break;
+            case 2:
+                context.fillStyle = "#ff6b6b";
+                break;
+            case 0:
+            default:
+                context.fillStyle = "#60f376";
+                break;
         }
+
+        context.fill();
         context.stroke();
+
+        context.fillStyle = "#000000";
+        context.fillText(
+            workplace.name,
+            (workplace.xpos + width / 2) / currentScale,
+            (workplace.ypos + height / 2) / currentScale,
+        );
     });
+
+    return currentScale;
 }

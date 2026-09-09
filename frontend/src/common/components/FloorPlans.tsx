@@ -6,7 +6,7 @@ import {ArrowBox, IconProduct} from "../../assets";
 import drawFloorPlan from "./drawFloorPlan";
 import type IFloorPlans from "../../types/compontents/IFloorPlans";
 import type {IWall} from "../../types/floorPlans/IWall";
-import type {IWorkplace} from "../../types/floorPlans/IWorkplace";
+import type {IWorkplace, WorkplaceWithOccupancy} from "../../types/floorPlans/IWorkplace";
 import http from "../http";
 import type {KeyValuePair} from "../../types/validation/keyvaluePair";
 
@@ -25,16 +25,36 @@ export default function FloorPlans({rooms}: IFloorPlans) {
     const [popupPosition, setPopupPosition] = useState({left: 0, top: 0});
     const [arrowSide, setArrowSide] = useState<keyof typeof arrowClassName>("left");
     const [arrowOffset, setArrowOffset] = useState(0);
-    const [currentWorkplace, setCurrentWorkplace] = useState<IWorkplace>();
-    const [occupancy, setOccupancy] = useState({Ochtend: "Vrij", Middag: "Vrij"});
-    const [workplaces, setWorkplaces] = useState<IWorkplace[]>([]);
+    const [currentWorkplace, setCurrentWorkplace] = useState<WorkplaceWithOccupancy>();
+    const [workplaces, setWorkplaces] = useState<WorkplaceWithOccupancy[]>([]);
     const [walls, setWalls] = useState<IWall[]>([]);
+    const [occupancyStatus, setOccupancyStatus] = useState<{label: string; color: string}>();
     const canvas = useRef<HTMLCanvasElement>(null);
     const popup = useRef<HTMLDivElement>(null);
+    const currentScale = useRef<number | undefined>(undefined);
+
+    const occupancyStatuses = [
+        {label: "Vrij", color: "text-(--color-green)"},
+        {label: "Deels", color: "text-(--color-yellow)"},
+        {label: "Bezet", color: "text-(--color-red)"},
+    ];
 
     useEffect(() => {
         if (!rooms[active]) return;
-        getWorkplaces().then(setWorkplaces);
+        getWorkplaces().then(
+            (
+                workplaces, //tijdelijk todat de data uit de db gehaald kan worden
+            ) =>
+                setWorkplaces(
+                    workplaces.map(wp => ({
+                        ...wp,
+                        timeslots: [
+                            {name: "morning", occupancy: "Vrij"},
+                            {name: "evening", occupancy: "Vrij"},
+                        ],
+                    })),
+                ),
+        );
         getWalls().then(setWalls);
     }, [rooms, active]);
 
@@ -46,7 +66,10 @@ export default function FloorPlans({rooms}: IFloorPlans) {
 
         const observer = new ResizeObserver(() => {
             clearTimeout(timer);
-            timer = setTimeout(() => drawFloorPlan(canvas, rooms[active], workplaces, walls), 200);
+            timer = setTimeout(
+                () => (currentScale.current = drawFloorPlan(canvas, rooms[active], workplaces, walls)),
+                200,
+            );
         });
 
         observer.observe(element);
@@ -90,16 +113,20 @@ export default function FloorPlans({rooms}: IFloorPlans) {
         if (!rooms[active]) return;
 
         for (const workplace of workplaces) {
-            const left = workplace.xpos / rooms[active].scale;
-            const top = workplace.ypos / rooms[active].scale;
-            const width = (workplace.rotation === 90 ? 1600 : 800) / rooms[active].scale;
-            const height = (workplace.rotation === 90 ? 800 : 1600) / rooms[active].scale;
+            const left = workplace.xpos / currentScale.current;
+            const top = workplace.ypos / currentScale.current;
+            const width = (workplace.rotation === 90 ? 1600 : 800) / currentScale.current;
+            const height = (workplace.rotation === 90 ? 800 : 1600) / currentScale.current;
             const popupHeight = popup.current?.clientHeight ?? 200;
 
             if (x < left || x > left + width || y < top || y > top + height) continue;
 
             canvas.style.cursor = "pointer";
             setCurrentWorkplace(workplace);
+
+            setOccupancyStatus(
+                occupancyStatuses[workplace.timeslots.filter(timeslot => timeslot.occupancy !== "Vrij").length],
+            );
 
             if (left + width + popupWidth < canvas.width) {
                 setPopupPosition({left: left + width, top: top + height / 2 - popupHeight / 2});
@@ -131,13 +158,6 @@ export default function FloorPlans({rooms}: IFloorPlans) {
         )
             setShowPopUp(false);
     }
-
-    const occupied = Object.values(occupancy).filter(participant => participant !== "Vrij").length;
-    const status = [
-        {label: "Vrij", color: "text-(--color-green)"},
-        {label: "Deels", color: "text-(--color-yellow)"},
-        {label: "Bezet", color: "text-(--color-red)"},
-    ][occupied];
 
     return (
         <div className="flex flex-col gap-4 relative">
@@ -186,24 +206,35 @@ export default function FloorPlans({rooms}: IFloorPlans) {
                         <div className="flex flex-row justify-between text-[20px] font-semibold">
                             <span>Plek {currentWorkplace?.name}</span>
 
-                            <span className={status.color}>{status.label}</span>
+                            <span className={occupancyStatus.color}>{occupancyStatus.label}</span>
                         </div>
 
                         <div className="h-px bg-(--color-black)/5"></div>
 
-                        {Object.entries(occupancy).map(([dayPart, participant]) => (
-                            <div key={dayPart} className="flex flex-row gap-3 items-center">
+                        {currentWorkplace.timeslots.map((timeslot, index) => (
+                            <div key={timeslot.name} className="flex flex-row gap-3 items-center">
                                 <span
                                     className={`size-3 shrink-0 rounded-full
-                                    ${participant === "Vrij" ? "bg-(--color-green)" : "bg-(--color-red)"}`}></span>
+                                    ${timeslot.occupancy === "Vrij" ? "bg-(--color-green)" : "bg-(--color-red)"}`}></span>
 
-                                <span className="w-20 text-(--color-darkblue)/50">{dayPart}</span>
+                                <span className="w-20 text-(--color-darkblue)/50">{timeslot.name}</span>
 
                                 <select
-                                    value={participant}
-                                    onChange={event => setOccupancy({...occupancy, [dayPart]: event.target.value})}
+                                    value={timeslot.occupancy}
+                                    onChange={event => {
+                                        currentWorkplace.timeslots[index].occupancy = event.target.value;
+                                        setCurrentWorkplace({...currentWorkplace});
+                                        setOccupancyStatus(
+                                            occupancyStatuses[
+                                                currentWorkplace.timeslots.filter(
+                                                    timeslot => timeslot.occupancy !== "Vrij",
+                                                ).length
+                                            ],
+                                        );
+                                        currentScale.current = drawFloorPlan(canvas, rooms[active], workplaces, walls);
+                                    }}
                                     className={`bg-transparent outline-none cursor-pointer
-                                    ${participant === "Vrij" ? "text-(--color-darkblue)/50" : "font-semibold"}`}>
+                                    ${timeslot.occupancy === "Vrij" ? "text-(--color-darkblue)/50" : "font-semibold"}`}>
                                     <option value="Vrij">Vrij</option>
 
                                     {/* alle andere options moeten uit deelnemers komen */}
