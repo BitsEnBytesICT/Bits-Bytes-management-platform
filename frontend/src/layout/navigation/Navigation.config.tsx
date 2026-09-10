@@ -15,6 +15,7 @@ import {
     IconSettings,
     IconLogout,
 } from "../../assets";
+import SignatureManagement from "../../pages/SignatureManagement/SignatureManagement";
 
 export const navigationItemsMenu: INavigationItem[] = [
     {
@@ -33,6 +34,7 @@ export const navigationItemsMenu: INavigationItem[] = [
         name: "Handtekeningen",
         path: "/handtekeningen",
         icon: IconSignature,
+        page: <SignatureManagement />,
     },
     {
         name: "Inventarisatie",
