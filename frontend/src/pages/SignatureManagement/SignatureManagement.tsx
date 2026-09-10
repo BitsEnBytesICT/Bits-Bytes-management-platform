@@ -15,7 +15,7 @@ interface IAttendance {
     clockinDate: string;
     clockoutDate?: string;
     workDuration?: number;
-    signature: string;
+    signature: string; //svg
 }
 
 type AttendanceRow = IAttendance & {checked: boolean};
