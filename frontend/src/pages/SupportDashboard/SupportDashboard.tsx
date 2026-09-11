@@ -93,7 +93,7 @@ export default function SupportDashboard() {
                     </div>
                 </div>
 
-                <FloorPlans rooms={rooms} />
+                <FloorPlans rooms={rooms} participants={participants} />
 
                 <Calendar />
             </div>

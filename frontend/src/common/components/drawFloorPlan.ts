@@ -10,23 +10,20 @@ export default function drawFloorPlan(
     walls?: IWall[],
 ): number {
     const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
 
-    if (!canvas || !room) return room.scale;
+    if (!canvas || !room || !context) return room.scale;
 
     let currentScale = room.scale;
 
-    canvas.style.width = `${room.width / room.scale + 2}px`;
-    canvas.style.height = `${room.height / room.scale + 2}px`;
+    //canvas.style.width = `${room.width / room.scale + 2}px`;
+    //canvas.style.height = `${room.height / room.scale + 2}px`;
 
     if (canvas.height !== canvas.clientHeight) canvas.height = canvas.clientHeight;
 
     if (canvas.width !== canvas.clientWidth) canvas.width = canvas.clientWidth;
 
     if (room.width / room.scale > canvas.width - 2) currentScale = Math.ceil(room.width / (canvas.width - 2));
-
-    const context = canvas.getContext("2d");
-
-    if (!context) return room.scale;
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.lineWidth = 1;
@@ -64,7 +61,25 @@ export default function drawFloorPlan(
 
         switch (workplace.timeslots.filter(timeslot => timeslot.occupancy !== "Vrij").length) {
             case 1:
-                context.fillStyle = "#ffd641";
+                const x = workplace.xpos / currentScale;
+                const y = workplace.ypos / currentScale;
+                let gradient: CanvasGradient;
+                if (workplace.rotation === 90)
+                    gradient = context.createLinearGradient(x, y, x + width / currentScale, y);
+                else gradient = context.createLinearGradient(x, y, x, y + height / currentScale);
+
+                if (workplace.timeslots[0].occupancy !== "Vrij") {
+                    gradient.addColorStop(0, "#ffd641");
+                    gradient.addColorStop(0.4, "#ffd641");
+                    gradient.addColorStop(0.6, "#60f376");
+                    gradient.addColorStop(1, "#60f376");
+                } else {
+                    gradient.addColorStop(0, "#60f376");
+                    gradient.addColorStop(0.4, "#60f376");
+                    gradient.addColorStop(0.6, "#ffd641");
+                    gradient.addColorStop(1, "#ffd641");
+                }
+                context.fillStyle = gradient;
                 break;
             case 2:
                 context.fillStyle = "#ff6b6b";

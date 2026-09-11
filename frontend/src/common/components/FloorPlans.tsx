@@ -10,17 +10,9 @@ import type {IWorkplace, WorkplaceWithOccupancy} from "../../types/floorPlans/IW
 import http from "../http";
 import type {KeyValuePair} from "../../types/validation/keyvaluePair";
 
-const popupWidth = 300;
-
-const arrowClassName = {
-    left: "-left-1.75 top-1/2 -translate-y-1/2 -rotate-90",
-    right: "-right-1.75 top-1/2 -translate-y-1/2 rotate-90",
-    top: "-top-1",
-    bottom: "-bottom-1 rotate-180",
-};
-
-export default function FloorPlans({rooms}: IFloorPlans) {
+export default function FloorPlans({rooms, participants}: IFloorPlans) {
     const [active, setActive] = useState(0);
+    const [currentDay, setCurrentDay] = useState(0);
     const [showPopUp, setShowPopUp] = useState(false);
     const [popupPosition, setPopupPosition] = useState({left: 0, top: 0});
     const [arrowSide, setArrowSide] = useState<keyof typeof arrowClassName>("left");
@@ -38,6 +30,15 @@ export default function FloorPlans({rooms}: IFloorPlans) {
         {label: "Deels", color: "text-(--color-yellow)"},
         {label: "Bezet", color: "text-(--color-red)"},
     ];
+
+    const popupWidth = 300;
+
+    const arrowClassName = {
+        left: "-left-1.75 top-1/2 -translate-y-1/2 -rotate-90",
+        right: "-right-1.75 top-1/2 -translate-y-1/2 rotate-90",
+        top: "-top-1",
+        bottom: "-bottom-1 rotate-180",
+    };
 
     useEffect(() => {
         if (!rooms[active]) return;
@@ -160,16 +161,95 @@ export default function FloorPlans({rooms}: IFloorPlans) {
     }
 
     return (
-        <div className="flex flex-col gap-4 relative">
-            <canvas
-                ref={canvas}
-                onMouseMove={e => onMouseHover(e)}
-                onMouseLeave={e => {
-                    if (e.relatedTarget instanceof Node && popup.current?.contains(e.relatedTarget)) return;
-                    setShowPopUp(false);
-                }}
-                className="p-1 flex items-center justify-center max-h-120 max-w-full bg-(--color-white) rounded-lg
-                    shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]"></canvas>
+        <div className="flex flex-col gap-4">
+            <div className="flex gap-6">
+                <SmallButton label="Ma" active={currentDay === 0} onClick={() => setCurrentDay(0)} />
+                <SmallButton label="Di" active={currentDay === 1} onClick={() => setCurrentDay(1)} />
+                <SmallButton label="Wo" active={currentDay === 2} onClick={() => setCurrentDay(2)} />
+                <SmallButton label="Do" active={currentDay === 3} onClick={() => setCurrentDay(3)} />
+                <SmallButton label="Vr" active={currentDay === 4} onClick={() => setCurrentDay(4)} />
+            </div>
+            <div className="relative">
+                <canvas
+                    ref={canvas}
+                    onMouseMove={e => onMouseHover(e)}
+                    onMouseLeave={e => {
+                        if (e.relatedTarget instanceof Node && popup.current?.contains(e.relatedTarget)) return;
+                        setShowPopUp(false);
+                    }}
+                    className="p-1 flex items-center justify-center h-120 w-full bg-(--color-white) rounded-lg
+                        shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]"></canvas>
+
+                {showPopUp && (
+                    <div
+                        className="p-1 absolute z-50 w-75"
+                        style={popupPosition}
+                        ref={popup}
+                        onMouseLeave={e => {
+                            if (e.relatedTarget instanceof Node && canvas.current?.contains(e.relatedTarget)) return;
+                            setShowPopUp(false);
+                        }}>
+                        <img
+                            src={ArrowBox}
+                            style={arrowSide === "top" || arrowSide === "bottom" ? {left: arrowOffset} : undefined}
+                            className={`absolute z-10 select-none [-webkit-user-drag:none] ${arrowClassName[arrowSide]}`}
+                        />
+
+                        <div
+                            className="px-8 py-6 flex flex-col gap-4 text-(--color-darkblue) bg-(--color-white)
+                                rounded-2xl
+                                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
+                            <div className="flex flex-row justify-between text-[20px] font-semibold">
+                                <span>Plek {currentWorkplace?.name}</span>
+
+                                <span className={occupancyStatus.color}>{occupancyStatus.label}</span>
+                            </div>
+
+                            <div className="h-px bg-(--color-black)/5"></div>
+
+                            {currentWorkplace.timeslots.map((timeslot, index) => (
+                                <div key={timeslot.name} className="flex flex-row gap-3 items-center">
+                                    <span
+                                        className={`size-3 shrink-0 rounded-full
+                                        ${timeslot.occupancy === "Vrij" ? "bg-(--color-green)" : "bg-(--color-red)"}`}></span>
+
+                                    <span className="w-20 text-(--color-darkblue)/50">{timeslot.name}</span>
+
+                                    <select
+                                        value={timeslot.occupancy}
+                                        onChange={event => {
+                                            currentWorkplace.timeslots[index].occupancy = event.target.value;
+                                            setCurrentWorkplace({...currentWorkplace});
+                                            setOccupancyStatus(
+                                                occupancyStatuses[
+                                                    currentWorkplace.timeslots.filter(
+                                                        timeslot => timeslot.occupancy !== "Vrij",
+                                                    ).length
+                                                ],
+                                            );
+                                            currentScale.current = drawFloorPlan(
+                                                canvas,
+                                                rooms[active],
+                                                workplaces,
+                                                walls,
+                                            );
+                                        }}
+                                        className={`bg-transparent outline-none cursor-pointer
+                                        ${timeslot.occupancy === "Vrij" ? "text-(--color-darkblue)/50" : "font-semibold"}`}>
+                                        <option value="Vrij">Vrij</option>
+
+                                        {participants.map(p => (
+                                            <option
+                                                key={p.id}
+                                                value={`${p.firstname} ${p.lastname}`}>{`${p.firstname} ${p.lastname}`}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
 
             <div className="flex flex-row gap-6">
                 {rooms &&
@@ -184,67 +264,6 @@ export default function FloorPlans({rooms}: IFloorPlans) {
                     ))}
                 {rooms.length === 0 && <>geen ruimtes gemaakt</>}
             </div>
-
-            {showPopUp && (
-                <div
-                    className="p-1 absolute z-50 w-75"
-                    style={popupPosition}
-                    ref={popup}
-                    onMouseLeave={e => {
-                        if (e.relatedTarget instanceof Node && canvas.current?.contains(e.relatedTarget)) return;
-                        setShowPopUp(false);
-                    }}>
-                    <img
-                        src={ArrowBox}
-                        style={arrowSide === "top" || arrowSide === "bottom" ? {left: arrowOffset} : undefined}
-                        className={`absolute z-10 select-none [-webkit-user-drag:none] ${arrowClassName[arrowSide]}`}
-                    />
-
-                    <div
-                        className="px-8 py-6 flex flex-col gap-4 text-(--color-darkblue) bg-(--color-white) rounded-2xl
-                            shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
-                        <div className="flex flex-row justify-between text-[20px] font-semibold">
-                            <span>Plek {currentWorkplace?.name}</span>
-
-                            <span className={occupancyStatus.color}>{occupancyStatus.label}</span>
-                        </div>
-
-                        <div className="h-px bg-(--color-black)/5"></div>
-
-                        {currentWorkplace.timeslots.map((timeslot, index) => (
-                            <div key={timeslot.name} className="flex flex-row gap-3 items-center">
-                                <span
-                                    className={`size-3 shrink-0 rounded-full
-                                    ${timeslot.occupancy === "Vrij" ? "bg-(--color-green)" : "bg-(--color-red)"}`}></span>
-
-                                <span className="w-20 text-(--color-darkblue)/50">{timeslot.name}</span>
-
-                                <select
-                                    value={timeslot.occupancy}
-                                    onChange={event => {
-                                        currentWorkplace.timeslots[index].occupancy = event.target.value;
-                                        setCurrentWorkplace({...currentWorkplace});
-                                        setOccupancyStatus(
-                                            occupancyStatuses[
-                                                currentWorkplace.timeslots.filter(
-                                                    timeslot => timeslot.occupancy !== "Vrij",
-                                                ).length
-                                            ],
-                                        );
-                                        currentScale.current = drawFloorPlan(canvas, rooms[active], workplaces, walls);
-                                    }}
-                                    className={`bg-transparent outline-none cursor-pointer
-                                    ${timeslot.occupancy === "Vrij" ? "text-(--color-darkblue)/50" : "font-semibold"}`}>
-                                    <option value="Vrij">Vrij</option>
-
-                                    {/* alle andere options moeten uit deelnemers komen */}
-                                    <option value="Derk & Remon">Derk & Remon</option>
-                                </select>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
