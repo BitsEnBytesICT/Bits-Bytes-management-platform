@@ -32,8 +32,6 @@ export const setupDatabase = () => {
         db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100)
 
 
-
-
         console.log('Seed data inserted');
     } catch (error) {
         console.log(error)

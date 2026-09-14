@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import AuthenticationDecorator from '../../common/authenticationDecorator';
 import ScanService from './attendance.service';
+import IAttendance from '../../types/attendance/IAttendance';
+import { KeyValuePair } from '../../common/Validator';
 
 export default class AttendanceController {
     private service: ScanService;
@@ -37,6 +39,21 @@ export default class AttendanceController {
     async create(req: Request, res: Response) {
         await this.service.create(req.body.rfid_uid, req.body.signature);
         res.sendStatus(200);
+    }
+
+    @AuthenticationDecorator('attendance.update')
+    async update(req: Request, _res: Response) {
+        const { id, signature } = req.body;
+        if (id == null || signature == null) {
+            console.log("missing body param")
+            return;
+        }
+
+        const signatureUpdate: Partial<IAttendance> = {
+            signature: signature
+        }
+
+        this.service.update(["id", id], ...Object.entries(signatureUpdate) as KeyValuePair<IAttendance>[])
     }
 
     @AuthenticationDecorator('attendance.list')
