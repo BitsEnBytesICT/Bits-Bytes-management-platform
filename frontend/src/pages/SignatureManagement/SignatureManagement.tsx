@@ -1,22 +1,17 @@
 import {useEffect, useState} from "react";
 
 import SmallButton from "../../common/components/SmallButton";
-// import SmallPopUp from "../../common/components/SmallPopUp";
+import SmallPopUp from "../../common/components/SmallPopUp";
 import Table from "../../common/components/Table";
 
+import type IAttendance from "../../types/compontents/IAttendance";
+import type IParticipant from "../../types/compontents/IParticipant";
 import type {ITableColumn} from "../../types/compontents/ITable";
 
 import {IconAddUser, IconCalendar, IconDelete, IconEdit, IconExport, IconFilter, IconInfo} from "../../assets";
 import http from "../../common/http";
-
-interface IAttendance {
-    id?: number;
-    participantID: number;
-    clockinDate: string;
-    clockoutDate?: string;
-    workDuration?: number;
-    signature: string; //svg
-}
+import ParticipantsService from "../Participants/Participants.service";
+import SignaturePopUp from "./components/SignaturePopUp";
 
 type AttendanceRow = IAttendance & {checked: boolean};
 
@@ -55,10 +50,13 @@ function ActionIcons(
 
 export default function SignatureManagement() {
     const [signatures, setSignatures] = useState<AttendanceRow[]>([]);
+    const [participants, setParticipants] = useState<IParticipant[]>([]);
 
-    const [_infoSignature, setInfoSignature] = useState<IAttendance | null>(null);
-    const [_editSignature, setEditSignature] = useState<IAttendance | null>(null);
-    const [_deleteSignature, setDeleteSignature] = useState<IAttendance | null>(null);
+    const [infoSignature, setInfoSignature] = useState<IAttendance | null>(null);
+    const [editSignature, setEditSignature] = useState<IAttendance | null>(null);
+    const [deleteSignature, setDeleteSignature] = useState<IAttendance | null>(null);
+
+    const participantService: ParticipantsService = new ParticipantsService();
 
     const signatureColumns: ITableColumn<IAttendance>[] = [
         {key: "id", label: "id"},
@@ -91,8 +89,11 @@ export default function SignatureManagement() {
         setSignatures(response.map(row => ({...row, checked: false})));
     };
 
+    const findParticipant = (participantID: number) => participants.find(p => p.id === participantID);
+
     useEffect(() => {
         fetchData();
+        participantService.getParticipants().then(setParticipants);
     }, []);
 
     return (
@@ -157,35 +158,36 @@ export default function SignatureManagement() {
                 />
             </div>
 
-            {/* {infoSignature && (
-                <SmallPopUp
-                    title="Details"
-                    message={`${infoSignature.firstname} ${infoSignature.lastname} — ${infoSignature.organisation}, ${infoSignature.date} (${infoSignature.duration})`}
-                    onCancel={() => setInfoSignature(null)}
-                    onConfirm={() => setInfoSignature(null)}
+            {infoSignature && (
+                <SignaturePopUp
+                    mode="info"
+                    signature={infoSignature}
+                    participant={findParticipant(infoSignature.participantID)}
+                    onClose={() => setInfoSignature(null)}
                 />
             )}
 
             {editSignature && (
-                <SmallPopUp
-                    title="Bewerken"
-                    message={`Bewerken van ${editSignature.firstname} ${editSignature.lastname} nog niet geïmplementeerd.`}
-                    onCancel={() => setEditSignature(null)}
-                    onConfirm={() => setEditSignature(null)}
+                <SignaturePopUp
+                    mode="edit"
+                    signature={editSignature}
+                    participant={findParticipant(editSignature.participantID)}
+                    onClose={() => setEditSignature(null)}
+                    onSaved={fetchData}
                 />
-            )} */}
-            {/* 
+            )}
+
             {deleteSignature && (
                 <SmallPopUp
                     title="Verwijderen"
-                    message={`Weet je zeker dat je de handtekening van ${deleteSignature.firstname} ${deleteSignature.lastname} wil verwijderen?`}
+                    message={`Weet je zeker dat je de handtekening van deelnemer ${deleteSignature.participantID} wil verwijderen?`}
                     onCancel={() => setDeleteSignature(null)}
                     onConfirm={() => {
                         setSignatures(signatures.filter(signature => signature.id !== deleteSignature.id));
                         setDeleteSignature(null);
                     }}
                 />
-            )} */}
+            )}
         </div>
     );
 }

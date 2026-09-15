@@ -42,10 +42,11 @@ export default class AttendanceController {
     }
 
     @AuthenticationDecorator('attendance.update')
-    async update(req: Request, _res: Response) {
+    async update(req: Request, res: Response) {
         const { id, signature } = req.body;
+
         if (id == null || signature == null) {
-            console.log("missing body param")
+            res.status(400).json(["id en signature zijn verplicht"]);
             return;
         }
 
@@ -53,7 +54,8 @@ export default class AttendanceController {
             signature: signature
         }
 
-        this.service.update(["id", id], ...Object.entries(signatureUpdate) as KeyValuePair<IAttendance>[])
+        await this.service.update(["id", id], ...Object.entries(signatureUpdate) as KeyValuePair<IAttendance>[])
+        res.sendStatus(200);
     }
 
     @AuthenticationDecorator('attendance.list')
