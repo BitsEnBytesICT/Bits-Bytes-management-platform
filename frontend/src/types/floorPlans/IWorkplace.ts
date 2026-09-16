@@ -9,7 +9,7 @@ export interface IWorkplace {
 }
 
 export interface IOccupancy {
-    timeslots: {name: "ochtend" | "middag"; occupancy: string}[];
+    timeslots: {name: "Ochtend" | "Middag"; occupancy: string}[];
 }
 
 export type WorkplaceWithOccupancy = IWorkplace & IOccupancy;

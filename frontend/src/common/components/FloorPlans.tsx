@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from "react";
 
 import SmallButton from "./SmallButton";
+import Tabs from "./Tabs";
 
 import {ArrowBox, IconProduct} from "../../assets";
 import drawFloorPlan from "./drawFloorPlan";
@@ -13,6 +14,7 @@ import type {KeyValuePair} from "../../types/validation/keyvaluePair";
 export default function FloorPlans({rooms, participants}: IFloorPlans) {
     const [active, setActive] = useState(0);
     const [currentDay, setCurrentDay] = useState(0);
+    const [drawn, setDrawn] = useState(false);
     const [showPopUp, setShowPopUp] = useState(false);
     const [popupPosition, setPopupPosition] = useState({left: 0, top: 0});
     const [arrowSide, setArrowSide] = useState<keyof typeof arrowClassName>("left");
@@ -31,7 +33,7 @@ export default function FloorPlans({rooms, participants}: IFloorPlans) {
         {label: "Bezet", color: "text-(--color-red)"},
     ];
 
-    const popupWidth = 300;
+    const popupWidth = 260;
 
     const arrowClassName = {
         left: "-left-1.75 top-1/2 -translate-y-1/2 -rotate-90",
@@ -50,8 +52,8 @@ export default function FloorPlans({rooms, participants}: IFloorPlans) {
                     workplaces.map(wp => ({
                         ...wp,
                         timeslots: [
-                            {name: "ochtend", occupancy: "Vrij"},
-                            {name: "middag", occupancy: "Vrij"},
+                            {name: "Ochtend", occupancy: "Vrij"},
+                            {name: "Middag", occupancy: "Vrij"},
                         ],
                     })),
                 ),
@@ -67,10 +69,10 @@ export default function FloorPlans({rooms, participants}: IFloorPlans) {
 
         const observer = new ResizeObserver(() => {
             clearTimeout(timer);
-            timer = setTimeout(
-                () => (currentScale.current = drawFloorPlan(canvas, rooms[active], workplaces, walls)),
-                200,
-            );
+            timer = setTimeout(() => {
+                currentScale.current = drawFloorPlan(canvas, rooms[active], workplaces, walls);
+                if (workplaces.length) setDrawn(true);
+            }, 200);
         });
 
         observer.observe(element);
@@ -161,14 +163,28 @@ export default function FloorPlans({rooms, participants}: IFloorPlans) {
     }
 
     return (
-        <div className="flex flex-col gap-4">
-            <div className="flex gap-6">
-                <SmallButton label="Ma" active={currentDay === 0} onClick={() => setCurrentDay(0)} />
-                <SmallButton label="Di" active={currentDay === 1} onClick={() => setCurrentDay(1)} />
-                <SmallButton label="Wo" active={currentDay === 2} onClick={() => setCurrentDay(2)} />
-                <SmallButton label="Do" active={currentDay === 3} onClick={() => setCurrentDay(3)} />
-                <SmallButton label="Vr" active={currentDay === 4} onClick={() => setCurrentDay(4)} />
+        <div className="flex flex-col gap-4 animate-[fade-in_0.3s_ease-in-out]">
+            <div className="flex justify-between">
+                <div className="flex flex-row gap-6">
+                    {rooms &&
+                        rooms.map((room, i) => (
+                            <SmallButton
+                                key={room.name}
+                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconProduct} />}
+                                label={room.name}
+                                active={active === i}
+                                onClick={() => setActive(i)}
+                            />
+                        ))}
+                </div>
+
+                <Tabs
+                    tabs={["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag"]}
+                    active={currentDay}
+                    onChange={setCurrentDay}
+                />
             </div>
+
             <div className="relative">
                 <canvas
                     ref={canvas}
@@ -177,12 +193,13 @@ export default function FloorPlans({rooms, participants}: IFloorPlans) {
                         if (e.relatedTarget instanceof Node && popup.current?.contains(e.relatedTarget)) return;
                         setShowPopUp(false);
                     }}
-                    className="p-1 flex items-center justify-center h-120 w-full bg-(--color-white) rounded-lg
-                        shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]"></canvas>
+                    className={`p-1 flex items-center justify-center h-120 w-full bg-(--color-white) rounded-lg
+                        transition-opacity duration-300 ease-in-out ${drawn ? "opacity-100" : "opacity-0"}
+                        shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`}></canvas>
 
                 {showPopUp && (
                     <div
-                        className="p-1 absolute z-50 w-75"
+                        className="p-1 absolute z-50 w-65 animate-[fade-in_0.2s_ease-in-out]"
                         style={popupPosition}
                         ref={popup}
                         onMouseLeave={e => {
@@ -196,10 +213,10 @@ export default function FloorPlans({rooms, participants}: IFloorPlans) {
                         />
 
                         <div
-                            className="px-8 py-6 flex flex-col gap-4 text-(--color-darkblue) bg-(--color-white)
-                                rounded-2xl
+                            className="px-5 py-4 flex flex-col gap-2 text-sm font-medium text-(--color-darkblue)
+                                bg-(--color-white) rounded-2xl
                                 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
-                            <div className="flex flex-row justify-between text-[20px] font-semibold">
+                            <div className="flex flex-row justify-between text-base">
                                 <span>Plek {currentWorkplace?.name}</span>
 
                                 <span className={occupancyStatus.color}>{occupancyStatus.label}</span>
@@ -210,7 +227,7 @@ export default function FloorPlans({rooms, participants}: IFloorPlans) {
                             {currentWorkplace.timeslots.map((timeslot, index) => (
                                 <div key={timeslot.name} className="flex flex-row gap-3 items-center">
                                     <span
-                                        className={`size-3 shrink-0 rounded-full
+                                        className={`size-2.5 shrink-0 rounded-full
                                         ${timeslot.occupancy === "Vrij" ? "bg-(--color-green)" : "bg-(--color-red)"}`}></span>
 
                                     <span className="w-20 text-(--color-darkblue)/50">{timeslot.name}</span>
@@ -234,8 +251,8 @@ export default function FloorPlans({rooms, participants}: IFloorPlans) {
                                                 walls,
                                             );
                                         }}
-                                        className={`bg-transparent outline-none cursor-pointer
-                                        ${timeslot.occupancy === "Vrij" ? "text-(--color-darkblue)/50" : "font-semibold"}`}>
+                                        className={`flex-1 min-w-0 bg-transparent outline-none cursor-pointer
+                                        ${timeslot.occupancy === "Vrij" ? "text-(--color-darkblue)/50" : ""}`}>
                                         <option value="Vrij">Vrij</option>
 
                                         {participants.map(p => (
@@ -249,20 +266,6 @@ export default function FloorPlans({rooms, participants}: IFloorPlans) {
                         </div>
                     </div>
                 )}
-            </div>
-
-            <div className="flex flex-row gap-6">
-                {rooms &&
-                    rooms.map((room, i) => (
-                        <SmallButton
-                            key={room.name}
-                            icon={<img className="select-none [-webkit-user-drag:none]" src={IconProduct} />}
-                            label={room.name}
-                            active={active === i}
-                            onClick={() => setActive(i)}
-                        />
-                    ))}
-                {rooms.length === 0 && <>geen ruimtes gemaakt</>}
             </div>
         </div>
     );

@@ -3,6 +3,16 @@ import type {IRoom} from "../../types/floorPlans/IRoom";
 import type {IWall} from "../../types/floorPlans/IWall";
 import type {WorkplaceWithOccupancy} from "../../types/floorPlans/IWorkplace";
 
+function cssColor(name: string): string {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function withOpacity(hex: string, opacity: number): string {
+    return `${hex}${Math.round(opacity * 255)
+        .toString(16)
+        .padStart(2, "0")}`;
+}
+
 export default function drawFloorPlan(
     canvasRef: RefObject<HTMLCanvasElement | null>,
     room: IRoom,
@@ -13,6 +23,17 @@ export default function drawFloorPlan(
     const context = canvas.getContext("2d");
 
     if (!canvas || !room || !context) return room.scale;
+
+    const colors = {
+        darkblue: cssColor("--color-darkblue"),
+        black: cssColor("--color-black"),
+        green: cssColor("--color-green"),
+        yellow: cssColor("--color-yellow"),
+        red: cssColor("--color-red"),
+    };
+
+    const fillOpacity = 0.35;
+    const wallThickness = 2.5;
 
     let currentScale = room.scale;
 
@@ -26,74 +47,143 @@ export default function drawFloorPlan(
     if (room.width / room.scale > canvas.width - 2) currentScale = Math.ceil(room.width / (canvas.width - 2));
 
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.lineWidth = 1;
-    context.strokeStyle = "black";
+
+    const dotSpacing = 24;
+    const dotSize = 4;
+    context.fillStyle = withOpacity(colors.black, 0.08);
+    for (let dotY = dotSpacing / 2; dotY < canvas.height; dotY += dotSpacing) {
+        for (let dotX = dotSpacing / 2; dotX < canvas.width; dotX += dotSpacing) {
+            context.beginPath();
+            context.roundRect(dotX - dotSize / 2, dotY - dotSize / 2, dotSize, dotSize, 1.5);
+            context.fill();
+        }
+    }
+
+    context.strokeStyle = colors.darkblue;
     context.font = "16px Arial";
     context.textAlign = "center";
     context.textBaseline = "middle";
 
+    context.lineWidth = wallThickness;
+    context.lineCap = "round";
+    context.lineJoin = "round";
+    context.setLineDash([10, 10]);
     context.beginPath();
-    context.roundRect(context.lineWidth, context.lineWidth, room.width / currentScale, room.height / currentScale, 6);
+    context.roundRect(wallThickness / 2, wallThickness / 2, room.width / currentScale, room.height / currentScale, 12);
     context.stroke();
+
     if (walls) {
         walls.forEach(wall => {
-            if (!wall.rotation)
-                context.rect(wall.xpos / currentScale, wall.ypos / currentScale, wall.height / currentScale, 5);
-            else if (wall.rotation === 90)
-                context.rect(wall.xpos / currentScale, wall.ypos / currentScale, 5, wall.height / currentScale);
+            const wallX = wall.xpos / currentScale;
+            const wallY = wall.ypos / currentScale;
+            const wallLength = wall.height / currentScale;
+
+            context.beginPath();
+            if (!wall.rotation) {
+                context.moveTo(wallX, wallY + wallThickness / 2);
+                context.lineTo(wallX + wallLength, wallY + wallThickness / 2);
+            } else if (wall.rotation === 90) {
+                context.moveTo(wallX + wallThickness / 2, wallY);
+                context.lineTo(wallX + wallThickness / 2, wallY + wallLength);
+            }
             context.stroke();
         });
     }
+
+    context.setLineDash([]);
+    context.lineWidth = 1.5;
 
     workplaces.forEach(workplace => {
         const rotated = workplace.rotation === 90;
         const width = rotated ? 1600 : 800;
         const height = rotated ? 800 : 1600;
+        const x = workplace.xpos / currentScale;
+        const y = workplace.ypos / currentScale;
+        const w = width / currentScale;
+        const h = height / currentScale;
 
         context.beginPath();
-        context.roundRect(
-            workplace.xpos / currentScale,
-            workplace.ypos / currentScale,
-            width / currentScale,
-            height / currentScale,
-            6,
-        );
+        context.roundRect(x, y, w, h, 6);
 
         switch (workplace.timeslots.filter(timeslot => timeslot.occupancy !== "Vrij").length) {
-            case 1:
-                const x = workplace.xpos / currentScale;
-                const y = workplace.ypos / currentScale;
-                let gradient: CanvasGradient;
-                if (workplace.rotation === 90)
-                    gradient = context.createLinearGradient(x, y, x + width / currentScale, y);
-                else gradient = context.createLinearGradient(x, y, x, y + height / currentScale);
+            case 1: {
+                const [first, second] =
+                    workplace.timeslots[0].occupancy !== "Vrij"
+                        ? [colors.yellow, colors.green]
+                        : [colors.green, colors.yellow];
 
-                if (workplace.timeslots[0].occupancy !== "Vrij") {
-                    gradient.addColorStop(0, "#ffd641");
-                    gradient.addColorStop(0.4, "#ffd641");
-                    gradient.addColorStop(0.6, "#60f376");
-                    gradient.addColorStop(1, "#60f376");
-                } else {
-                    gradient.addColorStop(0, "#60f376");
-                    gradient.addColorStop(0.4, "#60f376");
-                    gradient.addColorStop(0.6, "#ffd641");
-                    gradient.addColorStop(1, "#ffd641");
-                }
-                context.fillStyle = gradient;
+                const skew = Math.min(w, h) * 0.15;
+                const margin = context.lineWidth;
+
+                const halves: [string, () => void][] = [
+                    [
+                        first,
+                        () => {
+                            if (rotated) {
+                                context.moveTo(x - margin, y - margin);
+                                context.lineTo(x + w / 2 + skew, y - margin);
+                                context.lineTo(x + w / 2 - skew, y + h + margin);
+                                context.lineTo(x - margin, y + h + margin);
+                            } else {
+                                context.moveTo(x - margin, y - margin);
+                                context.lineTo(x + w + margin, y - margin);
+                                context.lineTo(x + w + margin, y + h / 2 - skew);
+                                context.lineTo(x - margin, y + h / 2 + skew);
+                            }
+                        },
+                    ],
+                    [
+                        second,
+                        () => {
+                            if (rotated) {
+                                context.moveTo(x + w / 2 + skew, y - margin);
+                                context.lineTo(x + w + margin, y - margin);
+                                context.lineTo(x + w + margin, y + h + margin);
+                                context.lineTo(x + w / 2 - skew, y + h + margin);
+                            } else {
+                                context.moveTo(x - margin, y + h / 2 + skew);
+                                context.lineTo(x + w + margin, y + h / 2 - skew);
+                                context.lineTo(x + w + margin, y + h + margin);
+                                context.lineTo(x - margin, y + h + margin);
+                            }
+                        },
+                    ],
+                ];
+
+                halves.forEach(([color, tracePath]) => {
+                    context.save();
+                    context.beginPath();
+                    tracePath();
+                    context.closePath();
+                    context.clip();
+
+                    context.beginPath();
+                    context.roundRect(x, y, w, h, 6);
+                    context.fillStyle = withOpacity(color, fillOpacity);
+                    context.fill();
+                    context.strokeStyle = color;
+                    context.stroke();
+
+                    context.restore();
+                });
                 break;
+            }
             case 2:
-                context.fillStyle = "#ff6b6b";
+                context.fillStyle = withOpacity(colors.red, fillOpacity);
+                context.fill();
+                context.strokeStyle = colors.red;
+                context.stroke();
                 break;
             case 0:
             default:
-                context.fillStyle = "#60f376";
+                context.fillStyle = withOpacity(colors.green, fillOpacity);
+                context.fill();
+                context.strokeStyle = colors.green;
+                context.stroke();
                 break;
         }
 
-        context.fill();
-        context.stroke();
-
-        context.fillStyle = "#000000";
+        context.fillStyle = colors.black;
         context.fillText(
             workplace.name,
             (workplace.xpos + width / 2) / currentScale,
