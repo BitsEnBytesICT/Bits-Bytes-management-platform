@@ -241,12 +241,26 @@ export default function FloorPlans({rooms, participants, dayButtons}: IFloorPlan
                                         className={`size-2.5 shrink-0 rounded-full
                                         ${timeslot.occupancy === "Vrij" ? "bg-(--color-green)" : "bg-(--color-red)"}`}></span>
 
-                                    <span className="w-20 text-(--color-darkblue)/50">{timeslot.name}</span>
+                                    <label
+                                        htmlFor={`participant-${currentWorkplace.id}-${index}`}
+                                        className="w-20 text-(--color-darkblue)/50">
+                                        {timeslot.name}
+                                    </label>
 
-                                    <select
+                                    <Input
+                                        key={`${currentWorkplace.id}-${index}`}
+                                        id={`participant-${currentWorkplace.id}-${index}`}
+                                        type="select"
+                                        options={[
+                                            {value: "Vrij", label: "Vrij"},
+                                            ...participants.map(p => ({
+                                                value: `${p.firstname} ${p.lastname}`,
+                                                label: `${p.firstname} ${p.lastname}`,
+                                            })),
+                                        ]}
                                         value={timeslot.occupancy}
-                                        onChange={event => {
-                                            currentWorkplace.timeslots[index].occupancy = event.target.value;
+                                        onChange={value => {
+                                            currentWorkplace.timeslots[index].occupancy = value;
                                             setCurrentWorkplace({...currentWorkplace});
                                             setOccupancyStatus(
                                                 occupancyStatuses[
@@ -262,16 +276,8 @@ export default function FloorPlans({rooms, participants, dayButtons}: IFloorPlan
                                                 walls,
                                             );
                                         }}
-                                        className={`flex-1 min-w-0 bg-transparent outline-none cursor-pointer
-                                        ${timeslot.occupancy === "Vrij" ? "text-(--color-darkblue)/50" : ""}`}>
-                                        <option value="Vrij">Vrij</option>
-
-                                        {participants.map(p => (
-                                            <option
-                                                key={p.id}
-                                                value={`${p.firstname} ${p.lastname}`}>{`${p.firstname} ${p.lastname}`}</option>
-                                        ))}
-                                    </select>
+                                        className={timeslot.occupancy === "Vrij" ? "text-(--color-darkblue)/50" : ""}
+                                    />
                                 </div>
                             ))}
                             <Input
