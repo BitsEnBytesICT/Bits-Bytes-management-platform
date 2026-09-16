@@ -10,8 +10,9 @@ import type {IWall} from "../../types/floorPlans/IWall";
 import type {IWorkplace, WorkplaceWithOccupancy} from "../../types/floorPlans/IWorkplace";
 import http from "../http";
 import type {KeyValuePair} from "../../types/validation/keyvaluePair";
+import Input from "./Input";
 
-export default function FloorPlans({rooms, participants}: IFloorPlans) {
+export default function FloorPlans({rooms, participants, dayButtons}: IFloorPlans) {
     const [active, setActive] = useState(0);
     const [currentDay, setCurrentDay] = useState(0);
     const [drawn, setDrawn] = useState(false);
@@ -62,6 +63,12 @@ export default function FloorPlans({rooms, participants}: IFloorPlans) {
     }, [rooms, active]);
 
     useEffect(() => {
+        const day = new Date().getDay() - 1;
+        if (day > 4) setCurrentDay(0);
+        else setCurrentDay(day);
+    }, []);
+
+    useEffect(() => {
         const element = canvas.current;
         if (!element) return;
 
@@ -71,7 +78,7 @@ export default function FloorPlans({rooms, participants}: IFloorPlans) {
             clearTimeout(timer);
             timer = setTimeout(() => {
                 currentScale.current = drawFloorPlan(canvas, rooms[active], workplaces, walls);
-                if (workplaces.length) setDrawn(true);
+                setDrawn(true);
             }, 200);
         });
 
@@ -110,14 +117,16 @@ export default function FloorPlans({rooms, participants}: IFloorPlans) {
     function onMouseHover(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
         const canvas = e.currentTarget;
         const rect = canvas.getBoundingClientRect();
+        const widthOffset = (canvas.width - rooms[active].width / currentScale.current) / 2;
+        const heightOffset = (canvas.height - rooms[active].height / currentScale.current) / 2;
         const x = (e.clientX - rect.left) * (canvas.width / rect.width);
         const y = (e.clientY - rect.top) * (canvas.height / rect.height);
 
         if (!rooms[active]) return;
 
         for (const workplace of workplaces) {
-            const left = workplace.xpos / currentScale.current;
-            const top = workplace.ypos / currentScale.current;
+            const left = workplace.xpos / currentScale.current + widthOffset;
+            const top = workplace.ypos / currentScale.current + heightOffset;
             const width = (workplace.rotation === 90 ? 1600 : 800) / currentScale.current;
             const height = (workplace.rotation === 90 ? 800 : 1600) / currentScale.current;
             const popupHeight = popup.current?.clientHeight ?? 200;
@@ -178,11 +187,13 @@ export default function FloorPlans({rooms, participants}: IFloorPlans) {
                         ))}
                 </div>
 
-                <Tabs
-                    tabs={["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag"]}
-                    active={currentDay}
-                    onChange={setCurrentDay}
-                />
+                {(dayButtons || dayButtons === undefined) && (
+                    <Tabs
+                        tabs={["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag"]}
+                        active={currentDay}
+                        onChange={setCurrentDay}
+                    />
+                )}
             </div>
 
             <div className="relative">
@@ -263,6 +274,22 @@ export default function FloorPlans({rooms, participants}: IFloorPlans) {
                                     </select>
                                 </div>
                             ))}
+                            <Input
+                                key={currentWorkplace.id}
+                                value={currentWorkplace.extraInfo}
+                                onChange={value => {
+                                    const updatedWorkplace = {...currentWorkplace, extraInfo: value};
+                                    setCurrentWorkplace(updatedWorkplace);
+                                    setWorkplaces(previous =>
+                                        previous.map(workplace =>
+                                            workplace.id === updatedWorkplace.id ? updatedWorkplace : workplace,
+                                        ),
+                                    );
+                                }}
+                                id="omschrijving"
+                                type="textarea"
+                                label="Omschrijving"
+                            />
                         </div>
                     </div>
                 )}

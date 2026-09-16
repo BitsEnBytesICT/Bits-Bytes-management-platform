@@ -4,4 +4,5 @@ import type IParticipant from "./IParticipant";
 export default interface IFloorPlans {
     rooms: IRoom[];
     participants: IParticipant[];
+    dayButtons?: boolean;
 }

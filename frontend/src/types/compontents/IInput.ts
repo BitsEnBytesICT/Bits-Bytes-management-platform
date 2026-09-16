@@ -19,6 +19,14 @@ interface TextInput extends InputBase {
     onChange?: (input: string) => void;
 }
 
-type IInput = CheckboxInput | TextInput;
+interface TextareaInput extends InputBase {
+    type: "textarea";
+    rows?: number;
+    placeholder?: string;
+    value?: string;
+    onChange?: (input: string) => void;
+}
+
+type IInput = CheckboxInput | TextInput | TextareaInput;
 
 export type {IInput as default};

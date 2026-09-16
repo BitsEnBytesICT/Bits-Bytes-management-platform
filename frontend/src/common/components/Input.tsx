@@ -1,8 +1,8 @@
-import {forwardRef, useState} from "react";
+import {forwardRef, useState, type ChangeEvent, type ForwardedRef} from "react";
 
 import type IInput from "../../types/compontents/IInput";
 
-const Input = forwardRef<HTMLInputElement, IInput>((props, ref) => {
+const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props, ref) => {
     const [isFilledIn, setIsFilledIn] = useState(true);
 
     if (props.type === "checkbox") {
@@ -22,7 +22,7 @@ const Input = forwardRef<HTMLInputElement, IInput>((props, ref) => {
                         id={id}
                         checked={checked}
                         disabled={readOnly}
-                        ref={ref}
+                        ref={ref as ForwardedRef<HTMLInputElement>}
                         type="checkbox"
                         onChange={e => onChange?.(e.target.checked)}
                     />
@@ -32,6 +32,27 @@ const Input = forwardRef<HTMLInputElement, IInput>((props, ref) => {
     }
 
     const {label, placeholder, id, type, className, value = "", readOnly = false, required = false, onChange} = props;
+    const inputProps = {
+        className:
+            className ??
+            `px-5 py-3 text-[16px] text-(--color-offblack) bg-(--color-offwhite) outline-none rounded-xl
+            transition-colors focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]
+            ${readOnly ? "cursor-default" : ""} ${
+                !isFilledIn && required
+                    ? `shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-red)_50%,transparent)]
+                        focus:shadow-[inset_0_0_0_1px_var(--color-red)]`
+                    : `shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
+                        focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]`
+            }`,
+        id,
+        placeholder,
+        defaultValue: value,
+        readOnly,
+        onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            setIsFilledIn(Boolean(e.target.value));
+            onChange?.(e.target.value);
+        },
+    };
 
     return (
         <div className="flex flex-col gap-2">
@@ -41,30 +62,15 @@ const Input = forwardRef<HTMLInputElement, IInput>((props, ref) => {
                 </label>
             )}
 
-            <input
-                className={
-                    className ??
-                    `px-5 py-3 text-[16px] text-(--color-offblack) bg-(--color-offwhite) outline-none rounded-xl
-                    transition-colors focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]
-                    ${readOnly ? "cursor-default" : ""} ${
-                        !isFilledIn && required
-                            ? `shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-red)_50%,transparent)]
-                                focus:shadow-[inset_0_0_0_1px_var(--color-red)]`
-                            : `shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
-                                focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]`
-                    }`
-                }
-                id={id}
-                placeholder={placeholder}
-                defaultValue={value}
-                readOnly={readOnly}
-                ref={ref}
-                type={type}
-                onChange={e => {
-                    setIsFilledIn(Boolean(e.target.value));
-                    onChange?.(e.target.value);
-                }}
-            />
+            {type === "textarea" ? (
+                <textarea
+                    {...inputProps}
+                    ref={ref as ForwardedRef<HTMLTextAreaElement>}
+                    rows={Math.min(50, Math.max(4, props.rows ?? 4))}
+                />
+            ) : (
+                <input {...inputProps} ref={ref as ForwardedRef<HTMLInputElement>} type={type} />
+            )}
         </div>
     );
 });

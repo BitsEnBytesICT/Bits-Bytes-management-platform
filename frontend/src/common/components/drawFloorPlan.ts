@@ -37,14 +37,14 @@ export default function drawFloorPlan(
 
     let currentScale = room.scale;
 
-    //canvas.style.width = `${room.width / room.scale + 2}px`;
-    //canvas.style.height = `${room.height / room.scale + 2}px`;
-
     if (canvas.height !== canvas.clientHeight) canvas.height = canvas.clientHeight;
 
     if (canvas.width !== canvas.clientWidth) canvas.width = canvas.clientWidth;
 
     if (room.width / room.scale > canvas.width - 2) currentScale = Math.ceil(room.width / (canvas.width - 2));
+
+    const widthOffset = (canvas.width - room.width / currentScale) / 2;
+    const heightOffset = (canvas.height - room.height / currentScale) / 2;
 
     context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -69,23 +69,30 @@ export default function drawFloorPlan(
     context.lineJoin = "round";
     context.setLineDash([10, 10]);
     context.beginPath();
-    context.roundRect(wallThickness / 2, wallThickness / 2, room.width / currentScale, room.height / currentScale, 12);
+    context.roundRect(
+        wallThickness / 2 + widthOffset,
+        wallThickness / 2 + heightOffset,
+        room.width / currentScale,
+        room.height / currentScale,
+        12,
+    );
     context.stroke();
 
     if (walls) {
         walls.forEach(wall => {
-            const wallX = wall.xpos / currentScale;
-            const wallY = wall.ypos / currentScale;
+            const wallX = wall.xpos / currentScale + widthOffset;
+            const wallY = wall.ypos / currentScale + heightOffset;
             const wallLength = wall.height / currentScale;
 
             context.beginPath();
-            if (!wall.rotation) {
-                context.moveTo(wallX, wallY + wallThickness / 2);
-                context.lineTo(wallX + wallLength, wallY + wallThickness / 2);
-            } else if (wall.rotation === 90) {
-                context.moveTo(wallX + wallThickness / 2, wallY);
-                context.lineTo(wallX + wallThickness / 2, wallY + wallLength);
-            }
+            context.moveTo(
+                !wall.rotation ? wallX : wallX + wallThickness / 2,
+                !wall.rotation ? wallY + wallThickness / 2 : wallY,
+            );
+            context.lineTo(
+                !wall.rotation ? wallX + wallLength : wallX + wallThickness / 2,
+                !wall.rotation ? wallY + wallThickness / 2 : wallY + wallLength,
+            );
             context.stroke();
         });
     }
@@ -97,8 +104,8 @@ export default function drawFloorPlan(
         const rotated = workplace.rotation === 90;
         const width = rotated ? 1600 : 800;
         const height = rotated ? 800 : 1600;
-        const x = workplace.xpos / currentScale;
-        const y = workplace.ypos / currentScale;
+        const x = workplace.xpos / currentScale + widthOffset;
+        const y = workplace.ypos / currentScale + heightOffset;
         const w = width / currentScale;
         const h = height / currentScale;
 
@@ -107,7 +114,7 @@ export default function drawFloorPlan(
 
         switch (workplace.timeslots.filter(timeslot => timeslot.occupancy !== "Vrij").length) {
             case 1: {
-                const [first, second] =
+                const colorOrder =
                     workplace.timeslots[0].occupancy !== "Vrij"
                         ? [colors.yellow, colors.green]
                         : [colors.green, colors.yellow];
@@ -115,45 +122,27 @@ export default function drawFloorPlan(
                 const skew = Math.min(w, h) * 0.15;
                 const margin = context.lineWidth;
 
-                const halves: [string, () => void][] = [
-                    [
-                        first,
-                        () => {
-                            if (rotated) {
-                                context.moveTo(x - margin, y - margin);
-                                context.lineTo(x + w / 2 + skew, y - margin);
-                                context.lineTo(x + w / 2 - skew, y + h + margin);
-                                context.lineTo(x - margin, y + h + margin);
-                            } else {
-                                context.moveTo(x - margin, y - margin);
-                                context.lineTo(x + w + margin, y - margin);
-                                context.lineTo(x + w + margin, y + h / 2 - skew);
-                                context.lineTo(x - margin, y + h / 2 + skew);
-                            }
-                        },
-                    ],
-                    [
-                        second,
-                        () => {
-                            if (rotated) {
-                                context.moveTo(x + w / 2 + skew, y - margin);
-                                context.lineTo(x + w + margin, y - margin);
-                                context.lineTo(x + w + margin, y + h + margin);
-                                context.lineTo(x + w / 2 - skew, y + h + margin);
-                            } else {
-                                context.moveTo(x - margin, y + h / 2 + skew);
-                                context.lineTo(x + w + margin, y + h / 2 - skew);
-                                context.lineTo(x + w + margin, y + h + margin);
-                                context.lineTo(x - margin, y + h + margin);
-                            }
-                        },
-                    ],
-                ];
-
-                halves.forEach(([color, tracePath]) => {
+                colorOrder.forEach((color, index) => {
                     context.save();
                     context.beginPath();
-                    tracePath();
+                    if (index === 0) {
+                        context.moveTo(x - margin, y - margin);
+                        context.lineTo(rotated ? x + w / 2 + skew : x + w + margin, y - margin);
+                        context.lineTo(
+                            rotated ? x + w / 2 - skew : x + w + margin,
+                            rotated ? y + h + margin : y + h / 2 - skew,
+                        );
+                        context.lineTo(x - margin, rotated ? y + h + margin : y + h / 2 + skew);
+                    } else {
+                        context.moveTo(
+                            rotated ? x + w / 2 + skew : x - margin,
+                            rotated ? y - margin : y + h / 2 + skew,
+                        );
+                        context.lineTo(x + w + margin, rotated ? y - margin : y + h / 2 - skew);
+                        context.lineTo(x + w + margin, y + h + margin);
+                        context.lineTo(rotated ? x + w / 2 - skew : x - margin, y + h + margin);
+                    }
+
                     context.closePath();
                     context.clip();
 
@@ -186,8 +175,8 @@ export default function drawFloorPlan(
         context.fillStyle = colors.black;
         context.fillText(
             workplace.name,
-            (workplace.xpos + width / 2) / currentScale,
-            (workplace.ypos + height / 2) / currentScale,
+            (workplace.xpos + width / 2) / currentScale + widthOffset,
+            (workplace.ypos + height / 2) / currentScale + heightOffset,
         );
     });
 
