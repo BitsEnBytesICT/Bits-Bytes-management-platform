@@ -12,6 +12,7 @@ import {IconAddUser, IconCalendar, IconDelete, IconEdit, IconExport, IconFilter,
 import http from "../../common/http";
 import ParticipantsService from "../Participants/Participants.service";
 import SignaturePopUp from "./components/SignaturePopUp";
+import SignaturesFilter from "./components/SignaturesFilter";
 
 type AttendanceRow = IAttendance & {checked: boolean};
 
@@ -49,8 +50,10 @@ function ActionIcons(
 }
 
 export default function SignatureManagement() {
-    const [signatures, setSignatures] = useState<AttendanceRow[]>([]);
+    const [signatures, setSignatures] = useState<IAttendance[]>([]);
+    const [filteredSignatures, setFilteredSignatures] = useState<AttendanceRow[]>([]);
     const [participants, setParticipants] = useState<IParticipant[]>([]);
+    const [isFilterShown, setIsFilterShown] = useState(false);
 
     const [infoSignature, setInfoSignature] = useState<IAttendance | null>(null);
     const [editSignature, setEditSignature] = useState<IAttendance | null>(null);
@@ -86,7 +89,7 @@ export default function SignatureManagement() {
     const fetchData = async () => {
         const request = await http("/api/attendance", "GET");
         const response: IAttendance[] = await request.json();
-        setSignatures(response.map(row => ({...row, checked: false})));
+        setSignatures(response);
     };
 
     const findParticipant = (participantID: number) => participants.find(p => p.id === participantID);
@@ -101,8 +104,10 @@ export default function SignatureManagement() {
             <div className="mb-4 flex flex-row justify-between">
                 <div className="flex flex-row gap-6">
                     <SmallButton
+                        onClick={() => setIsFilterShown(prev => !prev)}
                         icon={<img src={IconFilter} className="select-none [-webkit-user-drag:none]" />}
-                        label=""
+                        label="Filter"
+                        active={isFilterShown}
                     />
                 </div>
 
@@ -145,18 +150,24 @@ export default function SignatureManagement() {
                 />
             </label>
 
-            <div
-                className="flex-1 min-h-0 [&_td:first-child]:w-12 [&_td:first-child]:overflow-hidden
-                    [&_td:last-child]:w-32 [&_td:last-child]:overflow-hidden [&_th:first-child]:w-12
-                    [&_th:last-child]:w-32">
-                <Table
-                    columns={signatureColumns}
-                    rows={signatures}
-                    setRows={setSignatures}
-                    rowKey="id"
-                    checkBox={true}
-                />
-            </div>
+            <SignaturesFilter
+                signatures={signatures}
+                participants={participants}
+                isShown={isFilterShown}
+                setFilteredSignatures={setFilteredSignatures}>
+                <div
+                    className="flex-1 min-h-0 [&_td:first-child]:w-12 [&_td:first-child]:overflow-hidden
+                        [&_td:last-child]:w-32 [&_td:last-child]:overflow-hidden [&_th:first-child]:w-12
+                        [&_th:last-child]:w-32">
+                    <Table
+                        columns={signatureColumns}
+                        rows={filteredSignatures}
+                        setRows={setFilteredSignatures}
+                        rowKey="id"
+                        checkBox={true}
+                    />
+                </div>
+            </SignaturesFilter>
 
             {infoSignature && (
                 <SignaturePopUp
