@@ -13,7 +13,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
         inputProps = {
             className:
                 props.className ??
-                `px-5 py-3 text-[16px] text-(--color-offblack) bg-(--color-offwhite) outline-none rounded-xl
+                `px-[15px] py-3 placeholder:text-(--color-offblack)/50 bg-(--color-offwhite) outline-none rounded-xl
                 transition-colors focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]
                 ${props.readOnly ? "cursor-default" : ""} ${
                     !isFilledIn && props.required
@@ -38,7 +38,9 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
             return (
                 <div className="flex flex-col gap-2">
                     {props.label && (
-                        <label className="ml-1.5 text-[16px] font-semibold text-(--color-darkblue)" htmlFor={props.id}>
+                        <label
+                            className={props.labelClassName ?? "ml-1.5 font-semibold text-(--color-darkblue)"}
+                            htmlFor={props.id}>
                             {`${props.label} ${props.required ? "*" : ""}`}
                         </label>
                     )}
@@ -60,7 +62,9 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
             return (
                 <div className={`flex flex-col gap-2`}>
                     {props.label && (
-                        <label className="ml-1.5 text-[16px] font-semibold text-(--color-darkblue)" htmlFor={props.id}>
+                        <label
+                            className={props.labelClassName ?? "ml-1.5 font-semibold text-(--color-darkblue)"}
+                            htmlFor={props.id}>
                             {`${props.label} ${props.required ? "*" : ""}`}
                         </label>
                     )}
@@ -68,6 +72,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
                     <textarea
                         {...inputProps}
                         ref={ref as ForwardedRef<HTMLTextAreaElement>}
+                        style={{resize: "none"}}
                         rows={Math.min(50, Math.max(4, props.rows ?? 4))}
                     />
                 </div>
@@ -77,7 +82,9 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
             return (
                 <div className={`flex flex-col gap-2`}>
                     {props.label && (
-                        <label className="ml-1.5 text-[16px] font-semibold text-(--color-darkblue)" htmlFor={props.id}>
+                        <label
+                            className={props.labelClassName ?? "ml-1.5 font-semibold text-(--color-darkblue)"}
+                            htmlFor={props.id}>
                             {`${props.label} ${props.required ? "*" : ""}`}
                         </label>
                     )}
@@ -87,20 +94,52 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
             );
         case "select":
             return (
-                <Select
-                    inputId={props.id}
-                    options={props.options}
-                    value={props.options.find(option => option.value === props.value) ?? null}
-                    onChange={option => props.onChange?.(option?.value ?? "")}
-                    isSearchable
-                    isDisabled={props.readOnly}
-                    required={props.required}
-                    placeholder={props.placeholder ?? "Selecteer..."}
-                    noOptionsMessage={() => "Geen resultaten"}
-                    className={props.className}
-                    menuPlacement="auto"
-                    styles={{menu: base => ({...base, minWidth: 192, right: 0})}}
-                />
+                <div className={`flex flex-col gap-2 ${props.className ?? ""}`}>
+                    {props.label && (
+                        <label
+                            className={props.labelClassName ?? "ml-1.5 font-semibold text-(--color-darkblue)"}
+                            htmlFor={props.id}>
+                            {`${props.label} ${props.required ? "*" : ""}`}
+                        </label>
+                    )}
+
+                    <Select
+                        inputId={props.id}
+                        options={props.options}
+                        value={props.options.find(option => option.value === props.value) ?? null}
+                        onChange={option => props.onChange?.(option?.value ?? "")}
+                        isSearchable
+                        isDisabled={props.readOnly}
+                        required={props.required}
+                        placeholder={props.placeholder ?? "Selecteer..."}
+                        noOptionsMessage={() => "Geen resultaten"}
+                        menuPlacement="auto"
+                        unstyled
+                        classNames={{
+                            control: ({isFocused}) =>
+                                `px-[15px] py-3 bg-(--color-offwhite) rounded-xl
+                                cursor-pointer transition-colors ${
+                                    isFocused
+                                        ? "shadow-[inset_0_0_0_1px_var(--color-darkblue)]"
+                                        : "shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]"
+                                }`,
+                            valueContainer: () => "gap-1",
+                            placeholder: () => "text-(--color-offblack)/50",
+                            singleValue: () => "text-inherit",
+                            input: () => "text-inherit",
+                            dropdownIndicator: () => "text-(--color-darkblue)",
+                            menu: () =>
+                                `py-2 text-(--color-darkblue) bg-(--color-white) rounded-xl shadow-lg overflow-hidden
+                                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`,
+                            option: ({isFocused, isSelected}) =>
+                                `px-5 py-2 cursor-pointer transition-colors duration-300 ease-in-out ${
+                                    isSelected || isFocused ? "bg-(--color-darkblue)/5" : ""
+                                }`,
+                            noOptionsMessage: () => "px-5 py-2 opacity-50",
+                        }}
+                        styles={{menu: base => ({...base, minWidth: "100%", right: 0, marginTop: 0, marginBottom: 0})}}
+                    />
+                </div>
             );
         default:
             return assertNever(props);

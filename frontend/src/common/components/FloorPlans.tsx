@@ -34,7 +34,7 @@ export default function FloorPlans({rooms, participants, dayButtons}: IFloorPlan
         {label: "Bezet", color: "text-(--color-red)"},
     ];
 
-    const popupWidth = 260;
+    const popupWidth = 300;
 
     const arrowClassName = {
         left: "-left-1.75 top-1/2 -translate-y-1/2 -rotate-90",
@@ -210,7 +210,7 @@ export default function FloorPlans({rooms, participants, dayButtons}: IFloorPlan
 
                 {showPopUp && (
                     <div
-                        className="p-1 absolute z-50 w-65 animate-[fade-in_0.2s_ease-in-out]"
+                        className="p-1 absolute z-50 w-75 animate-[fade-in_0.2s_ease-in-out]"
                         style={popupPosition}
                         ref={popup}
                         onMouseLeave={e => {
@@ -224,7 +224,7 @@ export default function FloorPlans({rooms, participants, dayButtons}: IFloorPlan
                         />
 
                         <div
-                            className="px-5 py-4 flex flex-col gap-2 text-sm font-medium text-(--color-darkblue)
+                            className="px-5 py-5 flex flex-col gap-3 text-sm font-medium text-(--color-darkblue)
                                 bg-(--color-white) rounded-2xl
                                 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
                             <div className="flex flex-row justify-between text-base">
@@ -276,7 +276,7 @@ export default function FloorPlans({rooms, participants, dayButtons}: IFloorPlan
                                                 walls,
                                             );
                                         }}
-                                        className={timeslot.occupancy === "Vrij" ? "text-(--color-darkblue)/50" : ""}
+                                        className={`flex-1 min-w-0 ${timeslot.occupancy === "Vrij" ? "text-(--color-darkblue)/50" : ""}`}
                                     />
                                 </div>
                             ))}
@@ -292,9 +292,10 @@ export default function FloorPlans({rooms, participants, dayButtons}: IFloorPlan
                                         ),
                                     );
                                 }}
-                                id="omschrijving"
+                                id="notitie"
                                 type="textarea"
-                                label="Omschrijving"
+                                label="Notitie"
+                                labelClassName="font-medium text-(--color-darkblue)"
                             />
                         </div>
                     </div>

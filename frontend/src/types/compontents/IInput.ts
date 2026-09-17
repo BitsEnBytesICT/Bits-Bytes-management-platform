@@ -2,6 +2,7 @@ interface InputBase {
     label?: string;
     id: string;
     className?: string;
+    labelClassName?: string;
     readOnly?: boolean;
     required?: boolean;
 }
