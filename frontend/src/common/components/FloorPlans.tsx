@@ -276,7 +276,8 @@ export default function FloorPlans({rooms, participants, dayButtons}: IFloorPlan
                                                 walls,
                                             );
                                         }}
-                                        className={`flex-1 min-w-0 ${timeslot.occupancy === "Vrij" ? "text-(--color-darkblue)/50" : ""}`}
+                                        className={`flex-1 min-w-0
+                                        ${timeslot.occupancy === "Vrij" ? "text-(--color-darkblue)/50" : ""}`}
                                     />
                                 </div>
                             ))}
