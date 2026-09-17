@@ -26,7 +26,7 @@ export default function DrawFloorPlan(
 
     const colors = {
         darkblue: cssColor("--color-darkblue"),
-        black: cssColor("--color-black"),
+        black: "#000000",
         green: cssColor("--color-green"),
         yellow: cssColor("--color-yellow"),
         red: cssColor("--color-red"),
@@ -60,7 +60,7 @@ export default function DrawFloorPlan(
     }
 
     context.strokeStyle = colors.darkblue;
-    context.font = "16px Arial";
+    context.font = "16px Outfit";
     context.textAlign = "center";
     context.textBaseline = "middle";
 
