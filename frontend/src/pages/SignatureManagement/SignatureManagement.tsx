@@ -18,6 +18,17 @@ import SignaturesPDF from "./components/SignaturesPDF";
 
 type AttendanceRow = IAttendance & {checked: boolean};
 
+const isSvg = (signature?: string) => signature?.trimStart().startsWith("<svg") ?? false;
+
+function formatDate(value?: string) {
+    if (!value) return "-";
+
+    const date = new Date(value);
+    if (isNaN(date.getTime())) return value;
+
+    return date.toLocaleString("nl-NL", {dateStyle: "short", timeStyle: "short"});
+}
+
 function ActionIcons(
     signature: IAttendance,
     onEditClick: (signature: IAttendance) => void,
@@ -64,12 +75,41 @@ export default function SignatureManagement() {
     const participantService: ParticipantsService = new ParticipantsService();
 
     const signatureColumns: ITableColumn<IAttendance>[] = [
-        {key: "id", label: "id"},
-        {key: "participantID", label: "participantID"},
-        {key: "clockinDate", label: "clockinDate"},
-        {key: "clockoutDate", label: "clockoutDate"},
-        {key: "workDuration", label: "workDuration"},
-        {key: "signature", label: "signature"},
+        {key: "id", label: "ID"},
+        {
+            key: "firstname",
+            label: "Naam",
+            sortable: false,
+            render: row => findParticipant(row.participantID)?.firstname ?? "-",
+        },
+        {
+            key: "lastname",
+            label: "Achternaam",
+            sortable: false,
+            render: row => findParticipant(row.participantID)?.lastname ?? "-",
+        },
+        {key: "clockinDate", label: "Ingeklokt", render: row => formatDate(row.clockinDate)},
+        {key: "clockoutDate", label: "Uitgeklokt", render: row => formatDate(row.clockoutDate)},
+        {
+            key: "workDuration",
+            label: "Werkduur",
+            render: row => (row.workDuration != null ? `${row.workDuration} min` : "-"),
+        },
+        {
+            key: "signature",
+            label: "Handtekening",
+            copyable: false,
+            sortable: false,
+            render: row =>
+                isSvg(row.signature) ? (
+                    <img
+                        src={`data:image/svg+xml;utf8,${encodeURIComponent(row.signature)}`}
+                        className="h-10 max-w-full object-contain select-none [-webkit-user-drag:none]"
+                    />
+                ) : (
+                    <span className="text-(--color-darkblue)/50">Nog geen handtekening</span>
+                ),
+        },
         {
             key: "acties",
             label: "Acties",
