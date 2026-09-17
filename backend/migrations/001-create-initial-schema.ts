@@ -160,7 +160,7 @@ const downStatements: string[] = [
     "DROP TABLE IF EXISTS SchedulesParticipants",
     "DROP TABLE IF EXISTS Workplaces",
     "DROP TABLE IF EXISTS Attendances",
-    "DROP TABLE IF EXISTS Signatures",
+    // "DROP TABLE IF EXISTS Signatures",
     "DROP TABLE IF EXISTS Schedules",
     "DROP TABLE IF EXISTS Rooms",
     "DROP TABLE IF EXISTS Participants",

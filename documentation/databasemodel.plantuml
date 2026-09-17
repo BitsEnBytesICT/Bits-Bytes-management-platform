@@ -34,7 +34,8 @@ entity Signatures {
 entity Attendance {
     * id: number <<primary key>>
     * participantID: number <<foreign key Participant.id>>
-    * clockinDate: Date
+    * clockinDate: string
+    * signature: string
     --
     clockoutDate: Date
     workDuration: number

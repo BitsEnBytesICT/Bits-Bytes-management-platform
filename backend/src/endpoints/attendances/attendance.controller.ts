@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import AuthenticationDecorator from '../../common/authenticationDecorator';
 import ScanService from './attendance.service';
+import IAttendance from '../../types/attendance/IAttendance';
+import { KeyValuePair } from '../../common/Validator';
 
 export default class AttendanceController {
     private service: ScanService;
@@ -36,6 +38,23 @@ export default class AttendanceController {
     @AuthenticationDecorator('attendance.clock_in')
     async create(req: Request, res: Response) {
         await this.service.create(req.body.rfid_uid, req.body.signature);
+        res.sendStatus(200);
+    }
+
+    @AuthenticationDecorator('attendance.update')
+    async update(req: Request, res: Response) {
+        const { id, signature } = req.body;
+
+        if (id == null || signature == null) {
+            res.status(400).json(["id en signature zijn verplicht"]);
+            return;
+        }
+
+        const signatureUpdate: Partial<IAttendance> = {
+            signature: signature
+        }
+
+        await this.service.update(["id", id], ...Object.entries(signatureUpdate) as KeyValuePair<IAttendance>[])
         res.sendStatus(200);
     }
 
