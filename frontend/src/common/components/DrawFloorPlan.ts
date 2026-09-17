@@ -13,7 +13,7 @@ function withOpacity(hex: string, opacity: number): string {
         .padStart(2, "0")}`;
 }
 
-export default function drawFloorPlan(
+export default function DrawFloorPlan(
     canvasRef: RefObject<HTMLCanvasElement | null>,
     room: IRoom,
     workplaces: WorkplaceWithOccupancy[],

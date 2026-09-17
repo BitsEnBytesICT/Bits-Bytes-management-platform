@@ -4,7 +4,7 @@ import SmallButton from "./SmallButton";
 import Tabs from "./Tabs";
 
 import {ArrowBox, IconProduct} from "../../assets";
-import drawFloorPlan from "./drawFloorPlan";
+import drawFloorPlan from "./DrawFloorPlan";
 import type IFloorPlans from "../../types/compontents/IFloorPlans";
 import type {IWall} from "../../types/floorPlans/IWall";
 import type {IWorkplace, WorkplaceWithOccupancy} from "../../types/floorPlans/IWorkplace";
