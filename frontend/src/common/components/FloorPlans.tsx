@@ -293,9 +293,9 @@ export default function FloorPlans({rooms, participants, dayButtons}: IFloorPlan
                                         ),
                                     );
                                 }}
-                                id="notitie"
+                                id="notities"
                                 type="textarea"
-                                label="Notitie"
+                                label="Notities"
                                 labelClassName="font-medium text-(--color-darkblue)"
                             />
                         </div>

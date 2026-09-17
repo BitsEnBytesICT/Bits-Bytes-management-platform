@@ -126,16 +126,16 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
                             valueContainer: () => "gap-1",
                             placeholder: () => "text-(--color-offblack)/50",
                             singleValue: () => "text-inherit",
-                            input: () => "text-inherit",
+                            input: () => "text-(--color-darkblue)",
                             dropdownIndicator: () => "text-(--color-darkblue)",
                             menu: () =>
                                 `py-2 text-(--color-darkblue) bg-(--color-white) rounded-xl shadow-lg overflow-hidden
                                 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`,
                             option: ({isFocused, isSelected}) =>
-                                `px-5 py-2 cursor-pointer transition-colors duration-300 ease-in-out ${
+                                `px-[15px] py-2 cursor-pointer transition-colors duration-300 ease-in-out ${
                                     isSelected || isFocused ? "bg-(--color-darkblue)/5" : ""
                                 }`,
-                            noOptionsMessage: () => "px-5 py-2 opacity-50",
+                            noOptionsMessage: () => "px-[15px] py-2 opacity-50",
                         }}
                         styles={{menu: base => ({...base, minWidth: "100%", right: 0, marginTop: 0, marginBottom: 0})}}
                     />
