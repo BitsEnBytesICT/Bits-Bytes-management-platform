@@ -9,10 +9,12 @@ import type IParticipant from "../../types/compontents/IParticipant";
 import type {ITableColumn} from "../../types/compontents/ITable";
 
 import {IconAddUser, IconCalendar, IconDelete, IconEdit, IconExport, IconFilter, IconInfo} from "../../assets";
+import {downloadPDF} from "../../common/buildPDF";
 import http from "../../common/http";
 import ParticipantsService from "../Participants/Participants.service";
 import SignaturePopUp from "./components/SignaturePopUp";
 import SignaturesFilter from "./components/SignaturesFilter";
+import SignaturesPDF from "./components/SignaturesPDF";
 
 type AttendanceRow = IAttendance & {checked: boolean};
 
@@ -77,9 +79,7 @@ export default function SignatureManagement() {
                 ActionIcons(
                     row,
                     setEditSignature,
-                    _signature => {
-                        //signature hier exporten?
-                    },
+                    signature => exportSignatures([signature], `handtekening-${signature.id}.pdf`),
                     setDeleteSignature,
                     setInfoSignature,
                 ),
@@ -93,6 +93,12 @@ export default function SignatureManagement() {
     };
 
     const findParticipant = (participantID: number) => participants.find(p => p.id === participantID);
+
+    const exportSignatures = async (toExport: IAttendance[], fileName = "handtekeningen-export.pdf") => {
+        if (toExport.length === 0) return;
+
+        await downloadPDF(<SignaturesPDF signatures={toExport} participants={participants} />, fileName);
+    };
 
     useEffect(() => {
         fetchData();
@@ -121,6 +127,7 @@ export default function SignatureManagement() {
                     <SmallButton
                         icon={<img src={IconExport} className="select-none [-webkit-user-drag:none]" />}
                         label="Exporteer Selectie"
+                        onClick={() => exportSignatures(filteredSignatures.filter(s => s.checked))}
                     />
 
                     <SmallButton
@@ -131,6 +138,7 @@ export default function SignatureManagement() {
                     <SmallButton
                         icon={<img src={IconExport} className="select-none [-webkit-user-drag:none]" />}
                         label="Exporteer"
+                        onClick={() => exportSignatures(filteredSignatures)}
                     />
                 </div>
             </div>
