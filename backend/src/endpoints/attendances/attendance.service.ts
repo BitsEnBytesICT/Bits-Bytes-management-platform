@@ -72,8 +72,8 @@ export default class AttendanceService implements serviceBase<IAttendance> {
         await this.dao.delete(where);
     }
     
-    async list(): Promise<IAttendance[]> {
-        return await this.dao.list();
+    async list(...where: KeyValuePair<IAttendance>[]): Promise<IAttendance[]> {
+        return await this.dao.list(...where);
     }
 
     async findOne(...where: KeyValuePair<IAttendance>[]): Promise<IAttendance> {

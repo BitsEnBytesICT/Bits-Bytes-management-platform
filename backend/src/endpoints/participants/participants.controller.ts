@@ -23,7 +23,7 @@ export default class ParticipantController {
 
     @AuthenticationDecorator("participant.list")
     async list (req: Request, res: Response) {
-        const participants = await this.service.list();
+        const participants = await this.service.list(...(req.body?.where ?? []));
         res.json(participants);
     }
 

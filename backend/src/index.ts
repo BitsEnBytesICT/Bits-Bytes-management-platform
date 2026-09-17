@@ -9,6 +9,9 @@ import attendanceRouter from './endpoints/attendances/attendance.routes';
 import authRouter from './endpoints/auth/auth.routes';
 import participantRouter from './endpoints/participants/participants.routes';
 import AccountRouter from './endpoints/accounts/accounts.routes';
+import roomRouter from './endpoints/rooms/rooms.routes';
+import wallRouter from './endpoints/walls/walls.routes';
+import workplaceRouter from './endpoints/workplaces/workplaces.routes';
 import { setupDatabase } from './setupDatabases';
 import { createConnection } from './common/db';
 import { environmentFileChecker } from './common/environmentFileChecker';
@@ -59,6 +62,9 @@ app.use(attendanceRouter);
 app.use(authRouter);
 app.use(participantRouter);
 app.use(AccountRouter);
+app.use(roomRouter);
+app.use(wallRouter);
+app.use(workplaceRouter);
 
 app.use((err: IError[] | IError, req: Request, res: Response, next: NextFunction) => {
     console.log(err)

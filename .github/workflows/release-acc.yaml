@@ -54,3 +54,6 @@ jobs:
           '${VITE_FRONTEND_SNAPSHOT_VERSION} ${BACKEND_SNAPSHOT_VERSION} ${BACKEND_VERSION} ${VITE_FRONTEND_VERSION}' \
           < deployment-ACC.yaml \
           | kubectl apply -f -
+
+      - name: cleanup docker
+        run: docker builder prune -af && docker image prune -af && docker container prune -f
