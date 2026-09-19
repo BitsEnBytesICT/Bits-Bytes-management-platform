@@ -5,4 +5,5 @@ export default interface IFloorPlans {
     rooms: IRoom[];
     participants: IParticipant[];
     dayButtons?: boolean;
+    height?: string;
 }

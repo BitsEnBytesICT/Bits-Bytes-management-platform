@@ -101,6 +101,8 @@ export default function SupportDashboard() {
             {isAddParticipantShown && (
                 <ParticipantPopUp
                     mode="add"
+                    participants={participants}
+                    rooms={rooms}
                     setParticipants={setParticipants}
                     onClose={() => setIsAddParticipantShown(false)}
                 />

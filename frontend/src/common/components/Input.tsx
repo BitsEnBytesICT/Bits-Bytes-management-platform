@@ -108,6 +108,9 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
                         options={props.options}
                         value={props.options.find(option => option.value === props.value) ?? null}
                         onChange={option => props.onChange?.(option?.value ?? "")}
+                        onMenuOpen={props.onMenuOpen}
+                        onMenuClose={props.onMenuClose}
+                        onInputChange={props.onInputChange}
                         isSearchable
                         isDisabled={props.readOnly}
                         required={props.required}

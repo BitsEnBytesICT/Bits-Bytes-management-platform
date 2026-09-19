@@ -12,7 +12,7 @@ import http from "../http";
 import type {KeyValuePair} from "../../types/validation/keyvaluePair";
 import Input from "./Input";
 
-export default function FloorPlans({rooms, participants, dayButtons}: IFloorPlans) {
+export default function FloorPlans({rooms, participants, dayButtons, height}: IFloorPlans) {
     const [active, setActive] = useState(0);
     const [currentDay, setCurrentDay] = useState(0);
     const [drawn, setDrawn] = useState(false);
@@ -131,7 +131,7 @@ export default function FloorPlans({rooms, participants, dayButtons}: IFloorPlan
             const height = (workplace.rotation === 90 ? 800 : 1600) / currentScale.current;
             const popupHeight = popup.current?.clientHeight ?? 200;
 
-            if (x < left || x > left + width || y < top || y > top + height) continue;
+            if (!currentScale.current || x < left || x > left + width || y < top || y > top + height) continue;
 
             canvas.style.cursor = "pointer";
             setCurrentWorkplace(workplace);
@@ -173,7 +173,7 @@ export default function FloorPlans({rooms, participants, dayButtons}: IFloorPlan
 
     return (
         <div className="flex flex-col gap-4 animate-[fade-in_0.3s_ease-in-out]">
-            <div className="flex justify-between">
+            <div className="flex justify-between flex-wrap gap-y-3">
                 <div className="flex flex-row gap-6">
                     {rooms &&
                         rooms.map((room, i) => (
@@ -204,8 +204,8 @@ export default function FloorPlans({rooms, participants, dayButtons}: IFloorPlan
                         if (e.relatedTarget instanceof Node && popup.current?.contains(e.relatedTarget)) return;
                         setShowPopUp(false);
                     }}
-                    className={`p-1 flex items-center justify-center h-120 w-full bg-(--color-white) rounded-lg
-                        transition-opacity duration-300 ease-in-out ${drawn ? "opacity-100" : "opacity-0"}
+                    className={`p-1 flex items-center justify-center ${height ?? "h-120"} w-full bg-(--color-white)
+                        rounded-lg transition-opacity duration-300 ease-in-out ${drawn ? "opacity-100" : "opacity-0"}
                         shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`}></canvas>
 
                 {showPopUp && (

@@ -7,7 +7,7 @@ export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITa
     const [tooltipKey, setTooltipKey] = useState<string | null>(null);
     const [sortKey, setSortKey] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-    const [allChecked, setAllChecked] = useState<boolean>();
+    const [allChecked, setAllChecked] = useState<boolean>(false);
 
     function sortRows<R>(rows: readonly R[]): R[] {
         const sorted = [...rows].sort((a, b) => {

@@ -2,6 +2,7 @@ import http from "../../common/http";
 import type IAccount from "../../types/accounts/IAccount";
 
 import type IParticipant from "../../types/compontents/IParticipant";
+import type {IRoom} from "../../types/floorPlans/IRoom";
 import type {KeyValuePair} from "../../types/validation/keyvaluePair";
 
 export default class ParticipantsService {
@@ -65,5 +66,15 @@ export default class ParticipantsService {
         });
         if (response.status === 200) return;
         return await response.json();
+    };
+
+    getRooms = async (): Promise<IRoom[]> => {
+        let rooms: IRoom[] = [];
+
+        await http("/api/rooms", "POST").then(async res => {
+            if (res.status === 200) rooms = await res.json();
+        });
+
+        return rooms;
     };
 }

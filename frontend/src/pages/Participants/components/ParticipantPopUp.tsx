@@ -9,11 +9,15 @@ import type IAccount from "../../../types/accounts/IAccount";
 import {PermissionsList} from "../../../types/accounts/accountTypes";
 import {Roles} from "../../../types/permissions/rolesList";
 import type {KeyValuePair} from "../../../types/validation/keyvaluePair";
+import FloorPlans from "../../../common/components/FloorPlans";
+import type {IRoom} from "../../../types/floorPlans/IRoom";
 
 type ParticipantPopUpMode = "info" | "add" | "edit";
 
 interface IParticipantPopUp {
     mode: ParticipantPopUpMode;
+    participants: IParticipant[];
+    rooms: IRoom[];
     participant?: IParticipant;
     account?: IAccount;
     onClose: () => void;
@@ -26,10 +30,21 @@ const titles: Record<ParticipantPopUpMode, string> = {
     edit: "Deelnemer Bewerken",
 };
 
-export default function ParticipantPopUp({mode, participant, account, onClose, setParticipants}: IParticipantPopUp) {
+export default function ParticipantPopUp({
+    mode,
+    participant,
+    account,
+    onClose,
+    setParticipants,
+    participants,
+    rooms,
+}: IParticipantPopUp) {
     const [currentParticipant, setCurrentParticipant] = useState(participant);
     const [password, setPassword] = useState(account?.password);
     const [error, setError] = useState([]);
+    const [selectPlaceholder, setSelectPlaceholder] = useState("naam van schema...");
+    const [scheduleName, setScheduleName] = useState("");
+    const [toggleScheduleScreen, setToggleScheduleScreen] = useState(true);
     const isInfo = mode === "info";
 
     const service: ParticipantsService = new ParticipantsService();
@@ -113,7 +128,8 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
         <PopUp
             onClose={onClose}
             title={titles[mode]}
-            child={
+            errors={error}
+            children={[
                 <>
                     <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                         <Input
@@ -224,27 +240,38 @@ export default function ParticipantPopUp({mode, participant, account, onClose, s
                             />
                         )}
                     </div>
-
-                    <div className="flex flex-col h-6">
-                        {error &&
-                            error.map(e => (
-                                <span
-                                    key={e}
-                                    className="text-[16px] font-semibold text-(--color-red)
-                                        animate-[fade-in_0.3s_ease-in-out]">
-                                    {e}
-                                </span>
-                            ))}
-                    </div>
+                </>,
+                <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                    <Input
+                        label="Schema toevoegen of bewerken"
+                        placeholder={selectPlaceholder}
+                        id="location"
+                        type="select"
+                        options={[]}
+                        readOnly={isInfo}
+                        onMenuOpen={() => setSelectPlaceholder("")}
+                        onMenuClose={() => setSelectPlaceholder("naam van schema...")}
+                        onInputChange={newvalue => setScheduleName(newvalue)}
+                    />
                     <div className="mt-auto">
-                        <Button
-                            onClick={async () => {
-                                isInfo ? onClose() : await save();
-                            }}>
-                            {isInfo ? "Terug" : mode === "edit" ? "Bewerken" : "Opslaan"}
-                        </Button>
+                        {scheduleName && !isInfo && (
+                            <Button onClick={() => setToggleScheduleScreen(true)}>Schema toevoegen</Button>
+                        )}
                     </div>
-                </>
+                    {toggleScheduleScreen && (
+                        <div className="col-span-full">
+                            <FloorPlans participants={participants} rooms={rooms} height="h-42"></FloorPlans>
+                        </div>
+                    )}
+                </div>,
+            ]}
+            button={
+                <Button
+                    onClick={async () => {
+                        isInfo ? onClose() : await save();
+                    }}>
+                    {isInfo ? "Terug" : mode === "edit" ? "Bewerken" : "Opslaan"}
+                </Button>
             }
         />
     );

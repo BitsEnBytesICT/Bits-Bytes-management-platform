@@ -14,6 +14,7 @@ import {IconAddUser, IconDelete, IconExport, IconFilter} from "../../assets";
 
 import buildPDF from "../../common/buildPDF";
 import SmallPopUp from "../../common/components/SmallPopUp";
+import type {IRoom} from "../../types/floorPlans/IRoom";
 
 export default function Participants() {
     const [participants, setParticipants] = useState<IParticipant[]>([]);
@@ -22,6 +23,7 @@ export default function Participants() {
     const [filteredParticipants, setFilteredParticipants] = useState<(IParticipant & {checked: boolean})[]>([]);
     const [hasSelected, setHasSelected] = useState<boolean>();
     const [deleteParticipants, setDeleteParticipants] = useState<boolean>();
+    const [rooms, setRooms] = useState<IRoom[]>([]);
 
     const service = new ParticipantsService();
 
@@ -33,6 +35,7 @@ export default function Participants() {
         service.getParticipants().then(participants => {
             setParticipants(participants);
         });
+        service.getRooms().then(setRooms);
     }, []);
 
     async function bulkDeleteParticipants() {
@@ -94,6 +97,8 @@ export default function Participants() {
                     <ParticipantsTable
                         filteredParticipants={filteredParticipants}
                         checkBox={true}
+                        participants={participants}
+                        rooms={rooms}
                         setParticipants={setParticipants}
                         setFilteredParticipants={setFilteredParticipants}
                     />
@@ -103,6 +108,8 @@ export default function Participants() {
             {isAddParticipantShown && (
                 <ParticipantPopUp
                     mode="add"
+                    rooms={rooms}
+                    participants={participants}
                     setParticipants={setParticipants}
                     onClose={() => setIsAddParticipantShown(false)}
                 />

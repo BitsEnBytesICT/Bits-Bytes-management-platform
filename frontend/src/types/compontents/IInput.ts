@@ -1,3 +1,5 @@
+import type {InputActionMeta} from "react-select";
+
 interface InputBase {
     label?: string;
     id: string;
@@ -33,6 +35,9 @@ interface SelectInput extends InputBase {
     options: {label: string; value: string}[];
     placeholder?: string;
     value?: string;
+    onMenuOpen?: () => void;
+    onMenuClose?: () => void;
+    onInputChange?: (newValue: string, actionMeta: InputActionMeta) => void;
     onChange?: (input: string) => void;
 }
 

@@ -41,7 +41,11 @@ export default function DrawFloorPlan(
 
     if (canvas.width !== canvas.clientWidth) canvas.width = canvas.clientWidth;
 
-    if (room.width / room.scale > canvas.width - 2) currentScale = Math.ceil(room.width / (canvas.width - 2));
+    if (room.width / room.scale > canvas.width - 2 || room.height / room.scale > canvas.height - 2) {
+        const widthScale = Math.ceil(room.width / (canvas.width - 2));
+        const heightScale = Math.ceil(room.height / (canvas.height - 2));
+        currentScale = Math.max(widthScale, heightScale);
+    }
 
     const widthOffset = (canvas.width - room.width / currentScale) / 2;
     const heightOffset = (canvas.height - room.height / currentScale) / 2;
