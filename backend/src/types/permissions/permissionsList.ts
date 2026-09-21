@@ -1,3 +1,5 @@
 export enum PermissionsList {
-    all = "*"
+    all = "*",
+    scheduleList = "schedule.list",
+    scheduleCreate = "schedule.create",
 }

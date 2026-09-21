@@ -9,8 +9,9 @@ import type IAccount from "../../../types/accounts/IAccount";
 import {PermissionsList} from "../../../types/accounts/accountTypes";
 import {Roles} from "../../../types/permissions/rolesList";
 import type {KeyValuePair} from "../../../types/validation/keyvaluePair";
-import FloorPlans from "../../../common/components/FloorPlans";
+import FloorPlans from "../../../common/components/floorplans/FloorPlans";
 import type {IRoom} from "../../../types/floorPlans/IRoom";
+import ParticipantpopUpFloorplans from "./ParticipantpopUpFloorplans";
 
 type ParticipantPopUpMode = "info" | "add" | "edit";
 
@@ -44,7 +45,7 @@ export default function ParticipantPopUp({
     const [error, setError] = useState([]);
     const [selectPlaceholder, setSelectPlaceholder] = useState("naam van schema...");
     const [scheduleName, setScheduleName] = useState("");
-    const [toggleScheduleScreen, setToggleScheduleScreen] = useState(true);
+    const [toggleScheduleScreen, setToggleScheduleScreen] = useState(false);
     const isInfo = mode === "info";
 
     const service: ParticipantsService = new ParticipantsService();
@@ -248,20 +249,32 @@ export default function ParticipantPopUp({
                         id="location"
                         type="select"
                         options={[]}
+                        inputValue={scheduleName}
                         readOnly={isInfo}
                         onMenuOpen={() => setSelectPlaceholder("")}
                         onMenuClose={() => setSelectPlaceholder("naam van schema...")}
-                        onInputChange={newvalue => setScheduleName(newvalue)}
+                        onInputChange={(newValue, actionMeta) => {
+                            if (actionMeta.action === "input-change") {
+                                setScheduleName(newValue);
+                            }
+                        }}
                     />
                     <div className="mt-auto">
                         {scheduleName && !isInfo && (
-                            <Button onClick={() => setToggleScheduleScreen(true)}>Schema toevoegen</Button>
+                            <Button onClick={() => setToggleScheduleScreen(true)}>Schema aanmaken</Button>
                         )}
                     </div>
                     {toggleScheduleScreen && (
-                        <div className="col-span-full">
-                            <FloorPlans participants={participants} rooms={rooms} height="h-42"></FloorPlans>
-                        </div>
+                        <>
+                            <div className="col-span-full">
+                                <FloorPlans
+                                    participants={participants}
+                                    rooms={rooms}
+                                    height="h-42"
+                                    popUpContent={ParticipantpopUpFloorplans}></FloorPlans>
+                            </div>
+                            <Button onClick={() => setToggleScheduleScreen(true)}>Schema oplsaan</Button>
+                        </>
                     )}
                 </div>,
             ]}

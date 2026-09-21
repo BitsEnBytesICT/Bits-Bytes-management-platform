@@ -73,7 +73,7 @@ entity Workplace {
     * RoomID: number <<foreign key Room.id>>
     * name: string
     --
-    extraInfo: blob
+    extraInfo: string
     rotation: number
 }
 
@@ -81,32 +81,36 @@ entity Schedule {
     * id: number <<primary key>>
     * name: string
     * startDate: Date
+    * participant: number <<foreign key Participant.id>>
     --
     endDate: Date
-    mon: number <<foreign key Workplace.id>>
-    thues: number <<foreign key Workplace.id>>
-    wed: number <<foreign key Workplace.id>>
-    thurs: number <<foreign key Workplace.id>>
-    fri: number <<foreign key Workplace.id>>
-}
-
-entity ScheduleParticipant {
-    * id: number <<primary key>>
-    * scheduleId: number <<foreign key Schedule.id>>
-    * participantId: number <<foreign key Participant.id>>
+    monMorning: number <<foreign key Workplace.id>>
+    monEvening: number <<foreign key Workplace.id>>
+    thuesMorning: number <<foreign key Workplace.id>>
+    thuesEvening: number <<foreign key Workplace.id>>
+    wedMorning: number <<foreign key Workplace.id>>
+    wedEvening: number <<foreign key Workplace.id>>
+    thursMorning: number <<foreign key Workplace.id>>
+    thursEvening: number <<foreign key Workplace.id>>
+    friMorning: number <<foreign key Workplace.id>>
+    friEvening: number <<foreign key Workplace.id>>
 }
 
 Permission ||--o{ Account
 Permission ||--o{ ApiKey
 Account ||--o{ Participant
 Participant ||--o{ Attendance
-Participant ||--o{ ScheduleParticipant
-Schedule ||--o{ ScheduleParticipant
+Participant ||--o{ Schedule : participant
 Room ||--o{ Wall
 Room ||--o{ Workplace
-Workplace |o--o{ Schedule : mon
-Workplace |o--o{ Schedule : thues
-Workplace |o--o{ Schedule : wed
-Workplace |o--o{ Schedule : thurs
-Workplace |o--o{ Schedule : fri
+Workplace |o--o{ Schedule : monMorning
+Workplace |o--o{ Schedule : monEvening
+Workplace |o--o{ Schedule : thuesMorning
+Workplace |o--o{ Schedule : thuesEvening
+Workplace |o--o{ Schedule : wedMorning
+Workplace |o--o{ Schedule : wedEvening
+Workplace |o--o{ Schedule : thursMorning
+Workplace |o--o{ Schedule : thursEvening
+Workplace |o--o{ Schedule : friMorning
+Workplace |o--o{ Schedule : friEvening
 @enduml

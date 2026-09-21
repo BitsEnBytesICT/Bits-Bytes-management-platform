@@ -35,6 +35,7 @@ interface SelectInput extends InputBase {
     options: {label: string; value: string}[];
     placeholder?: string;
     value?: string;
+    inputValue?: string;
     onMenuOpen?: () => void;
     onMenuClose?: () => void;
     onInputChange?: (newValue: string, actionMeta: InputActionMeta) => void;

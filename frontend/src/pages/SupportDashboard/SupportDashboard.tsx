@@ -2,13 +2,15 @@ import {useEffect, useState} from "react";
 
 import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import Card from "../../common/components/Card";
-import FloorPlans from "../../common/components/FloorPlans";
+import FloorPlans from "../../common/components/floorplans/FloorPlans";
 import Calendar from "../../common/components/Calendar";
 import SmallButton from "../../common/components/SmallButton";
 
 import SupportDashboardTable from "./components/SupportDashboardTable";
 
 import ParticipantPopUp from "../Participants/components/ParticipantPopUp";
+
+import FloorplansPopUp from "../../common/components/floorplans/FloorplansPopUp";
 
 import SupportDashboardService from "./SupportDashboard.service";
 
@@ -93,7 +95,7 @@ export default function SupportDashboard() {
                     </div>
                 </div>
 
-                <FloorPlans rooms={rooms} participants={participants} />
+                <FloorPlans rooms={rooms} participants={participants} popUpContent={FloorplansPopUp} />
 
                 <Calendar />
             </div>

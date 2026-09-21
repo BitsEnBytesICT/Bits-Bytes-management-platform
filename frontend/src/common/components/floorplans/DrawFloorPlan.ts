@@ -1,8 +1,7 @@
 import type {RefObject} from "react";
-import type {IRoom} from "../../types/floorPlans/IRoom";
-import type {IWall} from "../../types/floorPlans/IWall";
-import type {WorkplaceWithOccupancy} from "../../types/floorPlans/IWorkplace";
-
+import type {IRoom} from "../../../types/floorPlans/IRoom";
+import type {WorkplaceWithOccupancy} from "../../../types/floorPlans/IWorkplace";
+import type {IWall} from "../../../types/floorPlans/IWall";
 function cssColor(name: string): string {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }

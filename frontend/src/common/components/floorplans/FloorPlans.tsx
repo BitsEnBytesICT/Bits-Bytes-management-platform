@@ -1,18 +1,17 @@
 import {useEffect, useRef, useState} from "react";
 
-import SmallButton from "./SmallButton";
-import Tabs from "./Tabs";
+import SmallButton from "../SmallButton";
+import Tabs from "../Tabs";
 
-import {ArrowBox, IconProduct} from "../../assets";
+import {ArrowBox, IconProduct} from "../../../assets";
 import drawFloorPlan from "./DrawFloorPlan";
-import type IFloorPlans from "../../types/compontents/IFloorPlans";
-import type {IWall} from "../../types/floorPlans/IWall";
-import type {IWorkplace, WorkplaceWithOccupancy} from "../../types/floorPlans/IWorkplace";
-import http from "../http";
-import type {KeyValuePair} from "../../types/validation/keyvaluePair";
-import Input from "./Input";
+import type IFloorPlans from "../../../types/compontents/IFloorPlans";
+import type {IWall} from "../../../types/floorPlans/IWall";
+import type {IWorkplace, WorkplaceWithOccupancy} from "../../../types/floorPlans/IWorkplace";
+import http from "../../http";
+import type {KeyValuePair} from "../../../types/validation/keyvaluePair";
 
-export default function FloorPlans({rooms, participants, dayButtons, height}: IFloorPlans) {
+export default function FloorPlans({rooms, participants, popUpContent: PopUpContent, dayButtons, height}: IFloorPlans) {
     const [active, setActive] = useState(0);
     const [currentDay, setCurrentDay] = useState(0);
     const [drawn, setDrawn] = useState(false);
@@ -23,16 +22,9 @@ export default function FloorPlans({rooms, participants, dayButtons, height}: IF
     const [currentWorkplace, setCurrentWorkplace] = useState<WorkplaceWithOccupancy>();
     const [workplaces, setWorkplaces] = useState<WorkplaceWithOccupancy[]>([]);
     const [walls, setWalls] = useState<IWall[]>([]);
-    const [occupancyStatus, setOccupancyStatus] = useState<{label: string; color: string}>();
     const canvas = useRef<HTMLCanvasElement>(null);
     const popup = useRef<HTMLDivElement>(null);
     const currentScale = useRef<number | undefined>(undefined);
-
-    const occupancyStatuses = [
-        {label: "Vrij", color: "text-(--color-green)"},
-        {label: "Deels", color: "text-(--color-yellow)"},
-        {label: "Bezet", color: "text-(--color-red)"},
-    ];
 
     const popupWidth = 300;
 
@@ -136,10 +128,6 @@ export default function FloorPlans({rooms, participants, dayButtons, height}: IF
             canvas.style.cursor = "pointer";
             setCurrentWorkplace(workplace);
 
-            setOccupancyStatus(
-                occupancyStatuses[workplace.timeslots.filter(timeslot => timeslot.occupancy !== "Vrij").length],
-            );
-
             if (left + width + popupWidth < canvas.width) {
                 setPopupPosition({left: left + width, top: top + height / 2 - popupHeight / 2});
                 setArrowSide("left");
@@ -208,7 +196,7 @@ export default function FloorPlans({rooms, participants, dayButtons, height}: IF
                         rounded-lg transition-opacity duration-300 ease-in-out ${drawn ? "opacity-100" : "opacity-0"}
                         shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`}></canvas>
 
-                {showPopUp && (
+                {showPopUp && currentWorkplace && rooms[active] && (
                     <div
                         className="p-1 absolute z-50 w-75 animate-[fade-in_0.2s_ease-in-out]"
                         style={popupPosition}
@@ -223,82 +211,17 @@ export default function FloorPlans({rooms, participants, dayButtons, height}: IF
                             className={`absolute z-10 select-none [-webkit-user-drag:none] ${arrowClassName[arrowSide]}`}
                         />
 
-                        <div
-                            className="px-5 py-5 flex flex-col gap-3 text-sm font-medium text-(--color-darkblue)
-                                bg-(--color-white) rounded-2xl
-                                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
-                            <div className="flex flex-row justify-between text-base">
-                                <span>Plek {currentWorkplace?.name}</span>
-
-                                <span className={occupancyStatus.color}>{occupancyStatus.label}</span>
-                            </div>
-
-                            <div className="h-px bg-(--color-black)/5"></div>
-
-                            {currentWorkplace.timeslots.map((timeslot, index) => (
-                                <div key={timeslot.name} className="flex flex-row gap-3 items-center">
-                                    <span
-                                        className={`size-2.5 shrink-0 rounded-full
-                                        ${timeslot.occupancy === "Vrij" ? "bg-(--color-green)" : "bg-(--color-red)"}`}></span>
-
-                                    <label
-                                        htmlFor={`participant-${currentWorkplace.id}-${index}`}
-                                        className="w-20 text-(--color-darkblue)/50">
-                                        {timeslot.name}
-                                    </label>
-
-                                    <Input
-                                        key={`${currentWorkplace.id}-${index}`}
-                                        id={`participant-${currentWorkplace.id}-${index}`}
-                                        type="select"
-                                        options={[
-                                            {value: "Vrij", label: "Vrij"},
-                                            ...participants.map(p => ({
-                                                value: `${p.firstname} ${p.lastname}`,
-                                                label: `${p.firstname} ${p.lastname}`,
-                                            })),
-                                        ]}
-                                        value={timeslot.occupancy}
-                                        onChange={value => {
-                                            currentWorkplace.timeslots[index].occupancy = value;
-                                            setCurrentWorkplace({...currentWorkplace});
-                                            setOccupancyStatus(
-                                                occupancyStatuses[
-                                                    currentWorkplace.timeslots.filter(
-                                                        timeslot => timeslot.occupancy !== "Vrij",
-                                                    ).length
-                                                ],
-                                            );
-                                            currentScale.current = drawFloorPlan(
-                                                canvas,
-                                                rooms[active],
-                                                workplaces,
-                                                walls,
-                                            );
-                                        }}
-                                        className={`flex-1 min-w-0
-                                        ${timeslot.occupancy === "Vrij" ? "text-(--color-darkblue)/50" : ""}`}
-                                    />
-                                </div>
-                            ))}
-                            <Input
-                                key={currentWorkplace.id}
-                                value={currentWorkplace.extraInfo}
-                                onChange={value => {
-                                    const updatedWorkplace = {...currentWorkplace, extraInfo: value};
-                                    setCurrentWorkplace(updatedWorkplace);
-                                    setWorkplaces(previous =>
-                                        previous.map(workplace =>
-                                            workplace.id === updatedWorkplace.id ? updatedWorkplace : workplace,
-                                        ),
-                                    );
-                                }}
-                                id="notities"
-                                type="textarea"
-                                label="Notities"
-                                labelClassName="font-medium text-(--color-darkblue)"
-                            />
-                        </div>
+                        <PopUpContent
+                            canvas={canvas}
+                            currentWorkplace={currentWorkplace}
+                            participants={participants}
+                            setCurrentWorkplace={setCurrentWorkplace}
+                            currentScale={currentScale}
+                            setWorkplaces={setWorkplaces}
+                            room={rooms[active]}
+                            workplaces={workplaces}
+                            walls={walls}
+                        />
                     </div>
                 )}
             </div>
