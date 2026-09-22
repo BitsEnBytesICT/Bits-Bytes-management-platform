@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 
-export default function DateTimeDisplay() {
+export default function DateTimeDisplay({muted = false}: {muted?: boolean}) {
     const [date, setDate] = useState(new Date());
 
     useEffect(() => {
@@ -34,10 +34,11 @@ export default function DateTimeDisplay() {
     });
 
     return (
-        <div className="container_dates">
-            <div className="font-black text-(--color-orange)/70">{formattedDate}</div>
+        <div
+            className={`container_dates font-black ${muted ? "text-(--color-orange)/50" : "text-(--color-orange)/70"}`}>
+            <div>{formattedDate}</div>
 
-            <div className="font-black text-(--color-orange)/70">{formattedTime}</div>
+            <div>{formattedTime}</div>
         </div>
     );
 }

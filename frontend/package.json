@@ -8,6 +8,7 @@
         "build:acc": "env-cmd -f ../.env.versions -- env-cmd --no-override -f ./.env.acc -- sh -c \"tsc -b && vite build\"",
         "build:prod": "env-cmd -f ../.env.versions -- env-cmd --no-override -f ./.env.prod -- sh -c \"tsc -b && vite build\"",
         "lint": "eslint .",
+        "test:dashboard": "node --experimental-strip-types --test tests/participantDashboard.test.ts tests/useLocalStorage.test.ts",
         "preview": "vite preview",
         "prettier": "prettier . --write",
         "prettier:check": "prettier . --check",
