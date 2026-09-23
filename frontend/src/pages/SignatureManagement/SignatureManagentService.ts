@@ -1,4 +1,5 @@
 import http from "../../common/http";
+import type IAttendance from "../../types/compontents/IAttendance";
 
 export default class SignatureManagementService {
     updateSignature = async (id: number, signature: string): Promise<string[]> => {
@@ -6,6 +7,18 @@ export default class SignatureManagementService {
             id: id,
             signature: signature,
         });
+        if (response.status === 200) return;
+        else return await response.json();
+    };
+
+    createSignature = async (attendance: IAttendance): Promise<string[]> => {
+        const response = await http("/api/attendance/create", "POST", attendance);
+        if (response.status === 200) return;
+        else return await response.json();
+    };
+
+    deleteSignatures = async (ids: number[]): Promise<string[]> => {
+        const response = await http("/api/attendance/deleteMany", "DELETE", {ids: ids});
         if (response.status === 200) return;
         else return await response.json();
     };

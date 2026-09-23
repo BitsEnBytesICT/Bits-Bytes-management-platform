@@ -12,6 +12,8 @@ import {IconAddUser, IconCalendar, IconDelete, IconEdit, IconExport, IconFilter,
 import {downloadPDF} from "../../common/buildPDF";
 import http from "../../common/http";
 import ParticipantsService from "../Participants/Participants.service";
+import SignatureManagementService from "./SignatureManagentService";
+import SignatureCreatePopUp from "./components/SignatureCreatePopUp";
 import SignaturePopUp from "./components/SignaturePopUp";
 import SignaturesFilter from "./components/SignaturesFilter";
 import SignaturesPDF from "./components/SignaturesPDF";
@@ -71,8 +73,11 @@ export default function SignatureManagement() {
     const [infoSignature, setInfoSignature] = useState<IAttendance | null>(null);
     const [editSignature, setEditSignature] = useState<IAttendance | null>(null);
     const [deleteSignature, setDeleteSignature] = useState<IAttendance | null>(null);
+    const [isCreateShown, setIsCreateShown] = useState(false);
+    const [deleteSelection, setDeleteSelection] = useState<IAttendance[]>([]);
 
     const participantService: ParticipantsService = new ParticipantsService();
+    const signatureService: SignatureManagementService = new SignatureManagementService();
 
     const signatureColumns: ITableColumn<IAttendance>[] = [
         {key: "id", label: "ID"},
@@ -140,6 +145,14 @@ export default function SignatureManagement() {
         await downloadPDF(<SignaturesPDF signatures={toExport} participants={participants} />, fileName);
     };
 
+    const deleteSelectedSignatures = async () => {
+        const error = await signatureService.deleteSignatures(deleteSelection.map(signature => signature.id));
+        if (error) console.error(error);
+
+        setDeleteSelection([]);
+        await fetchData();
+    };
+
     useEffect(() => {
         fetchData();
         participantService.getParticipants().then(setParticipants);
@@ -155,13 +168,18 @@ export default function SignatureManagement() {
                         label="Filter"
                         active={isFilterShown}
                     />
+
+                    <SmallButton
+                        icon={<img src={IconCalendar} className="select-none [-webkit-user-drag:none]" />}
+                        label="Datum kiezen"
+                    />
                 </div>
 
                 <div className="flex flex-row gap-6">
                     <SmallButton
                         icon={<img src={IconDelete} className="select-none [-webkit-user-drag:none]" />}
                         label="Verwijder Selectie"
-                        onClick={() => fetchData()}
+                        onClick={() => setDeleteSelection(filteredSignatures.filter(s => s.checked))}
                     />
 
                     <SmallButton
@@ -173,6 +191,7 @@ export default function SignatureManagement() {
                     <SmallButton
                         icon={<img src={IconAddUser} className="select-none [-webkit-user-drag:none]" />}
                         label="Handmatig Toevoegen"
+                        onClick={() => setIsCreateShown(true)}
                     />
 
                     <SmallButton
@@ -182,21 +201,6 @@ export default function SignatureManagement() {
                     />
                 </div>
             </div>
-
-            <label
-                className="mb-4 py-2 px-4 flex flex-row gap-2.5 items-center w-full text-[14px] font-semibold
-                    bg-(--color-white) rounded-lg
-                    shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)] transition-shadow
-                    focus-within:shadow-[inset_0_0_0_1px_var(--color-darkblue)]">
-                <img src={IconCalendar} className="shrink-0 select-none [-webkit-user-drag:none]" />
-
-                <input
-                    type="text"
-                    placeholder="Datum kiezen"
-                    className="flex-1 min-w-0 text-(--color-darkblue) placeholder:text-(--color-darkblue)/50
-                        bg-transparent outline-none"
-                />
-            </label>
 
             <SignaturesFilter
                 signatures={signatures}
@@ -226,6 +230,14 @@ export default function SignatureManagement() {
                 />
             )}
 
+            {isCreateShown && (
+                <SignatureCreatePopUp
+                    participants={participants}
+                    onClose={() => setIsCreateShown(false)}
+                    onSaved={fetchData}
+                />
+            )}
+
             {editSignature && (
                 <SignaturePopUp
                     mode="edit"
@@ -233,6 +245,17 @@ export default function SignatureManagement() {
                     participant={findParticipant(editSignature.participantID)}
                     onClose={() => setEditSignature(null)}
                     onSaved={fetchData}
+                />
+            )}
+
+            {deleteSelection.length > 0 && (
+                <SmallPopUp
+                    title="Verwijderen"
+                    message={`Weet je zeker dat je ${deleteSelection.length} ${
+                        deleteSelection.length === 1 ? "handtekening" : "handtekeningen"
+                    } wil verwijderen?`}
+                    onCancel={() => setDeleteSelection([])}
+                    onConfirm={deleteSelectedSignatures}
                 />
             )}
 

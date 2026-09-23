@@ -35,9 +35,22 @@ export default class AttendanceController {
         res.sendStatus(200);
     }
 
+    @AuthenticationDecorator("attendance.delete")
+    async deleteMany (req: Request, res: Response) {
+        await this.service.deleteMany(req.body.ids);
+        res.sendStatus(200);
+    }
+
     @AuthenticationDecorator('attendance.clock_in')
     async create(req: Request, res: Response) {
         await this.service.create(req.body.rfid_uid, req.body.signature);
+        res.sendStatus(200);
+    }
+
+    @AuthenticationDecorator('attendance.create')
+    async createManual(req: Request, res: Response) {
+        const { participantID, clockinDate, clockoutDate, signature } = req.body;
+        await this.service.createManual({ participantID, clockinDate, clockoutDate, signature });
         res.sendStatus(200);
     }
 

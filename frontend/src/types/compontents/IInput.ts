@@ -13,7 +13,7 @@ interface CheckboxInput extends InputBase {
 }
 
 interface TextInput extends InputBase {
-    type: "text" | "password";
+    type: "text" | "password" | "datetime-local";
     placeholder?: string;
     value?: string;
     onChange?: (input: string) => void;

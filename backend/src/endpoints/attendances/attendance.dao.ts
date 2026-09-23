@@ -6,8 +6,8 @@ import { Tables } from '../../types/tables/tablesList';
 
 export default class AttendanceDao extends daoBase<IAttendance> implements daoBaseType<IAttendance> {
     async create(attendance: IAttendance) {
-        await dbQuery('INSERT INTO Attendances (participantID, clockinDate, signature) VALUES (?, ?, ?)',
-            [attendance.participantID, attendance.clockinDate, attendance.signature],
+        await dbQuery('INSERT INTO Attendances (participantID, clockinDate, clockoutDate, workDuration, signature) VALUES (?, ?, ?, ?, ?)',
+            [attendance.participantID, attendance.clockinDate, attendance.clockoutDate ?? null, attendance.workDuration ?? null, attendance.signature],
         );
     }
 
@@ -19,6 +19,10 @@ export default class AttendanceDao extends daoBase<IAttendance> implements daoBa
         await this.deleteFunc(Tables.Attendances, where);
     }
     
+    async deleteMany(ids: number[]) {
+        await dbQuery(`DELETE FROM ${Tables.Attendances} WHERE id IN (${ids.map(() => "?").join(", ")})`, ids);
+    }
+
     async list(): Promise<IAttendance[]> {
         return await dbAll<IAttendance>(`SELECT * FROM ${Tables.Attendances}`);
     }
