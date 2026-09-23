@@ -22,7 +22,7 @@ export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITa
 
     useEffect(() => {
         if (!checkBox) return;
-        setAllChecked(rows.find(r => r.checked == false) ? false : true);
+        setAllChecked(rows.length ? (rows.find(r => r.checked == false) ? false : true) : false);
     }, [rows]);
 
     useEffect(() => {

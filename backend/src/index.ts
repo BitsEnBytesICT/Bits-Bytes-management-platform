@@ -22,88 +22,96 @@ import cookieParser from 'cookie-parser';
 
 environmentFileChecker();
 
-const prepareDB = async() => {
-    if (process.env.DATABASE_TYPE === "sqllite"){
-        try {
-            await runMigrations();
-            setupDatabase();
-        } catch (error) {
-            console.log(error);
-        }
-    } 
-    else if (process.env.DATABASE_TYPE === "mysql") await createConnection();
-}
-prepareDB().then(createEnforcer);
-
-const app: Express = express();
-
-app.set("trust proxy", 2);
-
-app.use(cors({
-    origin: function (origin, callback) {
-        const allowedOrigin = process.env.ALLOWED_ORIGIN;
-        if (!origin || allowedOrigin === "*" || origin === allowedOrigin) {
-            console.log(`allowed connection from origin: ${origin}`);
-            callback(null, true);
-        } else {
-            console.log(`Blocked CORS request from origin: ${origin}`);
-            callback(null, false);
-        }
-    },
-    credentials: true,
-}));
-
-app.use(express.json({ limit: "20kb" }));
-app.use(express.urlencoded({ extended: true, limit: "20kb" }));
-app.use(cookieParser());
-app.set('port', process.env.PORT || 3000);
-
-app.use(HealthRouter);
-app.use(attendanceRouter);
-app.use(authRouter);
-app.use(participantRouter);
-app.use(AccountRouter);
-app.use(roomRouter);
-app.use(wallRouter);
-app.use(workplaceRouter);
-app.use(scheduleRouter);
-
-app.use((err: IError[] | IError, req: Request, res: Response, next: NextFunction) => {
-    console.log(err)
-    const errorData = Array.isArray(err) ? err : [err]
-    let responseData = [];
-    for (const error of errorData) {
-        switch (error.code) {
-            case ErrorCodes.InvalidData:
-                responseData.push(error.errorMSG.message);
-                res.status(422);
-                continue;
-            case ErrorCodes.Unknown:
-                responseData.push(error.errorMSG.message);
-                res.status(500);
-                continue;
-            case undefined:
-                res.status(500);
-                continue;
-            case ErrorCodes.sqlError:
-                responseData.push(error.errorMSG.message);
-                res.status(500);
-                continue;
-            case ErrorCodes.invalidCredentials:
-                responseData.push(error.errorMSG.message);
-                res.status(401);
-                continue;
-            default:
-                assertNever(error.code);
-                continue;
-        }
+const prepareDB = async () => {
+    if (process.env.DATABASE_TYPE === "sqllite") {
+        await runMigrations();
+        setupDatabase();
+    } else if (process.env.DATABASE_TYPE === "mysql") {
+        await createConnection();
     }
-    res.json(responseData);
-});
+};
 
-const server = app.listen(app.get('port'), function () {
-    console.log(`Express server version ${
-        process.env.BACKEND_SNAPSHOT_VERSION && Number(process.env.BACKEND_SNAPSHOT_VERSION) > 0 ? 
-        `${process.env.BACKEND_VERSION}-snapshot-${process.env.BACKEND_SNAPSHOT_VERSION}` : 
-        process.env.BACKEND_VERSION} listening on port ${(server.address() as AddressInfo).port}`);
+const startServer = async () => {
+    console.log('+---------------------+\n| setting up database |\n+---------------------+');
+    await prepareDB();
+    console.log('+---------------------+\n| setting up enforcer |\n+---------------------+');
+    await createEnforcer();
+
+    const app: Express = express();
+
+    app.set("trust proxy", 2);
+
+    app.use(cors({
+        origin: function (origin, callback) {
+            const allowedOrigin = process.env.ALLOWED_ORIGIN;
+            if (!origin || allowedOrigin === "*" || origin === allowedOrigin) {
+                console.log(`allowed connection from origin: ${origin}`);
+                callback(null, true);
+            } else {
+                console.log(`Blocked CORS request from origin: ${origin}`);
+                callback(null, false);
+            }
+        },
+        credentials: true,
+    }));
+
+    app.use(express.json({ limit: "20kb" }));
+    app.use(express.urlencoded({ extended: true, limit: "20kb" }));
+    app.use(cookieParser());
+    app.set('port', process.env.PORT || 3000);
+
+    app.use(HealthRouter);
+    app.use(attendanceRouter);
+    app.use(authRouter);
+    app.use(participantRouter);
+    app.use(AccountRouter);
+    app.use(roomRouter);
+    app.use(wallRouter);
+    app.use(workplaceRouter);
+    app.use(scheduleRouter);
+
+    app.use((err: IError[] | IError, req: Request, res: Response, next: NextFunction) => {
+        console.log(err)
+        const errorData = Array.isArray(err) ? err : [err]
+        let responseData = [];
+        for (const error of errorData) {
+            switch (error.code) {
+                case ErrorCodes.InvalidData:
+                    responseData.push(error.errorMSG.message);
+                    res.status(422);
+                    continue;
+                case ErrorCodes.Unknown:
+                    responseData.push(error.errorMSG.message);
+                    res.status(500);
+                    continue;
+                case undefined:
+                    res.status(500);
+                    continue;
+                case ErrorCodes.sqlError:
+                    responseData.push(error.errorMSG.message);
+                    res.status(500);
+                    continue;
+                case ErrorCodes.invalidCredentials:
+                    responseData.push(error.errorMSG.message);
+                    res.status(401);
+                    continue;
+                default:
+                    assertNever(error.code);
+                    continue;
+            }
+        }
+        res.json(responseData);
+    });
+
+    const server = app.listen(app.get('port'), function () {
+        console.log(`Express server version ${
+            process.env.BACKEND_SNAPSHOT_VERSION && Number(process.env.BACKEND_SNAPSHOT_VERSION) > 0 ?
+            `${process.env.BACKEND_VERSION}-snapshot-${process.env.BACKEND_SNAPSHOT_VERSION}` :
+            process.env.BACKEND_VERSION} listening on port ${(server.address() as AddressInfo).port}`);
+    });
+};
+
+startServer().catch((error: unknown) => {
+    console.error('Failed to start server:', error);
+    process.exit(1);
 });
