@@ -144,8 +144,8 @@ export default class ParticipantService implements serviceBase<IParticipant> {
         await this.dao.delete(["id", id]);
     }
 
-    async list(): Promise<IParticipant[]> {
-        return await this.dao.list();
+    async list(...where: KeyValuePair<IParticipant>[]): Promise<IParticipant[]> {
+        return await this.dao.list(...where);
     }
 
     async count(): Promise<number> {

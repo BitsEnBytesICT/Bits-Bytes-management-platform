@@ -2,6 +2,7 @@ interface InputBase {
     label?: string;
     id: string;
     className?: string;
+    labelClassName?: string;
     readOnly?: boolean;
     required?: boolean;
 }
@@ -13,12 +14,29 @@ interface CheckboxInput extends InputBase {
 }
 
 interface TextInput extends InputBase {
-    type: "text" | "password" | "datetime-local";
+    //type: "text" | "password" | "datetime-local";
+    type: "text" | "password";
     placeholder?: string;
     value?: string;
     onChange?: (input: string) => void;
 }
 
-type IInput = CheckboxInput | TextInput;
+interface TextareaInput extends InputBase {
+    type: "textarea";
+    rows?: number;
+    placeholder?: string;
+    value?: string;
+    onChange?: (input: string) => void;
+}
+
+interface SelectInput extends InputBase {
+    type: "select";
+    options: {label: string; value: string}[];
+    placeholder?: string;
+    value?: string;
+    onChange?: (input: string) => void;
+}
+
+type IInput = CheckboxInput | TextInput | TextareaInput | SelectInput;
 
 export type {IInput as default};

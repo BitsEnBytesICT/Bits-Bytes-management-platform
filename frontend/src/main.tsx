@@ -31,9 +31,14 @@ function App() {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
 
     useEffect(() => {
-        const handler = () => setIsMobile(window.innerWidth < 800);
-        window.addEventListener("resize", handler);
-        return () => window.removeEventListener("resize", handler);
+        const mediaQuery = window.matchMedia("(max-width: 799px)");
+        const updateIsMobile = () => setIsMobile(mediaQuery.matches);
+        updateIsMobile();
+        mediaQuery.addEventListener("change", updateIsMobile);
+
+        return () => {
+            mediaQuery.removeEventListener("change", updateIsMobile);
+        };
     }, []);
 
     if (isMobile) return <Mobile />;
