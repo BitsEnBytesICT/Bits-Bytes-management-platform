@@ -13,11 +13,6 @@ interface ISignatureCreatePopUp {
     onSaved?: () => Promise<void> | void;
 }
 
-// datetime-local gives local time ("YYYY-MM-DDTHH:mm"), the backend stores UTC as "YYYY-MM-DD HH:mm:ss"
-function toBackendDate(value: string) {
-    return new Date(value).toISOString().slice(0, 19).replace("T", " ");
-}
-
 export default function SignatureCreatePopUp({participants, onClose, onSaved}: ISignatureCreatePopUp) {
     const [participantID, setParticipantID] = useState("");
     const [clockinDate, setClockinDate] = useState("");
@@ -41,8 +36,8 @@ export default function SignatureCreatePopUp({participants, onClose, onSaved}: I
 
         const error = await service.createSignature({
             participantID: Number(participantID),
-            clockinDate: toBackendDate(clockinDate),
-            clockoutDate: toBackendDate(clockoutDate),
+            clockinDate: new Date(clockinDate),
+            clockoutDate: new Date(clockoutDate),
             signature: signature,
         });
         if (error) {

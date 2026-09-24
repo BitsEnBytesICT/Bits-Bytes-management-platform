@@ -12,7 +12,7 @@ class AttendanceRouter {
     }
 
     initializeRoutes() {
-        this.router.get('/api/attendance', this.controller.list.bind(this.controller));
+        this.router.post('/api/attendance', this.controller.list.bind(this.controller));
         this.router.post('/api/attendance/create', this.controller.createManual.bind(this.controller));
         this.router.post('/api/attendance/update', this.controller.update.bind(this.controller));
         this.router.post('/api/scan', this.controller.scan.bind(this.controller));

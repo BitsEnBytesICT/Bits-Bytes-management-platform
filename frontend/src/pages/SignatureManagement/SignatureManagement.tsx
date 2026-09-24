@@ -10,6 +10,7 @@ import type {ITableColumn} from "../../types/compontents/ITable";
 
 import {IconAddUser, IconCalendar, IconDelete, IconEdit, IconExport, IconFilter, IconInfo} from "../../assets";
 import {downloadPDF} from "../../common/buildPDF";
+import {formatDate, fromBackendDate} from "../../common/helperFunctions";
 import http from "../../common/http";
 import ParticipantsService from "../Participants/Participants.service";
 import SignatureManagementService from "./SignatureManagentService";
@@ -21,15 +22,6 @@ import SignaturesPDF from "./components/SignaturesPDF";
 type AttendanceRow = IAttendance & {checked: boolean};
 
 const isSvg = (signature?: string) => signature?.trimStart().startsWith("<svg") ?? false;
-
-function formatDate(value?: string) {
-    if (!value) return "-";
-
-    const date = new Date(value);
-    if (isNaN(date.getTime())) return value;
-
-    return date.toLocaleString("nl-NL", {dateStyle: "short", timeStyle: "short"});
-}
 
 function ActionIcons(
     signature: IAttendance,
@@ -132,9 +124,18 @@ export default function SignatureManagement() {
     ];
 
     const fetchData = async () => {
-        const request = await http("/api/attendance", "GET");
-        const response: IAttendance[] = await request.json();
-        setSignatures(response);
+        const request = await http("/api/attendance", "POST");
+        const response: (Omit<IAttendance, "clockinDate" | "clockoutDate"> & {
+            clockinDate: string;
+            clockoutDate?: string;
+        })[] = await request.json();
+        setSignatures(
+            response.map(attendance => ({
+                ...attendance,
+                clockinDate: fromBackendDate(attendance.clockinDate),
+                clockoutDate: attendance.clockoutDate ? fromBackendDate(attendance.clockoutDate) : undefined,
+            })),
+        );
     };
 
     const findParticipant = (participantID: number) => participants.find(p => p.id === participantID);

@@ -4,6 +4,7 @@ export enum Tables {
     Participants = "Participants",
     Attendances = "Attendances",
     Rooms = "Rooms",
+    Walls = "Walls",
     Workplaces = "Workplaces",
     Schedules = "Schedules",
     SchedulesParticipants = "SchedulesParticipants",

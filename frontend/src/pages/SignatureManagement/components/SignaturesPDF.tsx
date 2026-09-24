@@ -4,6 +4,7 @@ import type IAttendance from "../../../types/compontents/IAttendance";
 import type IParticipant from "../../../types/compontents/IParticipant";
 
 import {LogoDefaultPng} from "../../../assets";
+import {formatDate} from "../../../common/helperFunctions";
 
 interface ISignaturesPDF {
     signatures: IAttendance[];
@@ -41,15 +42,6 @@ function parseSignature(svg: string): IParsedSignature | null {
     const paths = Array.from(root.querySelectorAll("path"), path => path.getAttribute("d")).filter(Boolean);
 
     return width && height && paths.length ? {width, height, paths} : null;
-}
-
-function formatDate(value?: string) {
-    if (!value) return "-";
-
-    const date = new Date(value);
-    if (isNaN(date.getTime())) return value;
-
-    return date.toLocaleString("nl-NL", {dateStyle: "short", timeStyle: "short"});
 }
 
 export default function SignaturesPDF({signatures, participants}: ISignaturesPDF) {

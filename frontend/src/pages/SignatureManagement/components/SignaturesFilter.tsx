@@ -3,6 +3,7 @@ import type {ReactNode} from "react";
 
 import Filter from "../../../common/components/Filter";
 
+import {formatDate} from "../../../common/helperFunctions";
 import useLocalStorage from "../../../common/hooks/useLocalStorage";
 
 import type IAttendance from "../../../types/compontents/IAttendance";
@@ -48,8 +49,8 @@ export default function SignaturesFilter({
                 signature.id,
                 signature.participantID,
                 name,
-                signature.clockinDate,
-                signature.clockoutDate,
+                formatDate(signature.clockinDate),
+                formatDate(signature.clockoutDate),
                 signature.workDuration,
             ].some(value =>
                 String(value ?? "")

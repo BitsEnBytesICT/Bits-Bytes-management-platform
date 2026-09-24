@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import Button from "../../../common/components/Button";
 import Input from "../../../common/components/Input";
 import PopUp from "../../../common/components/PopUp";
+import {formatDate} from "../../../common/helperFunctions";
 
 import type IAttendance from "../../../types/compontents/IAttendance";
 import type IParticipant from "../../../types/compontents/IParticipant";
@@ -93,7 +94,7 @@ export default function SignaturePopUp({mode, signature, participant, onClose, o
                             placeholder="Ingeklokt"
                             id="clockinDate"
                             type="text"
-                            value={signature.clockinDate}
+                            value={formatDate(signature.clockinDate)}
                             readOnly
                         />
                         <Input
@@ -101,7 +102,7 @@ export default function SignaturePopUp({mode, signature, participant, onClose, o
                             placeholder="Uitgeklokt"
                             id="clockoutDate"
                             type="text"
-                            value={signature.clockoutDate ?? "-"}
+                            value={formatDate(signature.clockoutDate)}
                             readOnly
                         />
                         <Input
