@@ -83,14 +83,16 @@ export default function SignatureCreatePopUp({participants, onClose, onSaved}: I
                         <Input
                             label="Ingeklokt"
                             id="clockinDate"
-                            type="datetime-local"
+                            type="text"
+                            //type="datetime-local"
                             required
                             onChange={setClockinDate}
                         />
                         <Input
                             label="Uitgeklokt"
                             id="clockoutDate"
-                            type="datetime-local"
+                            //type="datetime-local"
+                            type="text"
                             required
                             onChange={setClockoutDate}
                         />

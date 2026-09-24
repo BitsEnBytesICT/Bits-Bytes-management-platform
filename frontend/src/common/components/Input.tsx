@@ -9,12 +9,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
 
     let inputProps = {};
 
-    if (
-        props.type === "textarea" ||
-        props.type === "text" ||
-        props.type === "password" ||
-        props.type === "datetime-local"
-    ) {
+    if (props.type === "textarea" || props.type === "text" || props.type === "password") {
         inputProps = {
             className:
                 props.className ??
@@ -84,7 +79,6 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
             );
         case "text":
         case "password":
-        case "datetime-local":
             return (
                 <div className={`flex flex-col gap-2`}>
                     {props.label && (
