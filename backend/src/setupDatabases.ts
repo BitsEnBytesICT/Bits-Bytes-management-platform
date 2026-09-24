@@ -29,6 +29,10 @@ export const setupDatabase = () => {
         db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Maria', 'Jansen', 'Orionis', 4, 'E1C7A710', now, 1, 1, 'Zorg');
         db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Peter', 'Bakker', 'Gemeente', 5, '98765432', now, 1, 0, 'Dagbesteding');
 
+        db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100)
+        db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100)
+        db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100)
+
         const roomResult = db.prepare("INSERT INTO Rooms (name, width, height, scale) VALUES (?, ?, ?, ?)").run('Gymzaal', 21000, 7000, 16);
         const roomId = Number(roomResult.lastInsertRowid);
         const quietRoomResult = db.prepare("INSERT INTO Rooms (name, width, height, scale) VALUES (?, ?, ?, ?)").run('Stilte ruimte', 7000, 7000, 16);
