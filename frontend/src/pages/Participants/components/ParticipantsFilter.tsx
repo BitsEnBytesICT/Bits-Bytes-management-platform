@@ -4,14 +4,13 @@ import type {ReactNode} from "react";
 import Filter from "../../../common/components/Filter";
 
 import useLocalStorage from "../../../common/hooks/useLocalStorage";
-
-import type IParticipant from "../../../types/compontents/IParticipant";
+import type {IParticipant, IParticipantWithSchedules} from "../../../types/compontents/IParticipant";
 
 interface IParticipantsFilter {
-    participants: IParticipant[];
+    participants: IParticipantWithSchedules[];
     isShown: boolean;
-    children: (filteredParticipants: (IParticipant & {checked: boolean})[]) => ReactNode;
-    setFilteredParticipants: (value: (IParticipant & {checked: boolean})[]) => void;
+    children: (filteredParticipants: (IParticipantWithSchedules & {checked: boolean})[]) => ReactNode;
+    setFilteredParticipants: (value: (IParticipantWithSchedules & {checked: boolean})[]) => void;
 }
 
 export default function ParticipantsFilter({
@@ -29,7 +28,7 @@ export default function ParticipantsFilter({
 
     const filterContentRef = useRef<HTMLDivElement>(null);
 
-    let filteredParticipants: (IParticipant & {checked: boolean})[];
+    let filteredParticipants: (IParticipantWithSchedules & {checked: boolean})[];
 
     useEffect(() => {
         setFilterHeight(isShown ? (filterContentRef.current?.scrollHeight ?? 0) : 0);

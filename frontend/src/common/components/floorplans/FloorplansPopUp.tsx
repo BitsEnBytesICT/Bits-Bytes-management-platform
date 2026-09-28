@@ -1,25 +1,26 @@
+import type IFloorplansPopUp from "../../../types/floorPlans/floorplantsPopUp";
 import Input from "../Input";
-import drawFloorPlan from "./DrawFloorPlan";
-import {type FloorplansPopUpDefault} from "../../../types/floorPlans/floorplantsPopUp";
 
 export default function FloorplansPopUp({
-    canvas,
     currentWorkplace,
     participants,
     setCurrentWorkplace,
-    currentScale,
     setWorkplaces,
-    room,
     workplaces,
-    walls,
-}: FloorplansPopUpDefault) {
+    currentDay,
+}: IFloorplansPopUp<unknown>) {
     const occupancyStatuses = [
         {label: "Vrij", color: "text-(--color-green)"},
         {label: "Deels", color: "text-(--color-yellow)"},
         {label: "Bezet", color: "text-(--color-red)"},
     ];
     const occupancyStatus =
-        occupancyStatuses[currentWorkplace.timeslots.filter(timeslot => timeslot.occupancy !== "Vrij").length];
+        occupancyStatuses[
+            [
+                currentWorkplace.timeslots[currentDay].Ochtend !== "Vrij",
+                currentWorkplace.timeslots[currentDay].Middag !== "Vrij",
+            ].filter(item => item === true).length
+        ];
 
     return (
         <div
@@ -33,16 +34,16 @@ export default function FloorplansPopUp({
 
             <div className="h-px bg-(--color-black)/5"></div>
 
-            {currentWorkplace.timeslots.map((timeslot, index) => (
-                <div key={timeslot.name} className="flex flex-row gap-3 items-center">
+            {Object.keys(currentWorkplace.timeslots[currentDay]).map((timeslot, index) => (
+                <div key={timeslot} className="flex flex-row gap-3 items-center">
                     <span
                         className={`size-2.5 shrink-0 rounded-full
-                        ${timeslot.occupancy === "Vrij" ? "bg-(--color-green)" : "bg-(--color-red)"}`}></span>
+                        ${currentWorkplace.timeslots[currentDay][timeslot] === "Vrij" ? "bg-(--color-green)" : "bg-(--color-red)"}`}></span>
 
                     <label
                         htmlFor={`participant-${currentWorkplace.id}-${index}`}
                         className="w-20 text-(--color-darkblue)/50">
-                        {timeslot.name}
+                        {timeslot}
                     </label>
 
                     <Input
@@ -56,22 +57,25 @@ export default function FloorplansPopUp({
                                 label: `${p.firstname} ${p.lastname}`,
                             })),
                         ]}
-                        value={timeslot.occupancy}
+                        value={currentWorkplace.timeslots[currentDay][timeslot]}
                         onChange={value => {
+                            if (index === 0) currentWorkplace.timeslots[currentDay].Ochtend = value;
+                            else if (index === 1) currentWorkplace.timeslots[currentDay].Middag = value;
+
                             const updatedWorkplace = {
                                 ...currentWorkplace,
-                                timeslots: currentWorkplace.timeslots.map((slot, slotIndex) =>
-                                    slotIndex === index ? {...slot, occupancy: value} : slot,
-                                ),
+                                timeslots: currentWorkplace.timeslots,
                             };
+
                             const updatedWorkplaces = workplaces.map(workplace =>
                                 workplace.id === updatedWorkplace.id ? updatedWorkplace : workplace,
                             );
+
                             setCurrentWorkplace(updatedWorkplace);
                             setWorkplaces(updatedWorkplaces);
-                            currentScale.current = drawFloorPlan(canvas, room, updatedWorkplaces, walls);
                         }}
-                        className={`flex-1 min-w-0 ${timeslot.occupancy === "Vrij" ? "text-(--color-darkblue)/50" : ""}`}
+                        className={`flex-1 min-w-0
+                        ${currentWorkplace.timeslots[currentDay][timeslot] === "Vrij" ? "text-(--color-darkblue)/50" : ""}`}
                     />
                 </div>
             ))}

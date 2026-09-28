@@ -22,6 +22,18 @@ export default class ParticipantController {
     }
 
     @AuthenticationDecorator("participant.list")
+    async countClockedin (req: Request, res: Response) {
+        const count = await this.service.countClockedin();
+        res.json({ count });
+    }
+
+    @AuthenticationDecorator("participant.list")
+    async findOne(req: Request, res: Response) {
+        const participant = await this.service.findOne(...(req.body?.where ?? []));
+        res.json(participant);
+    }
+
+    @AuthenticationDecorator("participant.list")
     async list (req: Request, res: Response) {
         const participants = await this.service.list(...(req.body?.where ?? []));
         res.json(participants);

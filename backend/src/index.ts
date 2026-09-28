@@ -45,7 +45,7 @@ const startServer = async () => {
         origin: function (origin, callback) {
             const allowedOrigin = process.env.ALLOWED_ORIGIN;
             if (!origin || allowedOrigin === "*" || origin === allowedOrigin) {
-                console.log(`allowed connection from origin: ${origin}`);
+                if (origin) console.log(`allowed connection from origin: ${origin}`);
                 callback(null, true);
             } else {
                 console.log(`Blocked CORS request from origin: ${origin}`);

@@ -3,7 +3,6 @@ import Button from "../../../common/components/Button";
 import Input from "../../../common/components/Input";
 import PopUp from "../../../common/components/PopUp";
 
-import type IParticipant from "../../../types/compontents/IParticipant";
 import ParticipantsService from "../Participants.service";
 import type IAccount from "../../../types/accounts/IAccount";
 import {PermissionsList} from "../../../types/accounts/accountTypes";
@@ -12,17 +11,20 @@ import type {KeyValuePair} from "../../../types/validation/keyvaluePair";
 import FloorPlans from "../../../common/components/floorplans/FloorPlans";
 import type {IRoom} from "../../../types/floorPlans/IRoom";
 import ParticipantpopUpFloorplans from "./ParticipantpopUpFloorplans";
+import type ISchedule from "../../../types/schedules/ISchedule";
+import {fromDateString, toDateString} from "../../../common/helperFunctions";
+import type {IParticipant, IParticipantWithSchedules} from "../../../types/compontents/IParticipant";
 
 type ParticipantPopUpMode = "info" | "add" | "edit";
 
 interface IParticipantPopUp {
     mode: ParticipantPopUpMode;
-    participants: IParticipant[];
+    participants: IParticipantWithSchedules[];
     rooms: IRoom[];
-    participant?: IParticipant;
+    participant?: IParticipantWithSchedules;
     account?: IAccount;
     onClose: () => void;
-    setParticipants?: (value: IParticipant[]) => void;
+    setParticipants?: (value: IParticipantWithSchedules[]) => void;
 }
 
 const titles: Record<ParticipantPopUpMode, string> = {
@@ -44,13 +46,20 @@ export default function ParticipantPopUp({
     const [password, setPassword] = useState(account?.password);
     const [error, setError] = useState([]);
     const [selectPlaceholder, setSelectPlaceholder] = useState("naam van schema...");
-    const [scheduleName, setScheduleName] = useState("");
+    const [scheduleInputValue, setScheduleInputValue] = useState("");
     const [toggleScheduleScreen, setToggleScheduleScreen] = useState(false);
+    const [scedules, setScedules] = useState<ISchedule[]>([]);
+    const [currentScedule, setCurrentScedule] = useState<ISchedule>();
+
     const isInfo = mode === "info";
 
     const service: ParticipantsService = new ParticipantsService();
 
     useEffect(() => {
+        if (mode !== "add") {
+            setScedules(participants.find(p => p.id === currentParticipant.id).schedules);
+        }
+
         if (isInfo) {
             return;
         }
@@ -90,14 +99,28 @@ export default function ParticipantPopUp({
 
             currentParticipant.active = currentParticipant.active ? currentParticipant.active : 0;
             const error = await service.createParticipant(currentParticipant, newAccount);
-            if (error) {
+            if (error.length > 0) {
                 setError(error);
+                return;
+            }
+            const participantFromDB = await service.findParticipant(
+                ["firstname", currentParticipant.firstname],
+                ["lastname", currentParticipant.lastname],
+            );
+            const errors = (
+                await Promise.all(
+                    scedules.map(scedule => service.createScedule({...scedule, participant: participantFromDB.id})),
+                )
+            ).flat();
+            if (errors.length > 0) {
+                setError(errors.flatMap(err => err));
+                await service.deleteAccount(participantFromDB.account);
                 return;
             }
         } else if (mode === "edit") {
             if (password !== account.password) {
                 const error = await service.updateAccount(["id", account.id], ["password", password]);
-                if (error) {
+                if (error.length > 0) {
                     setError(error);
                     return;
                 }
@@ -115,13 +138,22 @@ export default function ParticipantPopUp({
                 ...(updatedFields as KeyValuePair<IParticipant>[]),
             );
 
-            if (error) {
+            if (error.length > 0) {
                 setError(error);
                 return;
             }
         }
 
-        setParticipants(await service.getParticipants());
+        await service.getParticipants().then(participants => {
+            service.getScedules().then(schedules => {
+                setParticipants(
+                    participants.map(p => {
+                        const schedule = schedules.filter(s => s.participant === p.id);
+                        return {...p, schedules: schedule};
+                    }),
+                );
+            });
+        });
         onClose();
     }
 
@@ -248,22 +280,60 @@ export default function ParticipantPopUp({
                         placeholder={selectPlaceholder}
                         id="location"
                         type="select"
-                        options={[]}
-                        inputValue={scheduleName}
-                        readOnly={isInfo}
+                        options={scedules.map(scedule => ({label: scedule.name, value: scedule.name}))}
+                        inputValue={scheduleInputValue}
+                        value={currentScedule?.name}
                         onMenuOpen={() => setSelectPlaceholder("")}
                         onMenuClose={() => setSelectPlaceholder("naam van schema...")}
                         onInputChange={(newValue, actionMeta) => {
                             if (actionMeta.action === "input-change") {
-                                setScheduleName(newValue);
+                                setScheduleInputValue(newValue);
+                                setCurrentScedule({...currentScedule, name: newValue});
                             }
+                        }}
+                        onChange={value => {
+                            setCurrentScedule(scedules.find(scedule => scedule.name === value));
+                            setScheduleInputValue("");
+                            setToggleScheduleScreen(true);
                         }}
                     />
                     <div className="mt-auto">
-                        {scheduleName && !isInfo && (
+                        {currentScedule?.name && !isInfo && !toggleScheduleScreen && (
                             <Button onClick={() => setToggleScheduleScreen(true)}>Schema aanmaken</Button>
                         )}
                     </div>
+                    {toggleScheduleScreen && (
+                        <>
+                            <div className="flex flex-col py-5">
+                                <label htmlFor="startDate">start datum</label>
+                                <input
+                                    type="datetime-local"
+                                    value={toDateString(currentScedule.startDate)}
+                                    onChange={item => {
+                                        setCurrentScedule({
+                                            ...currentScedule,
+                                            startDate: fromDateString(item.target.value),
+                                        });
+                                    }}
+                                    id="startDate"
+                                    name="startDate"></input>
+                            </div>
+                            <div className="flex flex-col py-5">
+                                <label htmlFor="endDate">eind datum</label>
+                                <input
+                                    type="datetime-local"
+                                    id="endDate"
+                                    name="endDate"
+                                    value={toDateString(currentScedule.endDate)}
+                                    onChange={item => {
+                                        setCurrentScedule({
+                                            ...currentScedule,
+                                            endDate: fromDateString(item.target.value),
+                                        });
+                                    }}></input>
+                            </div>
+                        </>
+                    )}
                     {toggleScheduleScreen && (
                         <>
                             <div className="col-span-full">
@@ -271,9 +341,34 @@ export default function ParticipantPopUp({
                                     participants={participants}
                                     rooms={rooms}
                                     height="h-42"
-                                    popUpContent={ParticipantpopUpFloorplans}></FloorPlans>
+                                    popupPropsExtra={{
+                                        currentScedule: currentScedule,
+                                        setCurrentScedule: setCurrentScedule,
+                                    }}
+                                    PopUpContent={ParticipantpopUpFloorplans}></FloorPlans>
                             </div>
-                            <Button onClick={() => setToggleScheduleScreen(true)}>Schema oplsaan</Button>
+                            <Button
+                                onClick={() => {
+                                    setToggleScheduleScreen(false);
+                                    setCurrentScedule(undefined);
+                                    setScheduleInputValue("");
+                                }}>
+                                {isInfo ? "Sluiten" : "Annuleren"}
+                            </Button>
+                            {!isInfo && (
+                                <Button
+                                    onClick={() => {
+                                        setToggleScheduleScreen(false);
+                                        const location = scedules.findIndex(s => s.name === currentScedule.name);
+                                        if (location === -1) scedules.push(currentScedule);
+                                        else scedules[location] = currentScedule;
+                                        setScedules([...scedules]);
+                                        setCurrentScedule(undefined);
+                                        setScheduleInputValue("");
+                                    }}>
+                                    {mode === "add" ? "Schema oplsaan" : "Schema bewerken"}
+                                </Button>
+                            )}
                         </>
                     )}
                 </div>,
@@ -283,7 +378,7 @@ export default function ParticipantPopUp({
                     onClick={async () => {
                         isInfo ? onClose() : await save();
                     }}>
-                    {isInfo ? "Terug" : mode === "edit" ? "Bewerken" : "Opslaan"}
+                    {isInfo ? "sluiten" : mode === "edit" ? "Bewerken" : "Opslaan"}
                 </Button>
             }
         />

@@ -72,4 +72,8 @@ export default class ScheduleService {
 
         await this.dao.create(schedule);
     }
+
+    async delete(id: number) {
+        await this.dao.delete(["id", id]);
+    }
 }

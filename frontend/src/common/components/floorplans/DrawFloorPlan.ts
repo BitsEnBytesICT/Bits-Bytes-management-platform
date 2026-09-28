@@ -15,6 +15,7 @@ function withOpacity(hex: string, opacity: number): string {
 export default function DrawFloorPlan(
     canvasRef: RefObject<HTMLCanvasElement | null>,
     room: IRoom,
+    currentDay: number,
     workplaces: WorkplaceWithOccupancy[],
     walls?: IWall[],
 ): number {
@@ -115,10 +116,15 @@ export default function DrawFloorPlan(
         context.beginPath();
         context.roundRect(x, y, w, h, 6);
 
-        switch (workplace.timeslots.filter(timeslot => timeslot.occupancy !== "Vrij").length) {
+        switch (
+            [
+                workplace.timeslots[currentDay].Ochtend !== "Vrij",
+                workplace.timeslots[currentDay].Middag !== "Vrij",
+            ].filter(item => item === true).length
+        ) {
             case 1: {
                 const colorOrder =
-                    workplace.timeslots[0].occupancy !== "Vrij"
+                    workplace.timeslots[currentDay].Ochtend !== "Vrij"
                         ? [colors.yellow, colors.green]
                         : [colors.green, colors.yellow];
 

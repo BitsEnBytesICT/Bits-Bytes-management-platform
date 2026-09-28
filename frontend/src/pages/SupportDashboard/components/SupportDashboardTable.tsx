@@ -1,6 +1,6 @@
 import Table from "../../../common/components/Table";
+import type {IParticipant} from "../../../types/compontents/IParticipant";
 
-import type IParticipant from "../../../types/compontents/IParticipant";
 import type {ITableColumn} from "../../../types/compontents/ITable";
 
 interface ISupportDashboardTable {
@@ -26,12 +26,14 @@ const participantColumns: ITableColumn<IParticipant>[] = [
 
 export default function SupportDashboardTable({participants, setParticipants}: ISupportDashboardTable) {
     return (
-        <Table
-            columns={participantColumns}
-            rows={participants}
-            setRows={setParticipants}
-            checkBox={false}
-            rowKey="id"
-        />
+        <div className="max-h-112.5">
+            <Table
+                columns={participantColumns}
+                rows={participants}
+                setRows={setParticipants}
+                checkBox={false}
+                rowKey="id"
+            />
+        </div>
     );
 }

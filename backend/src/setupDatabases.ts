@@ -1,10 +1,12 @@
 import Database from 'better-sqlite3';
 import { encrypt } from './common/encryptorDecryptor';
-import { getCurrentDate } from './common/dateFunctions';
+import { fromDateString, getCurrentDate, toDateString } from './common/dateFunctions';
+import type ISchedule from './types/schedules/ISchedule';
 
 export const setupDatabase = () => {
     const db = new Database('database.db', { verbose: console.log });
     db.prepare('DELETE FROM Walls WHERE id > ?').run(-1);
+    db.prepare('DELETE FROM Schedules WHERE id > ?').run(-1);
     db.prepare('DELETE FROM Workplaces WHERE id > ?').run(-1);
     db.prepare('DELETE FROM Rooms WHERE id > ?').run(-1);
     db.prepare('DELETE FROM Attendances WHERE id > ?').run(-1);
@@ -23,11 +25,25 @@ export const setupDatabase = () => {
     db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Jan', 'JanD', 'de Vries', 'admin', encrypt('test123'));
     db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Maria', 'MariaJ', 'Jansen', 'admin', encrypt('test123'));
     db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Peter', 'PeterB', 'Bakker', 'admin', encrypt('test123'));
+    db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Sophie', 'SophieV', 'Visser', 'admin', encrypt('test123'));
+    db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Daan', 'DaanS', 'Smit', 'admin', encrypt('test123'));
+    db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Emma', 'EmmaM', 'Meijer', 'admin', encrypt('test123'));
+    db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Lucas', 'LucasD', 'de Boer', 'admin', encrypt('test123'));
+    db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Noor', 'NoorM', 'Mulder', 'admin', encrypt('test123'));
+    db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Milan', 'MilanD', 'Dekker', 'admin', encrypt('test123'));
+    db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Lotte', 'LotteV', 'van Dijk', 'admin', encrypt('test123'));
 
     const now = getCurrentDate();
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Jan', 'de Vries', 'WMO', 3, '11F3EF12', now, 1, 0, 'Develop');
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Maria', 'Jansen', 'Orionis', 4, 'E1C7A710', now, 1, 1, 'Zorg');
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Peter', 'Bakker', 'Gemeente', 5, '98765432', now, 1, 0, 'Dagbesteding');
+    db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Sophie', 'Visser', 'WMO', 6, 'A1B2C301', now, 1, 0, 'Develop');
+    db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Daan', 'Smit', 'Orionis', 7, 'A1B2C302', now, 1, 0, 'Zorg');
+    db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Emma', 'Meijer', 'Gemeente', 8, 'A1B2C303', now, 1, 0, 'Dagbesteding');
+    db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Lucas', 'de Boer', 'WMO', 9, 'A1B2C304', now, 1, 0, 'Develop');
+    db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Noor', 'Mulder', 'Orionis', 10, 'A1B2C305', now, 1, 0, 'Zorg');
+    db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Milan', 'Dekker', 'Gemeente', 11, 'A1B2C306', now, 1, 0, 'Dagbesteding');
+    db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Lotte', 'van Dijk', 'WMO', 12, 'A1B2C307', now, 1, 0, 'Develop');
 
     const roomResult = db.prepare("INSERT INTO Rooms (name, width, height, scale) VALUES (?, ?, ?, ?)").run('Gymzaal', 21000, 7000, 16);
     const roomId = Number(roomResult.lastInsertRowid);
@@ -73,13 +89,66 @@ export const setupDatabase = () => {
         );
     }
 
-    insertWorkplace.run(3500, 200, quietRoomId, 'B1', 'test info', 90);
-    insertWorkplace.run(5200, 2650, quietRoomId, 'B2', 'test info', 90);
-    insertWorkplace.run(3500, 2650, quietRoomId, 'B3', 'test info', 90);
-    insertWorkplace.run(5200, 3550, quietRoomId, 'B4', 'test info', 90);
-    insertWorkplace.run(3500, 3550, quietRoomId, 'B5', 'test info', 90);
-    insertWorkplace.run(200, 1850, quietRoomId, 'B6', 'test info', null);
-    insertWorkplace.run(200, 3550, quietRoomId, 'B7', 'test info', null);
+    const b1Id = Number(insertWorkplace.run(3500, 200, quietRoomId, 'B1', 'test info', 90).lastInsertRowid);
+    const b2Id = Number(insertWorkplace.run(5200, 2650, quietRoomId, 'B2', 'test info', 90).lastInsertRowid);
+    const b3Id = Number(insertWorkplace.run(3500, 2650, quietRoomId, 'B3', 'test info', 90).lastInsertRowid);
+    const b4Id = Number(insertWorkplace.run(5200, 3550, quietRoomId, 'B4', 'test info', 90).lastInsertRowid);
+    const b5Id = Number(insertWorkplace.run(3500, 3550, quietRoomId, 'B5', 'test info', 90).lastInsertRowid);
+    const b6Id = Number(insertWorkplace.run(200, 1850, quietRoomId, 'B6', 'test info', null).lastInsertRowid);
+    const b7Id = Number(insertWorkplace.run(200, 3550, quietRoomId, 'B7', 'test info', null).lastInsertRowid);
+
+    const startDate = fromDateString(now);
+    const dayOfMonth = startDate.getUTCDate();
+    startDate.setUTCHours(0, 0, 0, 0);
+    startDate.setUTCDate(1);
+    startDate.setUTCMonth(startDate.getUTCMonth() - 1);
+    const lastDayOfPreviousMonth = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth() + 1, 0)).getUTCDate();
+    startDate.setUTCDate(Math.min(dayOfMonth, lastDayOfPreviousMonth));
+    const scheduleStartDate = toDateString(startDate);
+
+    const schedules: Omit<ISchedule, 'startDate' | 'endDate'>[] = [
+        { name: 'Jan - drie ochtenden', participant: 1, monMorning: 1, wedMorning: 1, friMorning: 1 },
+        { name: 'Maria - volledige werkweek', participant: 2, monMorning: 2, monEvening: 2, thuesMorning: 3, thuesEvening: 3, wedMorning: b3Id, wedEvening: b3Id, thursMorning: 2, thursEvening: 2, friMorning: b4Id, friEvening: b4Id },
+        { name: 'Peter - maandag en donderdag volledig', participant: 3, monMorning: b1Id, monEvening: b1Id, thursMorning: b1Id, thursEvening: b1Id },
+        { name: 'Sophie - dinsdag- en donderdagochtend', participant: 4, thuesMorning: b2Id, thursMorning: b2Id },
+        { name: 'Daan - iedere middag', participant: 5, monEvening: b2Id, thuesEvening: b3Id, wedEvening: 5, thursEvening: b5Id, friEvening: b6Id },
+        { name: 'Emma - maandag, woensdag en vrijdag volledig', participant: 6, monMorning: 6, monEvening: 6, wedMorning: b4Id, wedEvening: b4Id, friMorning: 7, friEvening: 7 },
+        { name: 'Lucas - dinsdag en donderdag volledig', participant: 7, thuesMorning: b5Id, thuesEvening: b5Id, thursMorning: b7Id, thursEvening: b7Id },
+        { name: 'Noor - twee ochtenden en een middag', participant: 8, monMorning: b3Id, wedEvening: 8, friMorning: b2Id },
+        { name: 'Milan - woensdag volledig', participant: 9, wedMorning: b6Id, wedEvening: b6Id },
+        { name: 'Lotte - wisselende dagdelen', participant: 10, monEvening: b7Id, thuesMorning: 10, thursMorning: 9, thursEvening: 9, friEvening: b7Id },
+    ];
+    const insertSchedule = db.prepare(`
+        INSERT INTO Schedules (
+            name, participant, startDate, endDate,
+            monMorning, monEvening, thuesMorning, thuesEvening,
+            wedMorning, wedEvening, thursMorning, thursEvening,
+            friMorning, friEvening
+        ) VALUES (
+            @name, @participant, @startDate, NULL,
+            @monMorning, @monEvening, @thuesMorning, @thuesEvening,
+            @wedMorning, @wedEvening, @thursMorning, @thursEvening,
+            @friMorning, @friEvening
+        )
+    `);
+
+    for (const schedule of schedules) {
+        insertSchedule.run({
+            name: schedule.name,
+            participant: schedule.participant,
+            startDate: scheduleStartDate,
+            monMorning: schedule.monMorning ?? null,
+            monEvening: schedule.monEvening ?? null,
+            thuesMorning: schedule.thuesMorning ?? null,
+            thuesEvening: schedule.thuesEvening ?? null,
+            wedMorning: schedule.wedMorning ?? null,
+            wedEvening: schedule.wedEvening ?? null,
+            thursMorning: schedule.thursMorning ?? null,
+            thursEvening: schedule.thursEvening ?? null,
+            friMorning: schedule.friMorning ?? null,
+            friEvening: schedule.friEvening ?? null,
+        });
+    }
 
     console.log('Seed data inserted');
 }

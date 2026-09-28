@@ -5,13 +5,32 @@ import Tabs from "../Tabs";
 
 import {ArrowBox, IconProduct} from "../../../assets";
 import drawFloorPlan from "./DrawFloorPlan";
-import type IFloorPlans from "../../../types/compontents/IFloorPlans";
 import type {IWall} from "../../../types/floorPlans/IWall";
-import type {IWorkplace, WorkplaceWithOccupancy} from "../../../types/floorPlans/IWorkplace";
-import http from "../../http";
-import type {KeyValuePair} from "../../../types/validation/keyvaluePair";
+import type {WorkplaceWithOccupancy} from "../../../types/floorPlans/IWorkplace";
+import type IFloorPlans from "../../../types/compontents/IFloorPlans";
+import {getWalls, getWorkplaces} from "./floorplans.service";
 
-export default function FloorPlans({rooms, participants, popUpContent: PopUpContent, dayButtons, height}: IFloorPlans) {
+const scheduleFieldsByDay = [
+    ["monMorning", 0, "Ochtend"],
+    ["monEvening", 0, "Middag"],
+    ["thuesMorning", 1, "Ochtend"],
+    ["thuesEvening", 1, "Middag"],
+    ["wedMorning", 2, "Ochtend"],
+    ["wedEvening", 2, "Middag"],
+    ["thursMorning", 3, "Ochtend"],
+    ["thursEvening", 3, "Middag"],
+    ["friMorning", 4, "Ochtend"],
+    ["friEvening", 4, "Middag"],
+] as const;
+
+export default function FloorPlans<T>({
+    rooms,
+    participants,
+    PopUpContent,
+    dayButtons,
+    height,
+    popupPropsExtra,
+}: IFloorPlans<T>) {
     const [active, setActive] = useState(0);
     const [currentDay, setCurrentDay] = useState(0);
     const [drawn, setDrawn] = useState(false);
@@ -37,26 +56,43 @@ export default function FloorPlans({rooms, participants, popUpContent: PopUpCont
 
     useEffect(() => {
         if (!rooms[active]) return;
-        getWorkplaces().then(
-            (
-                workplaces, //tijdelijk todat de data uit de db gehaald kan worden
-            ) =>
-                setWorkplaces(
-                    workplaces.map(wp => ({
-                        ...wp,
-                        timeslots: [
-                            {name: "Ochtend", occupancy: "Vrij"},
-                            {name: "Middag", occupancy: "Vrij"},
-                        ],
-                    })),
-                ),
-        );
-        getWalls().then(setWalls);
+
+        getWorkplaces(rooms[active].id).then(workplaces => {
+            const workplacesWithOccupancy: WorkplaceWithOccupancy[] = workplaces.map(wp => ({
+                ...wp,
+                timeslots: [0, 1, 2, 3, 4].map(() => ({Ochtend: "Vrij", Middag: "Vrij"})),
+            }));
+
+            const now = Date.now();
+
+            for (const participant of participants) {
+                if (!participant.schedules) continue;
+                for (const schedule of participant.schedules) {
+                    if (schedule.endDate && schedule.endDate.getTime() < now) continue;
+
+                    for (const [field, dayIndex, period] of scheduleFieldsByDay) {
+                        const workplaceId = schedule[field];
+
+                        if (workplaceId === undefined || workplaceId === null) continue;
+
+                        const workplace = workplacesWithOccupancy.find(wp => wp.id === workplaceId);
+
+                        if (!workplace) continue;
+
+                        workplace.timeslots[dayIndex][period] = `${participant.firstname} ${participant.lastname}`;
+                    }
+                }
+            }
+
+            setWorkplaces(workplacesWithOccupancy);
+        });
+
+        getWalls(rooms[active].id).then(setWalls);
     }, [rooms, active]);
 
     useEffect(() => {
         const day = new Date().getDay() - 1;
-        if (day > 4) setCurrentDay(0);
+        if (day > 4 || day < 0) setCurrentDay(0);
         else setCurrentDay(day);
     }, []);
 
@@ -69,7 +105,7 @@ export default function FloorPlans({rooms, participants, popUpContent: PopUpCont
         const observer = new ResizeObserver(() => {
             clearTimeout(timer);
             timer = setTimeout(() => {
-                currentScale.current = drawFloorPlan(canvas, rooms[active], workplaces, walls);
+                currentScale.current = drawFloorPlan(canvas, rooms[active], currentDay, workplaces, walls);
                 setDrawn(true);
             }, 200);
         });
@@ -80,31 +116,7 @@ export default function FloorPlans({rooms, participants, popUpContent: PopUpCont
             clearTimeout(timer);
             observer.disconnect();
         };
-    }, [rooms, workplaces, walls]);
-
-    async function getWorkplaces(): Promise<IWorkplace[]> {
-        let workplacesData: IWorkplace[] = [];
-
-        await http("/api/workplaces", "POST", {
-            where: [["RoomID", rooms[active].id]] satisfies KeyValuePair<IWorkplace>[],
-        }).then(async res => {
-            if (res.status === 200) workplacesData = await res.json();
-        });
-
-        return workplacesData;
-    }
-
-    async function getWalls(): Promise<IWall[]> {
-        let wallsData: IWall[] = [];
-
-        await http("/api/walls", "POST", {where: [["RoomID", rooms[active].id]] satisfies KeyValuePair<IWall>[]}).then(
-            async res => {
-                if (res.status === 200) wallsData = await res.json();
-            },
-        );
-
-        return wallsData;
-    }
+    }, [rooms, workplaces, walls, currentDay]);
 
     function onMouseHover(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
         const canvas = e.currentTarget;
@@ -221,6 +233,8 @@ export default function FloorPlans({rooms, participants, popUpContent: PopUpCont
                             room={rooms[active]}
                             workplaces={workplaces}
                             walls={walls}
+                            popupPropsExtra={popupPropsExtra}
+                            currentDay={currentDay}
                         />
                     </div>
                 )}

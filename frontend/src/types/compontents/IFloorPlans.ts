@@ -1,12 +1,13 @@
 import type {ComponentType} from "react";
 import type {IRoom} from "../floorPlans/IRoom";
-import type IParticipant from "./IParticipant";
-import type {FloorplansPopUp} from "../floorPlans/floorplantsPopUp";
+import type FloorplansPopUp from "../floorPlans/floorplantsPopUp";
+import type {IParticipantWithSchedules} from "./IParticipant";
 
-export default interface IFloorPlans {
+export default interface IFloorPlans<T> {
     rooms: IRoom[];
-    participants: IParticipant[];
-    popUpContent: ComponentType<FloorplansPopUp>;
+    participants: IParticipantWithSchedules[];
+    PopUpContent: ComponentType<FloorplansPopUp<NoInfer<T>>>;
     dayButtons?: boolean;
+    popupPropsExtra?: T;
     height?: string;
 }

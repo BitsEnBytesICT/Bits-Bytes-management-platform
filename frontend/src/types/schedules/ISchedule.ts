@@ -3,6 +3,7 @@ export default interface ISchedule {
     name: string;
     startDate: Date;
     endDate?: Date;
+    participant: number;
     monMorning?: number;
     monEvening?: number;
     thuesMorning?: number;

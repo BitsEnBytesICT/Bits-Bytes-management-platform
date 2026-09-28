@@ -34,9 +34,13 @@ describe("ParticipantService", () => {
         assert.equal(count, 3);
     });
 
-    it("countPresent returns only the clocked-in participants", async () => {
+    it("countPresent counts the participants scheduled today in the seed data", async () => {
+        // Sunday through Saturday, based on the schedules in setupDatabase.
+        const expectedByWeekday = [0, 7, 5, 6, 6, 6, 0];
+        const expected = expectedByWeekday[new Date().getUTCDay()];
+
         const count = await service.countPresent();
-        assert.equal(count, 1);
+        assert.equal(count, expected);
     });
 
     it("list returns every participant with the expected fields", async () => {
