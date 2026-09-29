@@ -1,6 +1,5 @@
 import {useState} from "react";
 import Button from "../../../common/components/Button";
-import Input from "../../../common/components/Input";
 import PopUp from "../../../common/components/PopUp";
 
 import type IParticipant from "../../../types/compontents/IParticipant";
@@ -12,6 +11,11 @@ interface ISignatureCreatePopUp {
     onClose: () => void;
     onSaved?: () => Promise<void> | void;
 }
+
+const dateInputClassName = `px-[15px] py-3 font-normal text-(--color-offblack) bg-(--color-offwhite) outline-none
+    rounded-xl cursor-pointer transition-colors
+    shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
+    focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]`;
 
 export default function SignatureCreatePopUp({participants, onClose, onSaved}: ISignatureCreatePopUp) {
     const [participantID, setParticipantID] = useState("");
@@ -80,22 +84,28 @@ export default function SignatureCreatePopUp({participants, onClose, onSaved}: I
                                 ))}
                             </select>
                         </div>
-                        <Input
-                            label="Ingeklokt"
-                            id="clockinDate"
-                            type="text"
-                            //type="datetime-local"
-                            required
-                            onChange={setClockinDate}
-                        />
-                        <Input
-                            label="Uitgeklokt"
-                            id="clockoutDate"
-                            //type="datetime-local"
-                            type="text"
-                            required
-                            onChange={setClockoutDate}
-                        />
+                        <label className="flex flex-col gap-2 text-[16px] font-semibold text-(--color-darkblue)">
+                            <span className="ml-1.5">Ingeklokt *</span>
+                            <input
+                                id="clockinDate"
+                                type="datetime-local"
+                                value={clockinDate}
+                                max={clockoutDate || undefined}
+                                onChange={e => setClockinDate(e.target.value)}
+                                className={dateInputClassName}
+                            />
+                        </label>
+                        <label className="flex flex-col gap-2 text-[16px] font-semibold text-(--color-darkblue)">
+                            <span className="ml-1.5">Uitgeklokt *</span>
+                            <input
+                                id="clockoutDate"
+                                type="datetime-local"
+                                value={clockoutDate}
+                                min={clockinDate || undefined}
+                                onChange={e => setClockoutDate(e.target.value)}
+                                className={dateInputClassName}
+                            />
+                        </label>
                     </div>
 
                     <div className="flex flex-col gap-2">

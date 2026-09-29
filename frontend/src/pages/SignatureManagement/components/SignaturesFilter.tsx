@@ -7,12 +7,14 @@ import {formatDate} from "../../../common/helperFunctions";
 import useLocalStorage from "../../../common/hooks/useLocalStorage";
 
 import type IAttendance from "../../../types/compontents/IAttendance";
+import type {IDateRange} from "../../../types/compontents/IDateRangePicker";
 import type IParticipant from "../../../types/compontents/IParticipant";
 
 interface ISignaturesFilter {
     signatures: IAttendance[];
     participants: IParticipant[];
     isShown: boolean;
+    dateRange: IDateRange;
     children: ReactNode;
     setFilteredSignatures: (value: (IAttendance & {checked: boolean})[]) => void;
 }
@@ -21,6 +23,7 @@ export default function SignaturesFilter({
     signatures,
     participants,
     isShown,
+    dateRange,
     children,
     setFilteredSignatures,
 }: ISignaturesFilter) {
@@ -36,6 +39,14 @@ export default function SignaturesFilter({
         const participant = participants.find(p => p.id === participantID);
 
         return participant ? `${participant.firstname} ${participant.lastname}` : "";
+    }
+
+    // lokale "YYYY-MM-DD" zodat hij direct te vergelijken is met de waarde van een date input
+    function toDayKey(date: Date): string {
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+
+        return `${date.getFullYear()}-${month}-${day}`;
     }
 
     function matchesFilters(signature: IAttendance): boolean {
@@ -63,7 +74,10 @@ export default function SignaturesFilter({
             !signedFilter || (signature.signature ? "Ondertekend" : "Niet ondertekend") === signedFilter;
         const matchesStatus = !statusFilter || (signature.clockoutDate ? "Uitgeklokt" : "Ingeklokt") === statusFilter;
 
-        return matchesSearch && matchesParticipant && matchesSigned && matchesStatus;
+        const day = toDayKey(signature.clockinDate);
+        const matchesDate = (!dateRange.from || day >= dateRange.from) && (!dateRange.to || day <= dateRange.to);
+
+        return matchesSearch && matchesParticipant && matchesSigned && matchesStatus && matchesDate;
     }
 
     useEffect(() => {
@@ -72,7 +86,16 @@ export default function SignaturesFilter({
 
     useEffect(() => {
         setFilteredSignatures(signatures.filter(matchesFilters).map(s => ({...s, checked: false})));
-    }, [signatures, participants, searchTerm, participantFilter, signedFilter, statusFilter]);
+    }, [
+        signatures,
+        participants,
+        searchTerm,
+        participantFilter,
+        signedFilter,
+        statusFilter,
+        dateRange.from,
+        dateRange.to,
+    ]);
 
     const participantNames = [...new Set(signatures.map(s => participantName(s.participantID)).filter(Boolean))];
 

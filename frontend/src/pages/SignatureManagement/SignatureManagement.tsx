@@ -1,16 +1,19 @@
 import {useEffect, useState} from "react";
 
+import DateRangePicker from "../../common/components/DateRangePicker";
 import SmallButton from "../../common/components/SmallButton";
 import SmallPopUp from "../../common/components/SmallPopUp";
 import Table from "../../common/components/Table";
 
 import type IAttendance from "../../types/compontents/IAttendance";
+import type {IDateRange} from "../../types/compontents/IDateRangePicker";
 import type IParticipant from "../../types/compontents/IParticipant";
 import type {ITableColumn} from "../../types/compontents/ITable";
 
-import {IconAddUser, IconCalendar, IconDelete, IconEdit, IconExport, IconFilter, IconInfo} from "../../assets";
+import {IconAddUser, IconDelete, IconEdit, IconExport, IconFilter, IconInfo} from "../../assets";
 import {downloadPDF} from "../../common/buildPDF";
 import {formatDate, fromBackendDate} from "../../common/helperFunctions";
+import useLocalStorage from "../../common/hooks/useLocalStorage";
 import http from "../../common/http";
 import ParticipantsService from "../Participants/Participants.service";
 import SignatureManagementService from "./SignatureManagentService";
@@ -61,6 +64,7 @@ export default function SignatureManagement() {
     const [filteredSignatures, setFilteredSignatures] = useState<AttendanceRow[]>([]);
     const [participants, setParticipants] = useState<IParticipant[]>([]);
     const [isFilterShown, setIsFilterShown] = useState(false);
+    const [dateRange, setDateRange] = useLocalStorage<IDateRange>("signatures.dateRange", {from: "", to: ""});
 
     const [infoSignature, setInfoSignature] = useState<IAttendance | null>(null);
     const [editSignature, setEditSignature] = useState<IAttendance | null>(null);
@@ -138,6 +142,8 @@ export default function SignatureManagement() {
         );
     };
 
+    const checkedSignatures = filteredSignatures.filter(s => s.checked);
+
     const findParticipant = (participantID: number) => participants.find(p => p.id === participantID);
 
     const exportSignatures = async (toExport: IAttendance[], fileName = "handtekeningen-export.pdf") => {
@@ -170,24 +176,25 @@ export default function SignatureManagement() {
                         active={isFilterShown}
                     />
 
-                    <SmallButton
-                        icon={<img src={IconCalendar} className="select-none [-webkit-user-drag:none]" />}
-                        label="Datum kiezen"
-                    />
+                    <DateRangePicker value={dateRange} onChange={setDateRange} />
                 </div>
 
                 <div className="flex flex-row gap-6">
-                    <SmallButton
-                        icon={<img src={IconDelete} className="select-none [-webkit-user-drag:none]" />}
-                        label="Verwijder Selectie"
-                        onClick={() => setDeleteSelection(filteredSignatures.filter(s => s.checked))}
-                    />
+                    {checkedSignatures.length > 0 && (
+                        <SmallButton
+                            icon={<img src={IconDelete} className="select-none [-webkit-user-drag:none]" />}
+                            label="Verwijder Selectie"
+                            onClick={() => setDeleteSelection(checkedSignatures)}
+                        />
+                    )}
 
-                    <SmallButton
-                        icon={<img src={IconExport} className="select-none [-webkit-user-drag:none]" />}
-                        label="Exporteer Selectie"
-                        onClick={() => exportSignatures(filteredSignatures.filter(s => s.checked))}
-                    />
+                    {checkedSignatures.length > 0 && (
+                        <SmallButton
+                            icon={<img src={IconExport} className="select-none [-webkit-user-drag:none]" />}
+                            label="Exporteer Selectie"
+                            onClick={() => exportSignatures(checkedSignatures)}
+                        />
+                    )}
 
                     <SmallButton
                         icon={<img src={IconAddUser} className="select-none [-webkit-user-drag:none]" />}
@@ -207,6 +214,7 @@ export default function SignatureManagement() {
                 signatures={signatures}
                 participants={participants}
                 isShown={isFilterShown}
+                dateRange={dateRange}
                 setFilteredSignatures={setFilteredSignatures}>
                 <div
                     className="flex-1 min-h-0 [&_td:first-child]:w-12 [&_td:first-child]:overflow-hidden

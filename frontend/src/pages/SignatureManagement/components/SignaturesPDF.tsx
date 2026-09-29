@@ -111,7 +111,6 @@ export default function SignaturesPDF({signatures, participants}: ISignaturesPDF
             right: PADDING_X,
         },
         name: {
-            fontWeight: "bold",
             marginBottom: 12,
         },
         row: {
