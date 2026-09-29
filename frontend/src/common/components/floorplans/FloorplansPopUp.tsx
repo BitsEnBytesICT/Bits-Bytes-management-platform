@@ -1,5 +1,9 @@
 import type IFloorplansPopUp from "../../../types/floorPlans/floorplantsPopUp";
+import type ISchedule from "../../../types/schedules/ISchedule";
+import {scheduleFieldsByDay} from "../../../types/schedules/ISchedule";
+import type {KeyValuePair} from "../../../types/validation/keyvaluePair";
 import Input from "../Input";
+import FloorplansService from "./floorplans.service";
 
 export default function FloorplansPopUp({
     currentWorkplace,
@@ -21,6 +25,8 @@ export default function FloorplansPopUp({
                 currentWorkplace.timeslots[currentDay].Middag !== "Vrij",
             ].filter(item => item === true).length
         ];
+
+    const floorplansService: FloorplansService = new FloorplansService();
 
     return (
         <div
@@ -59,6 +65,40 @@ export default function FloorplansPopUp({
                         ]}
                         value={currentWorkplace.timeslots[currentDay][timeslot]}
                         onChange={value => {
+                            let participant;
+                            if (value !== "Vrij")
+                                participant = participants.find(p => `${p.firstname} ${p.lastname}` === value);
+                            else
+                                participant = participants.find(
+                                    p =>
+                                        `${p.firstname} ${p.lastname}` ===
+                                        currentWorkplace.timeslots[currentDay][timeslot],
+                                );
+                            const schedule = participant.schedules.find(
+                                s => !s.endDate || s.endDate.getTime() > Date.now(),
+                            );
+
+                            if (!schedule) {
+                                floorplansService.createScedule({
+                                    name: "gemaakt via floorplanner",
+                                    startDate: new Date(),
+                                    participant: participant.id,
+                                    [scheduleFieldsByDay[currentDay * 2 + index][0]]:
+                                        value === "Vrij" ? undefined : currentWorkplace.id,
+                                });
+                            } else {
+                                schedule[scheduleFieldsByDay[currentDay * 2 + index][0]] =
+                                    value === "Vrij" ? undefined : currentWorkplace.id;
+                                const updatedFields = (Object.keys(schedule) as Array<keyof ISchedule>).map(key => [
+                                    key,
+                                    schedule[key],
+                                ]);
+                                floorplansService.updateScedule(
+                                    ["id", schedule.id],
+                                    ...(updatedFields as KeyValuePair<ISchedule>[]),
+                                );
+                            }
+
                             if (index === 0) currentWorkplace.timeslots[currentDay].Ochtend = value;
                             else if (index === 1) currentWorkplace.timeslots[currentDay].Middag = value;
 

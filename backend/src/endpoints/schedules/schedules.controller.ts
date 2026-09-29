@@ -27,4 +27,10 @@ export default class ScheduleController {
         await this.service.create(req.body?.schedule);
         res.sendStatus(200);
     }
+
+    @AuthenticationDecorator(PermissionsList.scheduleUpdate)
+    async update(req: Request, res: Response) {
+        await this.service.update(req.body.where, ...req.body.values);
+        res.sendStatus(200);
+    }
 }

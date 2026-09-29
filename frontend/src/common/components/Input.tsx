@@ -8,6 +8,14 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
     const [isFilledIn, setIsFilledIn] = useState(true);
 
     let inputProps = {};
+    const labelPos =
+        !props.labelPos || props.labelPos === "top"
+            ? "flex-col"
+            : props.labelPos === "left"
+              ? "flex-row items-center"
+              : props.labelPos === "right"
+                ? "flex-row-reverse items-center"
+                : "flex-col-reverse";
 
     if (props.type === "textarea" || props.type === "text" || props.type === "password") {
         inputProps = {
@@ -36,7 +44,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
     switch (props.type) {
         case "checkbox":
             return (
-                <div className="flex flex-col gap-2">
+                <div className={`flex ${labelPos} gap-2`}>
                     {props.label && (
                         <label
                             className={props.labelClassName ?? "ml-1.5 font-semibold text-(--color-darkblue)"}
@@ -60,7 +68,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
             );
         case "textarea":
             return (
-                <div className={`flex flex-col gap-2`}>
+                <div className={`flex ${labelPos} gap-2`}>
                     {props.label && (
                         <label
                             className={props.labelClassName ?? "ml-1.5 font-semibold text-(--color-darkblue)"}
@@ -80,7 +88,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
         case "text":
         case "password":
             return (
-                <div className={`flex flex-col gap-2`}>
+                <div className={`flex ${labelPos} gap-2`}>
                     {props.label && (
                         <label
                             className={props.labelClassName ?? "ml-1.5 font-semibold text-(--color-darkblue)"}
@@ -94,7 +102,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
             );
         case "select":
             return (
-                <div className={`flex flex-col gap-2 ${props.className ?? ""}`}>
+                <div className={`flex ${labelPos} gap-2 ${props.className ?? ""}`}>
                     {props.label && (
                         <label
                             className={props.labelClassName ?? "ml-1.5 font-semibold text-(--color-darkblue)"}

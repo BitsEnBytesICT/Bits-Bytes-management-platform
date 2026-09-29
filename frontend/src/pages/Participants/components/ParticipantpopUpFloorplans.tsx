@@ -1,7 +1,8 @@
-import type {Dispatch, SetStateAction} from "react";
+import {useEffect, useState, type Dispatch, type SetStateAction} from "react";
 import Input from "../../../common/components/Input";
 import type FloorplansPopUp from "../../../types/floorPlans/floorplantsPopUp";
 import type ISchedule from "../../../types/schedules/ISchedule";
+import type {IParticipant} from "../../../types/compontents/IParticipant";
 
 interface IParticipantpopUpFloorplans {
     currentScedule: ISchedule;
@@ -23,7 +24,17 @@ export default function ParticipantpopUpFloorplans({
     currentDay,
     workplaces,
     setWorkplaces,
+    participants,
 }: FloorplansPopUp<IParticipantpopUpFloorplans>) {
+    const [currentParticipants, setCurrentParticipants] = useState<[IParticipant, IParticipant]>();
+
+    useEffect(() => {
+        setCurrentParticipants([
+            participants.find(p => `${p.firstname} ${p.lastname}` === currentWorkplace.timeslots[currentDay].Ochtend),
+            participants.find(p => `${p.firstname} ${p.lastname}` === currentWorkplace.timeslots[currentDay].Middag),
+        ]);
+    }, [participants, currentDay]);
+
     const scheduleFields = currentDay === undefined ? undefined : scheduleFieldsByDay[currentDay];
     const occupancyStatuses = [
         {label: "Vrij", color: "text-(--color-green)"},
@@ -68,6 +79,12 @@ export default function ParticipantpopUpFloorplans({
                         <Input
                             id={`${index}`}
                             type="checkbox"
+                            label={
+                                currentParticipants && currentParticipants[index]
+                                    ? `${currentParticipants[index].firstname} ${currentParticipants[index].lastname}`
+                                    : ""
+                            }
+                            labelPos="right"
                             checked={
                                 scheduleField !== undefined &&
                                 popupPropsExtra?.currentScedule[scheduleField] === currentWorkplace.id

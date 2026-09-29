@@ -1,8 +1,9 @@
 import type {InputActionMeta} from "react-select";
 
 interface InputBase {
-    label?: string;
     id: string;
+    label?: string;
+    labelPos?: "top" | "left" | "right" | "bottom";
     className?: string;
     labelClassName?: string;
     readOnly?: boolean;

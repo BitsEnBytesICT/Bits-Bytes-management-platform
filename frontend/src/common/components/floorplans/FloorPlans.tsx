@@ -8,20 +8,8 @@ import drawFloorPlan from "./DrawFloorPlan";
 import type {IWall} from "../../../types/floorPlans/IWall";
 import type {WorkplaceWithOccupancy} from "../../../types/floorPlans/IWorkplace";
 import type IFloorPlans from "../../../types/compontents/IFloorPlans";
-import {getWalls, getWorkplaces} from "./floorplans.service";
-
-const scheduleFieldsByDay = [
-    ["monMorning", 0, "Ochtend"],
-    ["monEvening", 0, "Middag"],
-    ["thuesMorning", 1, "Ochtend"],
-    ["thuesEvening", 1, "Middag"],
-    ["wedMorning", 2, "Ochtend"],
-    ["wedEvening", 2, "Middag"],
-    ["thursMorning", 3, "Ochtend"],
-    ["thursEvening", 3, "Middag"],
-    ["friMorning", 4, "Ochtend"],
-    ["friEvening", 4, "Middag"],
-] as const;
+import {scheduleFieldsByDay} from "../../../types/schedules/ISchedule";
+import FloorplansService from "./floorplans.service";
 
 export default function FloorPlans<T>({
     rooms,
@@ -30,6 +18,7 @@ export default function FloorPlans<T>({
     dayButtons,
     height,
     popupPropsExtra,
+    currentEditedScedule,
 }: IFloorPlans<T>) {
     const [active, setActive] = useState(0);
     const [currentDay, setCurrentDay] = useState(0);
@@ -54,10 +43,12 @@ export default function FloorPlans<T>({
         bottom: "-bottom-1 rotate-180",
     };
 
+    const floorplansService: FloorplansService = new FloorplansService();
+
     useEffect(() => {
         if (!rooms[active]) return;
 
-        getWorkplaces(rooms[active].id).then(workplaces => {
+        floorplansService.getWorkplaces(rooms[active].id).then(workplaces => {
             const workplacesWithOccupancy: WorkplaceWithOccupancy[] = workplaces.map(wp => ({
                 ...wp,
                 timeslots: [0, 1, 2, 3, 4].map(() => ({Ochtend: "Vrij", Middag: "Vrij"})),
@@ -87,7 +78,7 @@ export default function FloorPlans<T>({
             setWorkplaces(workplacesWithOccupancy);
         });
 
-        getWalls(rooms[active].id).then(setWalls);
+        floorplansService.getWalls(rooms[active].id).then(setWalls);
     }, [rooms, active]);
 
     useEffect(() => {
@@ -105,7 +96,14 @@ export default function FloorPlans<T>({
         const observer = new ResizeObserver(() => {
             clearTimeout(timer);
             timer = setTimeout(() => {
-                currentScale.current = drawFloorPlan(canvas, rooms[active], currentDay, workplaces, walls);
+                currentScale.current = drawFloorPlan(
+                    canvas,
+                    rooms[active],
+                    currentDay,
+                    workplaces,
+                    walls,
+                    currentEditedScedule,
+                );
                 setDrawn(true);
             }, 200);
         });
@@ -208,7 +206,7 @@ export default function FloorPlans<T>({
                         rounded-lg transition-opacity duration-300 ease-in-out ${drawn ? "opacity-100" : "opacity-0"}
                         shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`}></canvas>
 
-                {showPopUp && currentWorkplace && rooms[active] && (
+                {PopUpContent && showPopUp && currentWorkplace && rooms[active] && (
                     <div
                         className="p-1 absolute z-50 w-75 animate-[fade-in_0.2s_ease-in-out]"
                         style={popupPosition}
@@ -223,19 +221,21 @@ export default function FloorPlans<T>({
                             className={`absolute z-10 select-none [-webkit-user-drag:none] ${arrowClassName[arrowSide]}`}
                         />
 
-                        <PopUpContent
-                            canvas={canvas}
-                            currentWorkplace={currentWorkplace}
-                            participants={participants}
-                            setCurrentWorkplace={setCurrentWorkplace}
-                            currentScale={currentScale}
-                            setWorkplaces={setWorkplaces}
-                            room={rooms[active]}
-                            workplaces={workplaces}
-                            walls={walls}
-                            popupPropsExtra={popupPropsExtra}
-                            currentDay={currentDay}
-                        />
+                        {PopUpContent && (
+                            <PopUpContent
+                                canvas={canvas}
+                                currentWorkplace={currentWorkplace}
+                                participants={participants}
+                                setCurrentWorkplace={setCurrentWorkplace}
+                                currentScale={currentScale}
+                                setWorkplaces={setWorkplaces}
+                                room={rooms[active]}
+                                workplaces={workplaces}
+                                walls={walls}
+                                popupPropsExtra={popupPropsExtra}
+                                currentDay={currentDay}
+                            />
+                        )}
                     </div>
                 )}
             </div>

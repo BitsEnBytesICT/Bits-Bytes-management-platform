@@ -48,7 +48,7 @@ export default function ParticipantPopUp({
     const [selectPlaceholder, setSelectPlaceholder] = useState("naam van schema...");
     const [scheduleInputValue, setScheduleInputValue] = useState("");
     const [toggleScheduleScreen, setToggleScheduleScreen] = useState(false);
-    const [scedules, setScedules] = useState<ISchedule[]>([]);
+    const [schedules, setSchedules] = useState<ISchedule[]>([]);
     const [currentScedule, setCurrentScedule] = useState<ISchedule>();
 
     const isInfo = mode === "info";
@@ -57,7 +57,7 @@ export default function ParticipantPopUp({
 
     useEffect(() => {
         if (mode !== "add") {
-            setScedules(participants.find(p => p.id === currentParticipant.id).schedules);
+            setSchedules([...participants.find(p => p.id === currentParticipant.id).schedules]);
         }
 
         if (isInfo) {
@@ -109,7 +109,7 @@ export default function ParticipantPopUp({
             );
             const errors = (
                 await Promise.all(
-                    scedules.map(scedule => service.createScedule({...scedule, participant: participantFromDB.id})),
+                    schedules.map(scedule => service.createScedule({...scedule, participant: participantFromDB.id})),
                 )
             ).flat();
             if (errors.length > 0) {
@@ -129,18 +129,42 @@ export default function ParticipantPopUp({
             const updatedFields = (Object.keys(currentParticipant) as Array<keyof IParticipant>)
                 .filter(key => currentParticipant[key] !== participant[key])
                 .map(key => [key, currentParticipant[key]]);
-            if (updatedFields.length < 1) {
-                onClose();
-                return;
+
+            if (updatedFields.length > 0) {
+                const error = await service.updateParticipant(
+                    ["id", currentParticipant.id],
+                    ...(updatedFields as KeyValuePair<IParticipant>[]),
+                );
+
+                if (error.length > 0) {
+                    setError(error);
+                    return;
+                }
             }
-            const error = await service.updateParticipant(
-                ["id", currentParticipant.id],
-                ...(updatedFields as KeyValuePair<IParticipant>[]),
+
+            const updatedFieldsSchedules = schedules.map((scedule, index) =>
+                (Object.keys(scedule) as Array<keyof ISchedule>)
+                    .filter(key => scedule[key] !== currentParticipant.schedules[index][key])
+                    .map(key => [key, scedule[key]]),
             );
 
-            if (error.length > 0) {
-                setError(error);
-                return;
+            if (updatedFieldsSchedules.some(fields => fields.length > 0)) {
+                const errors = (
+                    await Promise.all(
+                        schedules.map((scedule, index) =>
+                            updatedFieldsSchedules[index].length === 0
+                                ? {}
+                                : service.updateScedule(
+                                      ["id", scedule.id],
+                                      ...(updatedFieldsSchedules[index] as KeyValuePair<ISchedule>[]),
+                                  ),
+                        ),
+                    )
+                ).flat();
+                if (errors.length > 0) {
+                    setError(errors.flatMap(err => err));
+                    return;
+                }
             }
         }
 
@@ -280,7 +304,7 @@ export default function ParticipantPopUp({
                         placeholder={selectPlaceholder}
                         id="location"
                         type="select"
-                        options={scedules.map(scedule => ({label: scedule.name, value: scedule.name}))}
+                        options={schedules.map(scedule => ({label: scedule.name, value: scedule.name}))}
                         inputValue={scheduleInputValue}
                         value={currentScedule?.name}
                         onMenuOpen={() => setSelectPlaceholder("")}
@@ -292,7 +316,7 @@ export default function ParticipantPopUp({
                             }
                         }}
                         onChange={value => {
-                            setCurrentScedule(scedules.find(scedule => scedule.name === value));
+                            setCurrentScedule(schedules.find(scedule => scedule.name === value));
                             setScheduleInputValue("");
                             setToggleScheduleScreen(true);
                         }}
@@ -345,7 +369,8 @@ export default function ParticipantPopUp({
                                         currentScedule: currentScedule,
                                         setCurrentScedule: setCurrentScedule,
                                     }}
-                                    PopUpContent={ParticipantpopUpFloorplans}></FloorPlans>
+                                    PopUpContent={!isInfo ? ParticipantpopUpFloorplans : undefined}
+                                    currentEditedScedule={currentScedule}></FloorPlans>
                             </div>
                             <Button
                                 onClick={() => {
@@ -358,11 +383,12 @@ export default function ParticipantPopUp({
                             {!isInfo && (
                                 <Button
                                     onClick={() => {
+                                        if (!currentScedule.startDate) return;
                                         setToggleScheduleScreen(false);
-                                        const location = scedules.findIndex(s => s.name === currentScedule.name);
-                                        if (location === -1) scedules.push(currentScedule);
-                                        else scedules[location] = currentScedule;
-                                        setScedules([...scedules]);
+                                        const location = schedules.findIndex(s => s.name === currentScedule.name);
+                                        if (location === -1) schedules.push(currentScedule);
+                                        else schedules[location] = currentScedule;
+                                        setSchedules([...schedules]);
                                         setCurrentScedule(undefined);
                                         setScheduleInputValue("");
                                     }}>

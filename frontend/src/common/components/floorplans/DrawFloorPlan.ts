@@ -2,6 +2,8 @@ import type {RefObject} from "react";
 import type {IRoom} from "../../../types/floorPlans/IRoom";
 import type {WorkplaceWithOccupancy} from "../../../types/floorPlans/IWorkplace";
 import type {IWall} from "../../../types/floorPlans/IWall";
+import type ISchedule from "../../../types/schedules/ISchedule";
+import {scheduleFieldsByDay} from "../../../types/schedules/ISchedule";
 function cssColor(name: string): string {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
@@ -18,6 +20,7 @@ export default function DrawFloorPlan(
     currentDay: number,
     workplaces: WorkplaceWithOccupancy[],
     walls?: IWall[],
+    currentEditedScedule?: ISchedule,
 ): number {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
@@ -29,6 +32,7 @@ export default function DrawFloorPlan(
         black: "#000000",
         green: cssColor("--color-green"),
         yellow: cssColor("--color-yellow"),
+        orange: cssColor("--color-orange"),
         red: cssColor("--color-red"),
     };
 
@@ -104,7 +108,7 @@ export default function DrawFloorPlan(
     context.setLineDash([]);
     context.lineWidth = 1.5;
 
-    workplaces.forEach(workplace => {
+    for (const workplace of workplaces) {
         const rotated = workplace.rotation === 90;
         const width = rotated ? 1600 : 800;
         const height = rotated ? 800 : 1600;
@@ -116,69 +120,80 @@ export default function DrawFloorPlan(
         context.beginPath();
         context.roundRect(x, y, w, h, 6);
 
-        switch (
-            [
-                workplace.timeslots[currentDay].Ochtend !== "Vrij",
-                workplace.timeslots[currentDay].Middag !== "Vrij",
-            ].filter(item => item === true).length
+        if (
+            currentEditedScedule &&
+            (workplace.id === currentEditedScedule[scheduleFieldsByDay[currentDay * 2][0]] ||
+                workplace.id === currentEditedScedule[scheduleFieldsByDay[currentDay * 2 + 1][0]])
         ) {
-            case 1: {
-                const colorOrder =
-                    workplace.timeslots[currentDay].Ochtend !== "Vrij"
-                        ? [colors.yellow, colors.green]
-                        : [colors.green, colors.yellow];
+            context.fillStyle = withOpacity(colors.orange, fillOpacity);
+            context.fill();
+            context.strokeStyle = colors.orange;
+            context.stroke();
+        } else {
+            switch (
+                [
+                    workplace.timeslots[currentDay].Ochtend !== "Vrij",
+                    workplace.timeslots[currentDay].Middag !== "Vrij",
+                ].filter(item => item === true).length
+            ) {
+                case 1: {
+                    const colorOrder =
+                        workplace.timeslots[currentDay].Ochtend !== "Vrij"
+                            ? [colors.yellow, colors.green]
+                            : [colors.green, colors.yellow];
 
-                const skew = Math.min(w, h) * 0.15;
-                const margin = context.lineWidth;
+                    const skew = Math.min(w, h) * 0.15;
+                    const margin = context.lineWidth;
 
-                colorOrder.forEach((color, index) => {
-                    context.save();
-                    context.beginPath();
-                    if (index === 0) {
-                        context.moveTo(x - margin, y - margin);
-                        context.lineTo(rotated ? x + w / 2 + skew : x + w + margin, y - margin);
-                        context.lineTo(
-                            rotated ? x + w / 2 - skew : x + w + margin,
-                            rotated ? y + h + margin : y + h / 2 - skew,
-                        );
-                        context.lineTo(x - margin, rotated ? y + h + margin : y + h / 2 + skew);
-                    } else {
-                        context.moveTo(
-                            rotated ? x + w / 2 + skew : x - margin,
-                            rotated ? y - margin : y + h / 2 + skew,
-                        );
-                        context.lineTo(x + w + margin, rotated ? y - margin : y + h / 2 - skew);
-                        context.lineTo(x + w + margin, y + h + margin);
-                        context.lineTo(rotated ? x + w / 2 - skew : x - margin, y + h + margin);
-                    }
+                    colorOrder.forEach((color, index) => {
+                        context.save();
+                        context.beginPath();
+                        if (index === 0) {
+                            context.moveTo(x - margin, y - margin);
+                            context.lineTo(rotated ? x + w / 2 + skew : x + w + margin, y - margin);
+                            context.lineTo(
+                                rotated ? x + w / 2 - skew : x + w + margin,
+                                rotated ? y + h + margin : y + h / 2 - skew,
+                            );
+                            context.lineTo(x - margin, rotated ? y + h + margin : y + h / 2 + skew);
+                        } else {
+                            context.moveTo(
+                                rotated ? x + w / 2 + skew : x - margin,
+                                rotated ? y - margin : y + h / 2 + skew,
+                            );
+                            context.lineTo(x + w + margin, rotated ? y - margin : y + h / 2 - skew);
+                            context.lineTo(x + w + margin, y + h + margin);
+                            context.lineTo(rotated ? x + w / 2 - skew : x - margin, y + h + margin);
+                        }
 
-                    context.closePath();
-                    context.clip();
+                        context.closePath();
+                        context.clip();
 
-                    context.beginPath();
-                    context.roundRect(x, y, w, h, 6);
-                    context.fillStyle = withOpacity(color, fillOpacity);
+                        context.beginPath();
+                        context.roundRect(x, y, w, h, 6);
+                        context.fillStyle = withOpacity(color, fillOpacity);
+                        context.fill();
+                        context.strokeStyle = color;
+                        context.stroke();
+
+                        context.restore();
+                    });
+                    break;
+                }
+                case 2:
+                    context.fillStyle = withOpacity(colors.red, fillOpacity);
                     context.fill();
-                    context.strokeStyle = color;
+                    context.strokeStyle = colors.red;
                     context.stroke();
-
-                    context.restore();
-                });
-                break;
+                    break;
+                case 0:
+                default:
+                    context.fillStyle = withOpacity(colors.green, fillOpacity);
+                    context.fill();
+                    context.strokeStyle = colors.green;
+                    context.stroke();
+                    break;
             }
-            case 2:
-                context.fillStyle = withOpacity(colors.red, fillOpacity);
-                context.fill();
-                context.strokeStyle = colors.red;
-                context.stroke();
-                break;
-            case 0:
-            default:
-                context.fillStyle = withOpacity(colors.green, fillOpacity);
-                context.fill();
-                context.strokeStyle = colors.green;
-                context.stroke();
-                break;
         }
 
         context.fillStyle = colors.black;
@@ -187,7 +202,7 @@ export default function DrawFloorPlan(
             (workplace.xpos + width / 2) / currentScale + widthOffset,
             (workplace.ypos + height / 2) / currentScale + heightOffset,
         );
-    });
+    }
 
     return currentScale;
 }

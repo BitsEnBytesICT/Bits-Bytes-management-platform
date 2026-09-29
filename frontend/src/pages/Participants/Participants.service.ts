@@ -58,13 +58,19 @@ export default class ParticipantsService {
         else return await response.json();
     };
 
-    // getScedules = async (...where: KeyValuePair<ISchedule>[]): Promise<ISchedule[]> => {
-    //     const schedules = await (await http("/api/schedules", "POST", {
-    //         where,
-    //     })).json();
-
-    //     return schedules.map((schedule) => ({...schedule, startDate: fromDateString(schedule.startDate), endDate: schedule.endDate ? fromDateString(schedule.endDate) : undefined}));
-    // };
+    updateScedule = async (where: KeyValuePair<ISchedule>, ...values: KeyValuePair<ISchedule>[]) => {
+        const response = await http("/api/schedules/update", "POST", {
+            where: where,
+            values: values.map(([key, value]) => {
+                if ((key === "startDate" || key === "endDate") && value) {
+                    return [key, toDateString(value)];
+                }
+                return [key, value];
+            }),
+        });
+        if (response.status === 200) return [];
+        else return await response.json();
+    };
 
     updateParticipant = async (where: KeyValuePair<IParticipant>, ...values: KeyValuePair<IParticipant>[]) => {
         const response = await http("/api/participants/update", "POST", {

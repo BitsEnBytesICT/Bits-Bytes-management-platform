@@ -2,12 +2,12 @@ import type {RefObject} from "react";
 import type {WorkplaceWithOccupancy} from "./IWorkplace";
 import type {IRoom} from "./IRoom";
 import type {IWall} from "./IWall";
-import type {IParticipant} from "../compontents/IParticipant";
+import type {IParticipantWithSchedules} from "../compontents/IParticipant";
 
 export default interface IFloorplansPopUp<T> {
     canvas?: RefObject<HTMLCanvasElement | null>;
     currentWorkplace: WorkplaceWithOccupancy;
-    participants?: IParticipant[];
+    participants?: IParticipantWithSchedules[];
     setCurrentWorkplace?: (workplace: WorkplaceWithOccupancy) => void;
     currentScale?: RefObject<number | undefined>;
     setWorkplaces?: React.Dispatch<React.SetStateAction<WorkplaceWithOccupancy[]>>;

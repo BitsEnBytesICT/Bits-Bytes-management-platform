@@ -18,6 +18,10 @@ export default class ScheduleDao extends daoBase<ISchedule> {
         await this.deleteFunc(Tables.Schedules, where);
     }
 
+    async update(where: KeyValuePair<ISchedule>, ...values: KeyValuePair<ISchedule>[]) {
+        await this.updateFunc(Tables.Schedules, where, ...values);
+    }
+
     async list(...where: KeyValuePair<ISchedule>[]): Promise<ISchedule[]> {
         if (where.length === 0) return await dbAll<ISchedule>(`SELECT * FROM ${Tables.Schedules}`);
 
