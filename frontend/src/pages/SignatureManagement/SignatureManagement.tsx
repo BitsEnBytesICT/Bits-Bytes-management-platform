@@ -10,7 +10,7 @@ import type {IDateRange} from "../../types/compontents/IDateRangePicker";
 import type IParticipant from "../../types/compontents/IParticipant";
 import type {ITableColumn} from "../../types/compontents/ITable";
 
-import {IconAddUser, IconDelete, IconEdit, IconExport, IconFilter, IconInfo} from "../../assets";
+import {IconAddUser, IconDelete, IconDownload, IconEdit, IconExport, IconFilter, IconInfo} from "../../assets";
 import {downloadPDF} from "../../common/buildPDF";
 import {formatDate, fromBackendDate} from "../../common/helperFunctions";
 import useLocalStorage from "../../common/hooks/useLocalStorage";
@@ -34,26 +34,26 @@ function ActionIcons(
     onInfoClick: (signature: IAttendance) => void,
 ) {
     return (
-        <div className="flex flex-row gap-2 items-center">
+        <div className="flex flex-row gap-[10%]">
+            <img
+                onClick={() => onInfoClick(signature)}
+                src={IconInfo}
+                className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+            />
             <img
                 onClick={() => onEditClick(signature)}
                 src={IconEdit}
-                className="size-4 shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+                className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
             />
             <img
                 onClick={() => onExportClick(signature)}
-                src={IconExport}
-                className="size-4 shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+                src={IconDownload}
+                className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
             />
             <img
                 onClick={() => onDeleteClick(signature)}
                 src={IconDelete}
-                className="size-4 shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
-            />
-            <img
-                onClick={() => onInfoClick(signature)}
-                src={IconInfo}
-                className="size-4 shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+                className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
             />
         </div>
     );
