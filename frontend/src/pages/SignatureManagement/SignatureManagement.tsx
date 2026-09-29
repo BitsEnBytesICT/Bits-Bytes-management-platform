@@ -80,13 +80,13 @@ export default function SignatureManagement() {
         {
             key: "firstname",
             label: "Naam",
-            sortable: false,
+            sortable: true,
             render: row => findParticipant(row.participantID)?.firstname ?? "-",
         },
         {
             key: "lastname",
             label: "Achternaam",
-            sortable: false,
+            sortable: true,
             render: row => findParticipant(row.participantID)?.lastname ?? "-",
         },
         {key: "clockinDate", label: "Ingeklokt", render: row => formatDate(row.clockinDate)},
