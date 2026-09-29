@@ -108,7 +108,7 @@ export default function SignatureManagement() {
                         className="h-10 max-w-full object-contain select-none [-webkit-user-drag:none]"
                     />
                 ) : (
-                    <span className="text-(--color-darkblue)/50">Nog geen handtekening</span>
+                    <span className="text-(--color-darkblue)/50">Niet ondertekend</span>
                 ),
         },
         {

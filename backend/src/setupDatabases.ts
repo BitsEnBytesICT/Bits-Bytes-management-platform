@@ -8,6 +8,9 @@ export const setupDatabase = () => {
         db.prepare('DELETE FROM Walls WHERE id > ?').run(-1);
         db.prepare('DELETE FROM Workplaces WHERE id > ?').run(-1);
         db.prepare('DELETE FROM Rooms WHERE id > ?').run(-1);
+        db.prepare('DELETE FROM Attendances WHERE id > ?').run(-1);
+        db.prepare('DELETE FROM SchedulesParticipants WHERE id > ?').run(-1);
+        db.prepare('DELETE FROM Schedules WHERE id > ?').run(-1);
         db.prepare('DELETE FROM Participants WHERE id > ?').run(-1);
         db.prepare('DELETE FROM Accounts WHERE id > ?').run(-1);
         db.prepare('DELETE FROM ApiKeys WHERE id > ?').run(-1);
