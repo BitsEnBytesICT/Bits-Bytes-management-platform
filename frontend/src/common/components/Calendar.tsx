@@ -25,7 +25,7 @@ export default function Calendar() {
                     className={`flex w-[200%] transition-transform duration-400 ease-in-out
                         ${active === 0 ? "translate-x-0" : "-translate-x-1/2"}`}>
                     {calendars.map(calendar => (
-                        <iframe key={calendar.label} className="h-100 w-1/2 border-0" src={calendar.url} />
+                        <iframe key={calendar.label} className="h-120 w-1/2 border-0" src={calendar.url} />
                     ))}
                 </div>
             </div>

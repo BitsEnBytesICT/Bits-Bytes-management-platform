@@ -26,7 +26,7 @@ const participantColumns: ITableColumn<IParticipant>[] = [
 
 export default function SupportDashboardTable({participants, setParticipants}: ISupportDashboardTable) {
     return (
-        <div className="max-h-112.5">
+        <div className="max-h-120">
             <Table
                 columns={participantColumns}
                 rows={participants}
