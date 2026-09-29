@@ -18,6 +18,8 @@ export {default as IconExport} from "./ui/icon-export.svg";
 export {default as IconDownload} from "./ui/icon-download.svg";
 export {default as IconLink} from "./ui/icon-link.svg";
 export {default as IconCalendar} from "./ui/icon-calendar.svg";
+export {default as IconCalendarAfter} from "./ui/icon-calendar-after.svg";
+export {default as IconCalendarBefore} from "./ui/icon-calendar-before.svg";
 export {default as IconProduct} from "./ui/icon-product.svg";
 export {default as IconEdit} from "./ui/icon-edit.svg";
 export {default as IconDelete} from "./ui/icon-delete.svg";

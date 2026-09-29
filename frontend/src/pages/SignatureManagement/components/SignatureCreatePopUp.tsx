@@ -1,21 +1,19 @@
 import {useState} from "react";
 import Button from "../../../common/components/Button";
 import PopUp from "../../../common/components/PopUp";
+import Input from "../../../common/components/Input";
 
 import type IParticipant from "../../../types/compontents/IParticipant";
 import SignatureManagementService from "../SignatureManagentService";
 import SignatureCanvasPopUp from "./SignatureCanvasPopUp";
+
+import {IconCalendarAfter, IconCalendarBefore} from "../../../assets";
 
 interface ISignatureCreatePopUp {
     participants: IParticipant[];
     onClose: () => void;
     onSaved?: () => Promise<void> | void;
 }
-
-const dateInputClassName = `px-[15px] py-3 font-normal text-(--color-offblack) bg-(--color-offwhite) outline-none
-    rounded-xl cursor-pointer transition-colors
-    shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
-    focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]`;
 
 export default function SignatureCreatePopUp({participants, onClose, onSaved}: ISignatureCreatePopUp) {
     const [participantID, setParticipantID] = useState("");
@@ -60,52 +58,41 @@ export default function SignatureCreatePopUp({participants, onClose, onSaved}: I
             child={
                 <>
                     <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-                        <div className="col-span-2 flex flex-col gap-2">
-                            <label
-                                className="ml-1.5 text-[16px] font-semibold text-(--color-darkblue)"
-                                htmlFor="participant">
-                                Deelnemer *
-                            </label>
-                            <select
-                                id="participant"
-                                value={participantID}
-                                onChange={e => setParticipantID(e.target.value)}
-                                className="px-5 py-3 text-[16px] text-(--color-offblack) bg-(--color-offwhite)
-                                    outline-none rounded-xl cursor-pointer transition-colors
-                                    shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
-                                    focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]">
-                                <option value="" disabled>
-                                    Kies een deelnemer
-                                </option>
-                                {participants.map(participant => (
-                                    <option key={participant.id} value={participant.id}>
-                                        {`${participant.firstname} ${participant.lastname}`}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <label className="flex flex-col gap-2 text-[16px] font-semibold text-(--color-darkblue)">
-                            <span className="ml-1.5">Ingeklokt *</span>
-                            <input
-                                id="clockinDate"
-                                type="datetime-local"
-                                value={clockinDate}
-                                max={clockoutDate || undefined}
-                                onChange={e => setClockinDate(e.target.value)}
-                                className={dateInputClassName}
-                            />
-                        </label>
-                        <label className="flex flex-col gap-2 text-[16px] font-semibold text-(--color-darkblue)">
-                            <span className="ml-1.5">Uitgeklokt *</span>
-                            <input
-                                id="clockoutDate"
-                                type="datetime-local"
-                                value={clockoutDate}
-                                min={clockinDate || undefined}
-                                onChange={e => setClockoutDate(e.target.value)}
-                                className={dateInputClassName}
-                            />
-                        </label>
+                        <Input
+                            id="participant"
+                            type="select"
+                            label="Deelnemer"
+                            required
+                            className="col-span-2"
+                            placeholder="Kies een deelnemer"
+                            options={participants.map(participant => ({
+                                value: String(participant.id),
+                                label: `${participant.firstname} ${participant.lastname}`,
+                            }))}
+                            value={participantID}
+                            onChange={setParticipantID}
+                        />
+                        <Input
+                            id="clockinDate"
+                            type="datetime-local"
+                            label="Ingeklokt"
+                            required
+                            value={clockinDate}
+                            max={clockoutDate || undefined}
+                            icon={IconCalendarAfter}
+                            onChange={setClockinDate}
+                        />
+
+                        <Input
+                            id="clockoutDate"
+                            type="datetime-local"
+                            label="Uitgeklokt"
+                            required
+                            value={clockoutDate}
+                            min={clockinDate || undefined}
+                            icon={IconCalendarBefore}
+                            onChange={setClockoutDate}
+                        />
                     </div>
 
                     <div className="flex flex-col gap-2">

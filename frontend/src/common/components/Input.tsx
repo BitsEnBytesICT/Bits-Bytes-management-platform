@@ -77,6 +77,51 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
                     />
                 </div>
             );
+        case "date":
+        case "datetime-local":
+            return (
+                <div className="flex flex-col gap-2">
+                    {props.label && (
+                        <label
+                            className={props.labelClassName ?? "ml-1.5 font-semibold text-(--color-darkblue)"}
+                            htmlFor={props.id}>
+                            {`${props.label} ${props.required ? "*" : ""}`}
+                        </label>
+                    )}
+
+                    <div className="relative">
+                        <input
+                            id={props.id}
+                            type={props.type}
+                            value={props.value}
+                            min={props.min}
+                            max={props.max}
+                            readOnly={props.readOnly}
+                            required={props.required}
+                            ref={ref as ForwardedRef<HTMLInputElement>}
+                            onChange={e => props.onChange?.(e.target.value)}
+                            className={
+                                props.className ??
+                                `px-[15px] py-3 w-full bg-(--color-offwhite) outline-none rounded-xl
+                                transition-colors focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]
+                                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
+                                ${props.readOnly ? "cursor-default" : "cursor-pointer"}
+                                [&::-webkit-calendar-picker-indicator]:size-5
+                                [&::-webkit-calendar-picker-indicator]:cursor-pointer
+                                ${props.icon ? "[&::-webkit-calendar-picker-indicator]:opacity-0" : ""}`
+                            }
+                        />
+
+                        {props.icon && (
+                            <img
+                                src={props.icon}
+                                className="absolute right-[15px] top-1/2 -translate-y-1/2 size-[18px]
+                                    pointer-events-none select-none [-webkit-user-drag:none]"
+                            />
+                        )}
+                    </div>
+                </div>
+            );
         case "text":
         case "password":
             return (
