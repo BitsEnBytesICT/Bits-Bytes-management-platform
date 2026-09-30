@@ -28,6 +28,16 @@ interface TextareaInput extends InputBase {
     onChange?: (input: string) => void;
 }
 
+interface DateInput extends InputBase {
+    type: "date" | "datetime-local";
+    value?: string;
+    min?: string;
+    max?: string;
+    icon?: string;
+    iconClassName?: string;
+    onChange?: (input: string) => void;
+}
+
 interface SelectInput extends InputBase {
     type: "select";
     options: {label: string; value: string}[];
@@ -36,6 +46,6 @@ interface SelectInput extends InputBase {
     onChange?: (input: string) => void;
 }
 
-type IInput = CheckboxInput | TextInput | TextareaInput | SelectInput;
+type IInput = CheckboxInput | TextInput | TextareaInput | DateInput | SelectInput;
 
 export type {IInput as default};

@@ -8,6 +8,9 @@ export const setupDatabase = () => {
         db.prepare('DELETE FROM Walls WHERE id > ?').run(-1);
         db.prepare('DELETE FROM Workplaces WHERE id > ?').run(-1);
         db.prepare('DELETE FROM Rooms WHERE id > ?').run(-1);
+        db.prepare('DELETE FROM Attendances WHERE id > ?').run(-1);
+        db.prepare('DELETE FROM SchedulesParticipants WHERE id > ?').run(-1);
+        db.prepare('DELETE FROM Schedules WHERE id > ?').run(-1);
         db.prepare('DELETE FROM Participants WHERE id > ?').run(-1);
         db.prepare('DELETE FROM Accounts WHERE id > ?').run(-1);
         db.prepare('DELETE FROM ApiKeys WHERE id > ?').run(-1);
@@ -28,6 +31,10 @@ export const setupDatabase = () => {
         db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Jan', 'de Vries', 'WMO', 3, '11F3EF12', now, 1, 0, 'Develop');
         db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Maria', 'Jansen', 'Orionis', 4, 'E1C7A710', now, 1, 1, 'Zorg');
         db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Peter', 'Bakker', 'Gemeente', 5, '98765432', now, 1, 0, 'Dagbesteding');
+
+        db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100)
+        db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100)
+        db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100)
 
         const roomResult = db.prepare("INSERT INTO Rooms (name, width, height, scale) VALUES (?, ?, ?, ?)").run('Gymzaal', 21000, 7000, 16);
         const roomId = Number(roomResult.lastInsertRowid);
