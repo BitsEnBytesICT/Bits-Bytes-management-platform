@@ -3,7 +3,7 @@ import type {ReactNode} from "react";
 
 import Filter from "../../../common/components/Filter";
 
-import {formatDate} from "../../../common/helperFunctions";
+import {formatDate, isSvg} from "../../../common/helperFunctions";
 import useLocalStorage from "../../../common/hooks/useLocalStorage";
 
 import type IAttendance from "../../../types/compontents/IAttendance";
@@ -62,7 +62,7 @@ export default function SignaturesFilter({
                 name,
                 formatDate(signature.clockinDate),
                 formatDate(signature.clockoutDate),
-                signature.workDuration,
+                signature.workDuration != null ? `${signature.workDuration} min` : "-",
             ].some(value =>
                 String(value ?? "")
                     .toLowerCase()
@@ -71,8 +71,8 @@ export default function SignaturesFilter({
 
         const matchesParticipant = !participantFilter || name === participantFilter;
         const matchesSigned =
-            !signedFilter || (signature.signature ? "Ondertekend" : "Niet ondertekend") === signedFilter;
-        const matchesStatus = !statusFilter || (signature.clockoutDate ? "Uitgeklokt" : "Ingeklokt") === statusFilter;
+            !signedFilter || (isSvg(signature.signature) ? "Ondertekend" : "Niet ondertekend") === signedFilter;
+        const matchesStatus = !statusFilter || (signature.clockoutDate ? "Afwezig" : "Aanwezig") === statusFilter;
 
         const day = toDayKey(signature.clockinDate);
         const matchesDate = (!dateRange.from || day >= dateRange.from) && (!dateRange.to || day <= dateRange.to);
@@ -114,7 +114,7 @@ export default function SignaturesFilter({
         },
         {
             label: "Status",
-            options: ["Ingeklokt", "Uitgeklokt"],
+            options: ["Aanwezig", "Afwezig"],
             value: statusFilter,
             onChange: setStatusFilter,
         },

@@ -2,6 +2,8 @@ export const assertNever = (x: never): never => {
     throw new Error("Unexpected value: " + x);
 };
 
+export const isSvg = (signature?: string): boolean => signature?.trimStart().startsWith("<svg") ?? false;
+
 // the backend stores dates as UTC strings without timezone ("YYYY-MM-DD HH:mm:ss")
 export const fromBackendDate = (value: string): Date => new Date(`${value.replace(" ", "T")}Z`);
 

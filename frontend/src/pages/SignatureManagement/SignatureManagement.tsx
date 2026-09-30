@@ -12,7 +12,7 @@ import type {ITableColumn} from "../../types/compontents/ITable";
 
 import {IconAddUser, IconDelete, IconDownload, IconEdit, IconExport, IconFilter, IconInfo} from "../../assets";
 import {downloadPDF} from "../../common/buildPDF";
-import {formatDate, fromBackendDate} from "../../common/helperFunctions";
+import {formatDate, fromBackendDate, isSvg} from "../../common/helperFunctions";
 import useLocalStorage from "../../common/hooks/useLocalStorage";
 import http from "../../common/http";
 import ParticipantsService from "../Participants/Participants.service";
@@ -23,8 +23,6 @@ import SignaturesFilter from "./components/SignaturesFilter";
 import SignaturesPDF from "./components/SignaturesPDF";
 
 type AttendanceRow = IAttendance & {checked: boolean};
-
-const isSvg = (signature?: string) => signature?.trimStart().startsWith("<svg") ?? false;
 
 function ActionIcons(
     signature: IAttendance,
