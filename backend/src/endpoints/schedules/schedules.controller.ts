@@ -33,4 +33,10 @@ export default class ScheduleController {
         await this.service.update(req.body.where, ...req.body.values);
         res.sendStatus(200);
     }
+
+    @AuthenticationDecorator(PermissionsList.scheduleDelete)
+    async delete (req: Request, res: Response) {
+        await this.service.delete(req.body.id);
+        res.sendStatus(200);
+    }
 }

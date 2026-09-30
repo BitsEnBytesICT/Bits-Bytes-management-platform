@@ -79,6 +79,7 @@ export default function ParticipantpopUpFloorplans({
                         <Input
                             id={`${index}`}
                             type="checkbox"
+                            readOnly={currentParticipants !== undefined && currentParticipants[index] !== undefined}
                             label={
                                 currentParticipants && currentParticipants[index]
                                     ? `${currentParticipants[index].firstname} ${currentParticipants[index].lastname}`

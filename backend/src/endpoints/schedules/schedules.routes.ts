@@ -15,6 +15,7 @@ class ScheduleRouter {
         this.router.post("/api/schedules/findOne", this.controller.findOne.bind(this.controller));
         this.router.post("/api/schedules/create", this.controller.create.bind(this.controller));
         this.router.post("/api/schedules/update", this.controller.update.bind(this.controller));
+        this.router.delete('/api/schedules/delete', this.controller.delete.bind(this.controller));
     }
 
     getRouter() {

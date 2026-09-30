@@ -114,7 +114,7 @@ export default function FloorPlans<T>({
             clearTimeout(timer);
             observer.disconnect();
         };
-    }, [rooms, workplaces, walls, currentDay]);
+    }, [rooms, workplaces, walls, currentDay, currentEditedScedule]);
 
     function onMouseHover(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
         const canvas = e.currentTarget;

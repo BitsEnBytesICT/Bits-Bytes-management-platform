@@ -99,17 +99,25 @@ export default function FloorplansPopUp({
                                 );
                             }
 
-                            if (index === 0) currentWorkplace.timeslots[currentDay].Ochtend = value;
-                            else if (index === 1) currentWorkplace.timeslots[currentDay].Middag = value;
-
                             const updatedWorkplace = {
                                 ...currentWorkplace,
-                                timeslots: currentWorkplace.timeslots,
+                                timeslots: currentWorkplace.timeslots.map((slots, day) =>
+                                    day === currentDay ? {...slots, [timeslot]: value} : slots,
+                                ),
                             };
 
-                            const updatedWorkplaces = workplaces.map(workplace =>
-                                workplace.id === updatedWorkplace.id ? updatedWorkplace : workplace,
-                            );
+                            const updatedWorkplaces = workplaces.map(workplace => {
+                                if (workplace.id === updatedWorkplace.id) return updatedWorkplace;
+                                if (value !== "Vrij" && workplace.timeslots[currentDay][timeslot] === value) {
+                                    return {
+                                        ...workplace,
+                                        timeslots: workplace.timeslots.map((slots, day) =>
+                                            day === currentDay ? {...slots, [timeslot]: "Vrij"} : slots,
+                                        ),
+                                    };
+                                }
+                                return workplace;
+                            });
 
                             setCurrentWorkplace(updatedWorkplace);
                             setWorkplaces(updatedWorkplaces);

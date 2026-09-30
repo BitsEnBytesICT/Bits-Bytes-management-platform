@@ -1,13 +1,13 @@
+import serviceBase from "../../common/serviceBase";
 import { KeyValuePair, ValidatorTuple } from "../../common/Validator";
 import { ErrorCodes } from "../../types/error/ErrorCodes";
 import IError from "../../types/error/IError";
 import ISchedule from "../../types/schedules/ISchedule";
 import { partialScheduleValidator, scheduleValidator, scheduleValidatorFunctors } from "../../validators/scheduleValidator";
 import ParticipantService from "../participants/participants.service";
-import WorkplaceService from "../workplaces/workplaces.service";
 import ScheduleDao from "./schedules.dao";
 
-export default class ScheduleService {
+export default class ScheduleService implements serviceBase<ISchedule> {
     dao: ScheduleDao;
     private participantService: ParticipantService;
 

@@ -72,6 +72,14 @@ export default class ParticipantsService {
         else return await response.json();
     };
 
+    deleteScedule = async (id: number) => {
+        const response = await http("/api/schedules/delete", "DELETE", {
+            id: id,
+        });
+        if (response.status === 200) return [];
+        return await response.json();
+    };
+
     updateParticipant = async (where: KeyValuePair<IParticipant>, ...values: KeyValuePair<IParticipant>[]) => {
         const response = await http("/api/participants/update", "POST", {
             where: where,

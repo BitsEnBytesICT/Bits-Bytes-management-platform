@@ -1,10 +1,10 @@
-import { daoBase } from "../../common/daoBase";
+import { daoBase, daoBaseType } from "../../common/daoBase";
 import { dbAll } from "../../common/db";
 import { KeyValuePair } from "../../common/Validator";
 import ISchedule from "../../types/schedules/ISchedule";
 import { Tables } from "../../types/tables/tablesList";
 
-export default class ScheduleDao extends daoBase<ISchedule> {
+export default class ScheduleDao extends daoBase<ISchedule> implements daoBaseType<ISchedule> {
     async create(schedule: ISchedule): Promise<void> {
         const values = Object.entries(schedule).filter(([, value]) => value !== undefined) as KeyValuePair<ISchedule>[];
         await this.createFunc(Tables.Schedules, ...values);

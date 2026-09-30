@@ -17,6 +17,7 @@ export enum PermissionsList {
     scheduleList = "schedule.list",
     scheduleCreate = "schedule.create",
     scheduleUpdate = "schedule.update",
+    scheduleDelete = "schedule.delete",
     wallList = "wall.list",
     workplaceList = "workplace.list",
 }

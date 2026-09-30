@@ -33,7 +33,7 @@ export default function PopUp({onClose, title, children, button, errors}: IPopUp
                                 </span>
                             ))}
                     </div>
-                    <div className="mt-auto flex gap-x-3">
+                    <div className="mt-auto flex gap-x-6">
                         {page > 0 && (
                             <Button
                                 onClick={() => {
