@@ -4,26 +4,27 @@ import Button from "../Button";
 import Input from "../Input";
 import PopUp from "../PopUp";
 
-import CalendarService from "./Calendar.service";
+import ShortcutService from "./Shortcut.service";
 
-import type ICalendar from "../../../types/accounts/ICalendar";
-import type ICalendarPopUp from "../../../types/compontents/ICalendarPopUp";
+import type IShortcut from "../../../types/accounts/IShortcut";
+import type IShortcutPopUp from "../../../types/compontents/IShortcutPopUp";
 
 import {IconDelete, IconEdit} from "../../../assets";
 
-export default function CalendarPopUp({calendars, onClose, onSaved}: ICalendarPopUp) {
+export default function ShortcutPopUp({shortcuts, onClose, onSaved}: IShortcutPopUp) {
     const [editIndex, setEditIndex] = useState<number>();
     const [label, setLabel] = useState("");
     const [url, setUrl] = useState("");
     const [errors, setErrors] = useState<string[]>([]);
 
-    const service = new CalendarService();
+    const service = new ShortcutService();
+
     const isEditing = editIndex !== undefined;
 
     function openForm(index?: number) {
-        setLabel(index === undefined ? "" : calendars[index].label);
-        setUrl(index === undefined ? "" : calendars[index].url);
-        setEditIndex(index ?? calendars.length);
+        setLabel(index === undefined ? "" : shortcuts[index].label);
+        setUrl(index === undefined ? "" : shortcuts[index].url);
+        setEditIndex(index ?? shortcuts.length);
         setErrors([]);
     }
 
@@ -32,8 +33,8 @@ export default function CalendarPopUp({calendars, onClose, onSaved}: ICalendarPo
         setErrors([]);
     }
 
-    async function store(updated: ICalendar[]) {
-        const result = await service.updateCalendars(updated);
+    async function store(updated: IShortcut[]): Promise<void> {
+        const result = await service.updateShortcuts(updated);
         if (result) {
             setErrors(result);
             return;
@@ -44,7 +45,7 @@ export default function CalendarPopUp({calendars, onClose, onSaved}: ICalendarPo
         setErrors([]);
     }
 
-    async function save() {
+    async function handleSave(): Promise<void> {
         if (!label || !url) {
             setErrors(["Naam en link zijn verplicht"]);
             return;
@@ -55,7 +56,7 @@ export default function CalendarPopUp({calendars, onClose, onSaved}: ICalendarPo
             return;
         }
 
-        const updated = [...calendars];
+        const updated = [...shortcuts];
         updated[editIndex!] = {label: label, url: url};
 
         await store(updated);
@@ -64,13 +65,13 @@ export default function CalendarPopUp({calendars, onClose, onSaved}: ICalendarPo
     return (
         <PopUp
             onClose={onClose}
-            title="Agenda's beheren"
+            title="Snelkoppelingen beheren"
             child={
                 isEditing ? (
                     <div className="flex flex-col justify-between grow">
                         <div className="flex flex-col gap-7">
                             <Input
-                                id="calendarLabel"
+                                id="shortcutLabel"
                                 type="text"
                                 label="Naam"
                                 required
@@ -79,11 +80,11 @@ export default function CalendarPopUp({calendars, onClose, onSaved}: ICalendarPo
                             />
 
                             <Input
-                                id="calendarUrl"
+                                id="shortcutUrl"
                                 type="text"
                                 label="Link"
                                 required
-                                placeholder="https://calendar.google.com/calendar/embed?src=..."
+                                placeholder="https://www.voorbeeld.nl"
                                 value={url}
                                 onChange={setUrl}
                             />
@@ -102,22 +103,22 @@ export default function CalendarPopUp({calendars, onClose, onSaved}: ICalendarPo
                         <div className="flex flex-col gap-3">
                             <Button onClick={closeForm}>Terug</Button>
 
-                            <Button onClick={save}>Opslaan</Button>
+                            <Button onClick={handleSave}>Opslaan</Button>
                         </div>
                     </div>
                 ) : (
-                    <div className="flex flex-col gap-7 grow">
+                    <div className="flex flex-col justify-between grow">
                         <div className="flex flex-col gap-3 max-h-100 overflow-auto">
-                            {calendars.map((calendar, index) => (
+                            {shortcuts.map((shortcut, index) => (
                                 <div
-                                    key={calendar.url}
+                                    key={shortcut.url}
                                     className="px-[15px] py-3 flex flex-row gap-4 items-center bg-(--color-offwhite)
                                         rounded-xl
                                         shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
                                     <span
                                         className="min-w-0 grow font-semibold text-(--color-darkblue) truncate
                                             select-none">
-                                        {calendar.label}
+                                        {shortcut.label}
                                     </span>
 
                                     <img
@@ -128,7 +129,7 @@ export default function CalendarPopUp({calendars, onClose, onSaved}: ICalendarPo
                                     />
 
                                     <img
-                                        onClick={() => store(calendars.filter((_, i) => i !== index))}
+                                        onClick={() => store(shortcuts.filter((_, i) => i !== index))}
                                         src={IconDelete}
                                         title="Verwijderen"
                                         className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
@@ -136,8 +137,8 @@ export default function CalendarPopUp({calendars, onClose, onSaved}: ICalendarPo
                                 </div>
                             ))}
 
-                            {calendars.length === 0 && (
-                                <div className="text-(--color-darkblue)/50">Nog geen agenda's toegevoegd</div>
+                            {shortcuts.length === 0 && (
+                                <div className="text-(--color-darkblue)/50">Nog geen snelkoppelingen toegevoegd</div>
                             )}
                         </div>
 
@@ -149,9 +150,7 @@ export default function CalendarPopUp({calendars, onClose, onSaved}: ICalendarPo
                             </div>
                         )}
 
-                        <div className="mt-auto">
-                            <Button onClick={() => openForm()}>Agenda toevoegen</Button>
-                        </div>
+                        <Button onClick={() => openForm()}>Snelkoppeling toevoegen</Button>
                     </div>
                 )
             }

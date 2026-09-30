@@ -19,6 +19,8 @@ class AccountRouter {
         this.router.post('/api/account/update', this.controller.update.bind(this.controller));
         this.router.post('/api/account/calendars', this.controller.calendars.bind(this.controller));
         this.router.post('/api/account/calendars/update', this.controller.updateCalendars.bind(this.controller));
+        this.router.post('/api/account/shortcuts', this.controller.shortcuts.bind(this.controller));
+        this.router.post('/api/account/shortcuts/update', this.controller.updateShortcuts.bind(this.controller));
     }
 
     getRouter() {

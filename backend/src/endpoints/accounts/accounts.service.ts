@@ -3,6 +3,7 @@ import serviceBase from "../../common/serviceBase";
 import { KeyValuePair, ValidatorTuple } from "../../common/Validator";
 import IAccount from "../../types/accounts/IAccount";
 import ICalendar from "../../types/accounts/ICalendar";
+import IShortcut from "../../types/accounts/IShortcut";
 import { ErrorCodes } from "../../types/error/ErrorCodes";
 import IError from "../../types/error/IError";
 import { AccountValidator, accountValidatorFunctors, partialAccountValidator } from "../../validators/accountValidator";
@@ -84,6 +85,16 @@ export default class AccountService implements serviceBase<IAccount> {
     async updateCalendars(token: string, calendars: ICalendar[]) {
         const account = await this.current(token);
         await this.update(["id", account.id], ["calendars", calendars]);
+    }
+
+    async shortcuts(token: string): Promise<IShortcut[]> {
+        const account = await this.current(token);
+        return account.shortcuts ?? [];
+    }
+
+    async updateShortcuts(token: string, shortcuts: IShortcut[]) {
+        const account = await this.current(token);
+        await this.update(["id", account.id], ["shortcuts", shortcuts]);
     }
 
     async current(token: string): Promise<IAccount> {

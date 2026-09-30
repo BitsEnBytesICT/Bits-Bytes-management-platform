@@ -1,5 +1,5 @@
-import http from "../http";
-import type ICalendar from "../../types/accounts/ICalendar";
+import http from "../../http";
+import type ICalendar from "../../../types/accounts/ICalendar";
 
 export default class CalendarService {
     getCalendars = async (): Promise<ICalendar[]> => {

@@ -1,13 +1,13 @@
 import {useEffect, useState} from "react";
 
-import SmallButton from "./SmallButton";
+import SmallButton from "../SmallButton";
 import CalendarPopUp from "./CalendarPopUp";
 
 import CalendarService from "./Calendar.service";
 
-import type ICalendar from "../../types/accounts/ICalendar";
+import type ICalendar from "../../../types/accounts/ICalendar";
 
-import {IconCalendar, IconEdit} from "../../assets";
+import {IconCalendar, IconEdit} from "../../../assets";
 
 export default function Calendar() {
     const [calendars, setCalendars] = useState<ICalendar[]>([]);

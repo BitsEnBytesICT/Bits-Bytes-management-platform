@@ -33,6 +33,12 @@ export const setupDatabase = () => {
         ]);
         db.prepare("UPDATE Accounts SET calendars = ? WHERE type = ?").run(calendars, 'support');
 
+        const shortcuts = JSON.stringify([
+            { label: 'Cliendo', url: 'https://www.cliendo.nl' },
+            { label: 'ZilliZ', url: 'https://zilliz.com' },
+        ]);
+        db.prepare("UPDATE Accounts SET shortcuts = ? WHERE type = ?").run(shortcuts, 'support');
+
         const now = getCurrentDate();
         db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Jan', 'de Vries', 'WMO', 3, '11F3EF12', now, 1, 0, 'Develop');
         db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Maria', 'Jansen', 'Orionis', 4, 'E1C7A710', now, 1, 1, 'Zorg');
