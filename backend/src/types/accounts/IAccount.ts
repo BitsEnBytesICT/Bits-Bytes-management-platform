@@ -1,4 +1,5 @@
 import { Roles } from "../permissions/rolesList";
+import ICalendar from "./ICalendar";
 import { PermissionsList } from "./accountTypes";
 
 export default interface IAccount {
@@ -8,5 +9,6 @@ export default interface IAccount {
     lastname: string,
     username: string,
     role: Roles,
-    password: string
+    password: string,
+    calendars?: ICalendar[]
 }

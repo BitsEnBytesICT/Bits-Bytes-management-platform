@@ -38,4 +38,16 @@ export default class AccountController {
         await this.service.update(req.body.where, ...req.body.values);
         res.sendStatus(200);
     }
+
+    @AuthenticationDecorator("account.current")
+    async calendars (req: Request, res: Response) {
+        const calendars = await this.service.calendars(req.cookies["login"]);
+        res.status(200).json(calendars);
+    }
+
+    @AuthenticationDecorator("account.update")
+    async updateCalendars (req: Request, res: Response) {
+        await this.service.updateCalendars(req.cookies["login"], req.body.calendars);
+        res.sendStatus(200);
+    }
 }
