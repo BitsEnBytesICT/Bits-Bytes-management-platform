@@ -100,23 +100,23 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
                             required={props.required}
                             ref={ref as ForwardedRef<HTMLInputElement>}
                             onChange={e => props.onChange?.(e.target.value)}
-                            className={
+                            className={`${
                                 props.className ??
-                                `px-[15px] py-3 w-full bg-(--color-offwhite) outline-none rounded-xl
-                                transition-colors focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]
-                                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
-                                ${props.readOnly ? "cursor-default" : "cursor-pointer"}
-                                [&::-webkit-calendar-picker-indicator]:size-5
-                                [&::-webkit-calendar-picker-indicator]:cursor-pointer
-                                ${props.icon ? "[&::-webkit-calendar-picker-indicator]:opacity-0" : ""}`
-                            }
+                                `px-[15px] py-3 bg-(--color-offwhite) rounded-xl
+                                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`
+                            } w-full outline-none transition-colors
+                            focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]
+                            ${props.readOnly ? "cursor-default" : "cursor-pointer"}
+                            [&::-webkit-calendar-picker-indicator]:size-5
+                            [&::-webkit-calendar-picker-indicator]:cursor-pointer
+                            ${props.icon ? "[&::-webkit-calendar-picker-indicator]:opacity-0" : ""}`}
                         />
 
                         {props.icon && (
                             <img
                                 src={props.icon}
-                                className="absolute right-[15px] top-1/2 -translate-y-1/2 size-[18px]
-                                    pointer-events-none select-none [-webkit-user-drag:none]"
+                                className={`absolute right-[15px] top-1/2 -translate-y-1/2 size-[18px]
+                                    pointer-events-none select-none [-webkit-user-drag:none] ${props.iconClassName ?? ""}`}
                             />
                         )}
                     </div>
@@ -174,7 +174,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
                             input: () => "text-(--color-darkblue)",
                             dropdownIndicator: () => "text-(--color-darkblue)",
                             menu: () =>
-                                `py-2 text-(--color-darkblue) bg-(--color-white) rounded-xl shadow-lg overflow-hidden
+                                `py-2 text-(--color-darkblue) bg-(--color-white) rounded-xl overflow-hidden
                                 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`,
                             option: ({isFocused, isSelected}) =>
                                 `px-[15px] py-2 cursor-pointer transition-colors duration-300 ease-in-out ${

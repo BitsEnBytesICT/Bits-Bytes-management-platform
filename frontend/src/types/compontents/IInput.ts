@@ -34,6 +34,7 @@ interface DateInput extends InputBase {
     min?: string;
     max?: string;
     icon?: string;
+    iconClassName?: string;
     onChange?: (input: string) => void;
 }
 
