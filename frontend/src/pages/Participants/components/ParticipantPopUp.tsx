@@ -361,32 +361,32 @@ export default function ParticipantPopUp({
                     {toggleScheduleScreen && (
                         <>
                             <div className="flex flex-col py-5">
-                                <label htmlFor="startDate">start datum</label>
-                                <input
+                                <Input
+                                    id="startDate"
+                                    label="vanaf"
                                     type="datetime-local"
+                                    required={true}
                                     value={toDateString(currentScedule.startDate)}
-                                    onChange={item => {
+                                    onChange={value => {
+                                        console.log(value);
                                         setCurrentScedule({
                                             ...currentScedule,
-                                            startDate: fromDateString(item.target.value),
+                                            startDate: fromDateString(value),
                                         });
-                                    }}
-                                    id="startDate"
-                                    name="startDate"></input>
+                                    }}></Input>
                             </div>
                             <div className="flex flex-col py-5">
-                                <label htmlFor="endDate">eind datum</label>
-                                <input
-                                    type="datetime-local"
+                                <Input
                                     id="endDate"
-                                    name="endDate"
+                                    type="datetime-local"
+                                    label="tot en met"
                                     value={toDateString(currentScedule.endDate)}
-                                    onChange={item => {
+                                    onChange={value => {
                                         setCurrentScedule({
                                             ...currentScedule,
-                                            endDate: fromDateString(item.target.value),
+                                            endDate: fromDateString(value),
                                         });
-                                    }}></input>
+                                    }}></Input>
                             </div>
                         </>
                     )}

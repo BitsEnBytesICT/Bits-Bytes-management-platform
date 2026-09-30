@@ -8,6 +8,8 @@ export enum PermissionsList {
     attendanceScan = "attendance.scan",
     attendanceList = "attendance.list",
     attendanceDelete = "attendance.delete",
+    attendanceCreate = "attendance.create",
+    attendanceUpdate = "attendance.update",
     attendanceClockIn = "attendance.clock_in",
     participantList = "participant.list",
     participantCreate = "participant.create",

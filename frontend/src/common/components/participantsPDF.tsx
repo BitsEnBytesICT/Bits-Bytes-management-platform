@@ -81,7 +81,6 @@ export default function ParticipantsPDF({data}: IParticipantsPDF) {
             right: PADDING_X,
         },
         name: {
-            fontWeight: "bold",
             marginBottom: 12,
         },
         row: {

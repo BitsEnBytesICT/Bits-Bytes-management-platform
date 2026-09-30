@@ -5,8 +5,9 @@ import type ISchedule from './types/schedules/ISchedule';
 
 export const setupDatabase = () => {
     const db = new Database('database.db', { verbose: console.log });
-    db.prepare('DELETE FROM Walls WHERE id > ?').run(-1);
+    
     db.prepare('DELETE FROM Schedules WHERE id > ?').run(-1);
+    db.prepare('DELETE FROM Walls WHERE id > ?').run(-1);
     db.prepare('DELETE FROM Workplaces WHERE id > ?').run(-1);
     db.prepare('DELETE FROM Rooms WHERE id > ?').run(-1);
     db.prepare('DELETE FROM Attendances WHERE id > ?').run(-1);
@@ -45,6 +46,10 @@ export const setupDatabase = () => {
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Milan', 'Dekker', 'Gemeente', 11, 'A1B2C306', now, 1, 0, 'Dagbesteding');
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Lotte', 'van Dijk', 'WMO', 12, 'A1B2C307', now, 1, 0, 'Develop');
 
+    db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100);
+    db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100);
+    db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100);
+    
     const roomResult = db.prepare("INSERT INTO Rooms (name, width, height, scale) VALUES (?, ?, ?, ?)").run('Gymzaal', 21000, 7000, 16);
     const roomId = Number(roomResult.lastInsertRowid);
     const quietRoomResult = db.prepare("INSERT INTO Rooms (name, width, height, scale) VALUES (?, ?, ?, ?)").run('Stilte ruimte', 7000, 7000, 16);

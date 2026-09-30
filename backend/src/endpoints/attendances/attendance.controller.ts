@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import AuthenticationDecorator from '../../common/authenticationDecorator';
 import { PermissionsList } from '../../types/permissions/permissionsList';
 import ScanService from './attendance.service';
+import IAttendance from '../../types/attendance/IAttendance';
+import { KeyValuePair } from '../../common/Validator';
 
 export default class AttendanceController {
     private service: ScanService;
@@ -34,9 +36,39 @@ export default class AttendanceController {
         res.sendStatus(200);
     }
 
+    @AuthenticationDecorator(PermissionsList.attendanceDelete)
+    async deleteMany (req: Request, res: Response) {
+        await this.service.deleteMany(req.body.ids);
+        res.sendStatus(200);
+    }
+    
     @AuthenticationDecorator(PermissionsList.attendanceClockIn)
     async create(req: Request, res: Response) {
         await this.service.create(req.body.rfid_uid, req.body.signature);
+        res.sendStatus(200);
+    }
+
+    @AuthenticationDecorator(PermissionsList.attendanceCreate)
+    async createManual(req: Request, res: Response) {
+        const { participantID, clockinDate, clockoutDate, signature } = req.body;
+        await this.service.createManual({ participantID, clockinDate, clockoutDate, signature });
+        res.sendStatus(200);
+    }
+
+    @AuthenticationDecorator(PermissionsList.attendanceUpdate)
+    async update(req: Request, res: Response) {
+        const { id, signature } = req.body;
+
+        if (id == null || signature == null) {
+            res.status(400).json(["id en signature zijn verplicht"]);
+            return;
+        }
+
+        const signatureUpdate: Partial<IAttendance> = {
+            signature: signature
+        }
+
+        await this.service.update(["id", id], ...Object.entries(signatureUpdate) as KeyValuePair<IAttendance>[])
         res.sendStatus(200);
     }
 

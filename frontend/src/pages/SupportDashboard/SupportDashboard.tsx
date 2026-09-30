@@ -64,7 +64,6 @@ export default function SupportDashboard() {
 
                     <div className="flex flex-row gap-8 min-[1000px]:gap-16">
                         <Card title="Deelnemers aanwezig:" value={clockedin} />
-
                         <Card title="Deelnemers totaal:" value={totalParticipants} />
                     </div>
                 </div>
