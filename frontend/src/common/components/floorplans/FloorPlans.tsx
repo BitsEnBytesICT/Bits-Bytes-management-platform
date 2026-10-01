@@ -16,6 +16,7 @@ export default function FloorPlans<T>({
     participants,
     PopUpContent,
     dayButtons,
+    stacked,
     height,
     popupPropsExtra,
     currentEditedScedule,
@@ -169,29 +170,35 @@ export default function FloorPlans<T>({
             setShowPopUp(false);
     }
 
+    const roomButtons = (
+        <div className="flex flex-row flex-wrap gap-6">
+            {rooms &&
+                rooms.map((room, i) => (
+                    <SmallButton
+                        key={room.name}
+                        icon={<img className="select-none [-webkit-user-drag:none]" src={IconProduct} />}
+                        label={room.name}
+                        active={active === i}
+                        onClick={() => setActive(i)}
+                    />
+                ))}
+        </div>
+    );
+
+    const dayTabs = (dayButtons || dayButtons === undefined) && (
+        <Tabs
+            tabs={["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag"]}
+            active={currentDay}
+            onChange={setCurrentDay}
+            classNameExtra={stacked ? "grow justify-between" : undefined}
+        />
+    );
+
     return (
         <div className="flex flex-col gap-4 animate-[fade-in_0.3s_ease-in-out]">
             <div className="flex justify-between flex-wrap gap-y-3">
-                <div className="flex flex-row gap-6">
-                    {rooms &&
-                        rooms.map((room, i) => (
-                            <SmallButton
-                                key={room.name}
-                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconProduct} />}
-                                label={room.name}
-                                active={active === i}
-                                onClick={() => setActive(i)}
-                            />
-                        ))}
-                </div>
-
-                {(dayButtons || dayButtons === undefined) && (
-                    <Tabs
-                        tabs={["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag"]}
-                        active={currentDay}
-                        onChange={setCurrentDay}
-                    />
-                )}
+                {!stacked && roomButtons}
+                {dayTabs}
             </div>
 
             <div className="relative">
@@ -239,6 +246,8 @@ export default function FloorPlans<T>({
                     </div>
                 )}
             </div>
+
+            {stacked && roomButtons}
         </div>
     );
 }

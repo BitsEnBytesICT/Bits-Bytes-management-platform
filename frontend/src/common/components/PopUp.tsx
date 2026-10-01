@@ -4,7 +4,7 @@ import {IconClose} from "../../assets";
 import {useState} from "react";
 import Button from "./Button";
 
-export default function PopUp({onClose, title, children, button, errors}: IPopUp) {
+export default function PopUp({onClose, onPrevious, title, children, button, errors}: IPopUp) {
     const [page, setPage] = useState(0);
 
     return (
@@ -37,9 +37,10 @@ export default function PopUp({onClose, title, children, button, errors}: IPopUp
                         {page > 0 && (
                             <Button
                                 onClick={() => {
+                                    if (onPrevious) return onPrevious();
                                     setPage(page - 1);
                                 }}>
-                                {"vorige"}
+                                {"Vorige"}
                             </Button>
                         )}
                         {page < children.length - 1 && (

@@ -9,6 +9,7 @@ export default interface IFloorPlans<T> {
     participants: IParticipantWithSchedules[];
     PopUpContent?: ComponentType<FloorplansPopUp<NoInfer<T>>>;
     dayButtons?: boolean;
+    stacked?: boolean;
     popupPropsExtra?: T;
     height?: string;
     currentEditedScedule?: ISchedule;
