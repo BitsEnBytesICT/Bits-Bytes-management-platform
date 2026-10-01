@@ -29,7 +29,7 @@ export default function Calendar() {
     return (
         <div className="flex flex-col gap-4">
             <div className="overflow-hidden">
-                {calendars.length > 0 ? (
+                {calendars.length > 0 && (
                     <div
                         style={{
                             width: `${calendars.length * 100}%`,
@@ -44,13 +44,6 @@ export default function Calendar() {
                                 src={calendar.url}
                             />
                         ))}
-                    </div>
-                ) : (
-                    <div
-                        className="flex items-center justify-center h-120 w-full text-(--color-darkblue)/50
-                            bg-(--color-white) rounded-lg
-                            shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
-                        Nog geen agenda's toegevoegd
                     </div>
                 )}
             </div>
