@@ -3,4 +3,5 @@ export default interface ISmallPopUp {
     message: string;
     onConfirm: () => void;
     onCancel: () => void;
+    nested?: boolean;
 }

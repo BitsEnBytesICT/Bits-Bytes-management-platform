@@ -8,6 +8,9 @@ export const setupDatabase = () => {
         db.prepare('DELETE FROM Walls WHERE id > ?').run(-1);
         db.prepare('DELETE FROM Workplaces WHERE id > ?').run(-1);
         db.prepare('DELETE FROM Rooms WHERE id > ?').run(-1);
+        db.prepare('DELETE FROM Attendances WHERE id > ?').run(-1);
+        db.prepare('DELETE FROM SchedulesParticipants WHERE id > ?').run(-1);
+        db.prepare('DELETE FROM Schedules WHERE id > ?').run(-1);
         db.prepare('DELETE FROM Participants WHERE id > ?').run(-1);
         db.prepare('DELETE FROM Accounts WHERE id > ?').run(-1);
         db.prepare('DELETE FROM ApiKeys WHERE id > ?').run(-1);
@@ -24,10 +27,26 @@ export const setupDatabase = () => {
         db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Maria', 'MariaJ', 'Jansen', 'admin', encrypt('test123'));
         db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Peter', 'PeterB', 'Bakker', 'admin', encrypt('test123'));
 
+        const calendars = JSON.stringify([
+            { label: 'Algemeen', url: 'https://calendar.google.com/calendar/embed?src=bnglprk6ouafmihk094plj9gu0%40group.calendar.google.com&ctz=Europe%2FAmsterdam' },
+            { label: 'Jantine', url: 'https://calendar.google.com/calendar/embed?src=bitsenbytesjantine%40gmail.com&ctz=UTC' },
+        ]);
+        db.prepare("UPDATE Accounts SET calendars = ? WHERE type = ?").run(calendars, 'support');
+
+        const shortcuts = JSON.stringify([
+            { label: 'Cliendo', url: 'https://www.cliendo.nl' },
+            { label: 'ZilliZ', url: 'https://zilliz.com' },
+        ]);
+        db.prepare("UPDATE Accounts SET shortcuts = ? WHERE type = ?").run(shortcuts, 'support');
+
         const now = getCurrentDate();
         db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Jan', 'de Vries', 'WMO', 3, '11F3EF12', now, 1, 0, 'Develop');
         db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Maria', 'Jansen', 'Orionis', 4, 'E1C7A710', now, 1, 1, 'Zorg');
         db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Peter', 'Bakker', 'Gemeente', 5, '98765432', now, 1, 0, 'Dagbesteding');
+
+        db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100)
+        db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100)
+        db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100)
 
         const roomResult = db.prepare("INSERT INTO Rooms (name, width, height, scale) VALUES (?, ?, ?, ?)").run('Gymzaal', 21000, 7000, 16);
         const roomId = Number(roomResult.lastInsertRowid);

@@ -58,6 +58,31 @@ describe("AccountService", () => {
         assert.ok(account);
     });
 
+    it("store and read calendars and shortcuts", async () => {
+        const token = jwt.sign(
+            { username: encrypt("support") },
+            String(process.env.JWT_SECRET),
+            { expiresIn: 900 },
+        );
+
+        await service.updateCalendars(token, [{ label: "Algemeen", url: "https://calendar.google.com" }]);
+        await service.updateShortcuts(token, [{ label: "Cliendo", url: "https://www.cliendo.nl" }]);
+
+        assert.deepEqual(await service.calendars(token), [{ label: "Algemeen", url: "https://calendar.google.com" }]);
+        assert.deepEqual(await service.shortcuts(token), [{ label: "Cliendo", url: "https://www.cliendo.nl" }]);
+    });
+
+    it("returns an empty list when no calendars or shortcuts are stored", async () => {
+        const token = jwt.sign(
+            { username: encrypt("it") },
+            String(process.env.JWT_SECRET),
+            { expiresIn: 900 },
+        );
+
+        assert.deepEqual(await service.calendars(token), []);
+        assert.deepEqual(await service.shortcuts(token), []);
+    });
+
     it("update account", async () => {
         await assert.doesNotReject(async () => {
             await service.update(
@@ -104,7 +129,9 @@ describe("AccountValidator", () => {
             password: "",
         });
 
-        assert.ok(results.every((result) => result.kind === "error"));
+        const requiredKeys = ["id", "type", "firstname", "lastname", "username", "role", "password"];
+
+        assert.ok(results.filter((result) => requiredKeys.includes(String(result.key))).every((result) => result.kind === "error"));
     });
 
     it("accepts an account without the optional id", () => {
@@ -133,6 +160,28 @@ describe("AccountValidator", () => {
             assert.equal(validResults.find((result) => result.key === key)?.kind, "success");
             assert.equal(invalidResults.find((result) => result.key === key)?.kind, "error");
         }
+    });
+
+    it("accepts calendars and shortcuts with a label and a url", () => {
+        const results = AccountValidator({
+            ...validAccount,
+            calendars: [{ label: "Algemeen", url: "https://calendar.google.com" }],
+            shortcuts: [{ label: "Cliendo", url: "https://www.cliendo.nl" }],
+        });
+
+        assert.equal(results.find((result) => result.key === "calendars")?.kind, "success");
+        assert.equal(results.find((result) => result.key === "shortcuts")?.kind, "success");
+    });
+
+    it("rejects calendars and shortcuts without a label or a url", () => {
+        const results = AccountValidator({
+            ...validAccount,
+            calendars: [{ label: "", url: "https://calendar.google.com" }],
+            shortcuts: [{ label: "Cliendo", url: "" }],
+        });
+
+        assert.equal(results.find((result) => result.key === "calendars")?.kind, "error");
+        assert.equal(results.find((result) => result.key === "shortcuts")?.kind, "error");
     });
 
     it("rejects values outside PermissionsList and Roles", () => {

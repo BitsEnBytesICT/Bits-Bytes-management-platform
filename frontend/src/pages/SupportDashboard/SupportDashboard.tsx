@@ -3,7 +3,8 @@ import {useEffect, useState} from "react";
 import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import Card from "../../common/components/Card";
 import FloorPlans from "../../common/components/FloorPlans";
-import Calendar from "../../common/components/Calendar";
+import Shortcuts from "../../common/components/Shortcuts/Shortcuts";
+import Calendar from "../../common/components/Calendar/Calendar";
 import SmallButton from "../../common/components/SmallButton";
 
 import SupportDashboardTable from "./components/SupportDashboardTable";
@@ -15,7 +16,7 @@ import SupportDashboardService from "./SupportDashboard.service";
 import type IParticipant from "../../types/compontents/IParticipant";
 import type {IRoom} from "../../types/floorPlans/IRoom";
 
-import {IconAddUser, IconLink, IconExport} from "../../assets";
+import {IconAddUser, IconExport} from "../../assets";
 
 import buildPDF from "../../common/buildPDF";
 
@@ -51,27 +52,14 @@ export default function SupportDashboard() {
 
                     <div className="flex flex-row gap-8 min-[1000px]:gap-16">
                         <Card title="Deelnemers aanwezig:" value={presentParticipants} />
-
                         <Card title="Deelnemers totaal:" value={totalParticipants} />
                     </div>
                 </div>
 
+                <Shortcuts />
+
                 <div className="flex flex-col gap-4">
-                    <div className="flex flex-row justify-between">
-                        <div className="flex flex-row gap-6">
-                            <SmallButton
-                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconLink} />}
-                                label="Cliendo"
-                                onClick={() => window.open("https://www.google.nl", "_blank")}
-                            />
-
-                            <SmallButton
-                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconLink} />}
-                                label="ZilliZ"
-                                onClick={() => window.open("https://www.google.nl", "_blank")}
-                            />
-                        </div>
-
+                    <div className="flex flex-row justify-end">
                         <div className="flex flex-row gap-6">
                             <SmallButton
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconAddUser} />}

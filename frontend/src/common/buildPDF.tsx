@@ -4,17 +4,21 @@ import ParticipantsPDF from "./components/participantsPDF";
 
 import type IParticipant from "../types/compontents/IParticipant";
 
-export default async function buildPDF(data: IParticipant[]) {
-    const blob = await pdf(<ParticipantsPDF data={data} />).toBlob();
+export async function downloadPDF(document: Parameters<typeof pdf>[0], fileName: string) {
+    const blob = await pdf(document).toBlob();
     const url = URL.createObjectURL(blob);
 
-    const link = document.createElement("a");
+    const link = window.document.createElement("a");
     link.href = url;
-    link.download = "participants-export.pdf";
+    link.download = fileName;
 
-    document.body.append(link);
+    window.document.body.append(link);
     link.click();
     link.remove();
 
     URL.revokeObjectURL(url);
+}
+
+export default async function buildPDF(data: IParticipant[]) {
+    await downloadPDF(<ParticipantsPDF data={data} />, "participants-export.pdf");
 }
