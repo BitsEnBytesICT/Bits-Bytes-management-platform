@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import AuthenticationDecorator from '../../common/authenticationDecorator';
+import { PermissionsList } from '../../types/permissions/permissionsList';
 import WallService from './walls.service';
 
 export default class WallController {
@@ -9,7 +10,7 @@ export default class WallController {
         this.service = new WallService();
     }
 
-    @AuthenticationDecorator('wall.list')
+    @AuthenticationDecorator(PermissionsList.wallList)
     async list(req: Request, res: Response) {
         const walls = await this.service.list(...(req.body?.where ?? []));
         res.json(walls);

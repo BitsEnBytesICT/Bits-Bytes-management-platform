@@ -37,9 +37,10 @@ export async function BuildEnforcerPolicies() {
             const role = RolesAndPermissions.find((p) => p.id === key.permissionId)?.role;
             if (role) await enforcerInstance.addRoleForUser(key.apikey, role);
         }
+        console.log("Enforcer build!");
     } catch (e) {
         console.log(e + "\nCannot make enforcer policies! Retrying in 5 seconds...");
         await sleep(5000);
-        BuildEnforcerPolicies();
+        await BuildEnforcerPolicies();
     }
 }

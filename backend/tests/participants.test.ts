@@ -31,18 +31,22 @@ describe("ParticipantService", () => {
 
     it("count returns the total number of participants", async () => {
         const count = await service.count();
-        assert.equal(count, 3);
+        assert.equal(count, 10);
     });
 
-    it("countPresent returns only the clocked-in participants", async () => {
-        const count = await service.countPresent();
-        assert.equal(count, 1);
+    it("countPresent counts the participants scheduled today in the seed data", async () => {
+        // Sunday through Saturday, based on the schedules in setupDatabase.
+        const expectedByWeekday = [0, 7, 5, 6, 6, 6, 0];
+        const expected = expectedByWeekday[new Date().getUTCDay()];
+
+        const participants = await service.countPresent();
+        assert.equal(participants.length, expected);
     });
 
     it("list returns every participant with the expected fields", async () => {
         const participants = await service.list();
 
-        assert.equal(participants.length, 3);
+        assert.equal(participants.length, 10);
         assert.ok(participants.some((p) => p.firstname === "Maria" && p.clockedin === 1));
     });
 

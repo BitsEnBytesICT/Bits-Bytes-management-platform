@@ -5,25 +5,28 @@ import Table from "../../../common/components/Table";
 
 import ParticipantPopUp from "./ParticipantPopUp";
 
-import type IParticipant from "../../../types/compontents/IParticipant";
 import type {ITableColumn} from "../../../types/compontents/ITable";
 
 import {IconDelete, IconEdit, IconInfo} from "../../../assets";
 import ParticipantsService from "../Participants.service";
 import type IAccount from "../../../types/accounts/IAccount";
+import type {IRoom} from "../../../types/floorPlans/IRoom";
+import type {IParticipantWithSchedules} from "../../../types/compontents/IParticipant";
 
 interface IParticipantsTable {
-    filteredParticipants: (IParticipant & {checked: boolean})[];
+    filteredParticipants: (IParticipantWithSchedules & {checked: boolean})[];
+    participants: IParticipantWithSchedules[];
+    rooms: IRoom[];
+    setParticipants: (value: IParticipantWithSchedules[]) => void;
+    setFilteredParticipants: (value: (IParticipantWithSchedules & {checked: boolean})[]) => void;
     checkBox?: true;
-    setParticipants: (value: IParticipant[]) => void;
-    setFilteredParticipants: (value: (IParticipant & {checked: boolean})[]) => void;
 }
 
 function ActionIcons(
-    participant: IParticipant,
-    onInfoClick: (participantAndAccount: [IParticipant, IAccount]) => void,
-    onEditClick: (participantAndAccount: [IParticipant, IAccount]) => void,
-    onDeleteClick: (participant: IParticipant) => void,
+    participant: IParticipantWithSchedules,
+    onInfoClick: (participantAndAccount: [IParticipantWithSchedules, IAccount]) => void,
+    onEditClick: (participantAndAccount: [IParticipantWithSchedules, IAccount]) => void,
+    onDeleteClick: (participant: IParticipantWithSchedules) => void,
 ) {
     const service: ParticipantsService = new ParticipantsService();
 
@@ -69,14 +72,16 @@ export default function ParticipantsTable({
     checkBox,
     setParticipants,
     setFilteredParticipants,
+    participants,
+    rooms,
 }: IParticipantsTable) {
-    const [infoParticipant, setInfoParticipant] = useState<[IParticipant, IAccount] | null>(null);
-    const [editParticipant, setEditParticipant] = useState<[IParticipant, IAccount] | null>(null);
-    const [deleteParticipant, setDeleteParticipant] = useState<IParticipant | null>(null);
+    const [infoParticipant, setInfoParticipant] = useState<[IParticipantWithSchedules, IAccount] | null>(null);
+    const [editParticipant, setEditParticipant] = useState<[IParticipantWithSchedules, IAccount] | null>(null);
+    const [deleteParticipant, setDeleteParticipant] = useState<IParticipantWithSchedules | null>(null);
 
     const service: ParticipantsService = new ParticipantsService();
 
-    const participantColumns: ITableColumn<IParticipant>[] = [
+    const participantColumns: ITableColumn<IParticipantWithSchedules>[] = [
         {key: "firstname", label: "Naam"},
         {key: "lastname", label: "Achternaam"},
         {key: "organisation", label: "Organisatie"},
@@ -120,6 +125,8 @@ export default function ParticipantsTable({
                 <ParticipantPopUp
                     mode="info"
                     participant={infoParticipant[0]}
+                    participants={participants}
+                    rooms={rooms}
                     account={infoParticipant[1]}
                     onClose={() => setInfoParticipant(null)}
                 />
@@ -130,6 +137,8 @@ export default function ParticipantsTable({
                     mode="edit"
                     participant={editParticipant[0]}
                     setParticipants={setParticipants}
+                    participants={participants}
+                    rooms={rooms}
                     account={editParticipant[1]}
                     onClose={() => setEditParticipant(null)}
                 />
@@ -147,7 +156,16 @@ export default function ParticipantsTable({
                         );
                         await service.deleteAccount(account.id);
                         setDeleteParticipant(null);
-                        setParticipants(await service.getParticipants());
+                        await service.getParticipants().then(participants => {
+                            service.getScedules().then(schedules => {
+                                setParticipants(
+                                    participants.map(p => {
+                                        const schedule = schedules.filter(s => s.participant === p.id);
+                                        return {...p, schedules: schedule};
+                                    }),
+                                );
+                            });
+                        });
                     }}
                 />
             )}

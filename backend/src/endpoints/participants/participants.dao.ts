@@ -1,6 +1,7 @@
 import { dbAll, dbGet, dbQuery } from "../../common/db";
 import { daoBaseType, daoBase } from "../../common/daoBase";
 import { KeyValuePair } from "../../common/Validator";
+import { toDateString } from "../../common/dateFunctions";
 
 import IParticipant from "../../types/participant/IParticipant";
 import { Tables } from "../../types/tables/tablesList";
@@ -38,7 +39,29 @@ export default class ParticipantDao extends daoBase<IParticipant> implements dao
         return result[0].count;
     }
 
-    async countPresent(): Promise<number> {
+    async countPresent(): Promise<IParticipant[]> {
+        const now = new Date();
+        const today = toDateString(now).slice(0, 10);
+        const weekday = [null, "mon", "thues", "wed", "thurs", "fri", null][now.getUTCDay()];
+        if (!weekday) return [];
+
+        const result = await dbAll<IParticipant>(
+            `SELECT *
+             FROM ${Tables.Participants} p
+             WHERE EXISTS (
+                 SELECT 1 FROM ${Tables.Schedules} s
+                 WHERE s.participant = p.id
+                   AND DATE(s.startDate) <= ?
+                   AND (s.endDate IS NULL OR DATE(s.endDate) >= ?)
+                   AND (s.${weekday}Morning IS NOT NULL OR s.${weekday}Evening IS NOT NULL)
+             )`,
+            [today, today]);
+
+        if (!result) return [];
+        return result;
+    }
+
+    async countClockedin(): Promise<number> {
         const result = await dbGet<{count: number}>(
             `SELECT COUNT(*) as count FROM ${Tables.Participants} WHERE clockedin = 1`);
         if (!result[0]) return 0;
