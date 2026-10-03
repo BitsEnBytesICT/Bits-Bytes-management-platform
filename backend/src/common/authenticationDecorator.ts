@@ -4,9 +4,10 @@ import { decrypt } from "./encryptorDecryptor";
 import IError from "../types/error/IError";
 import { ErrorCodes } from "../types/error/ErrorCodes";
 import { Request, Response } from "express";
+import { PermissionsList } from "../types/permissions/permissionsList";
 
 
-export default function AuthenticationDecorator(permission: string) {
+export default function AuthenticationDecorator(permission: PermissionsList) {
     return function (
         originalMethod: Function,
         context: ClassMethodDecoratorContext,

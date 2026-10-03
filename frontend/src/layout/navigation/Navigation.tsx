@@ -52,7 +52,7 @@ export default function Navigation({isOpen, setIsOpen}) {
 
     return (
         <>
-            <div className="flex flex-row fixed top-0 h-fit pointer-events-none">
+            <div className="flex flex-row fixed top-0 h-fit pointer-events-none z-50">
                 <div
                     className={`flex flex-row grow-0 relative top-0 h-screen transition-[left] duration-400
                         ${isNavOpen ? "left-0" : "-left-62"}`}

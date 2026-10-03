@@ -8,6 +8,14 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
     const [isFilledIn, setIsFilledIn] = useState(true);
 
     let inputProps = {};
+    const labelPos =
+        !props.labelPos || props.labelPos === "top"
+            ? "flex-col"
+            : props.labelPos === "left"
+              ? "flex-row items-center"
+              : props.labelPos === "right"
+                ? "flex-row-reverse items-center"
+                : "flex-col-reverse";
 
     if (props.type === "textarea" || props.type === "text" || props.type === "password") {
         inputProps = {
@@ -36,7 +44,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
     switch (props.type) {
         case "checkbox":
             return (
-                <div className="flex flex-col gap-2">
+                <div className={`flex ${labelPos} gap-2`}>
                     {props.label && (
                         <label
                             className={props.labelClassName ?? "ml-1.5 font-semibold text-(--color-darkblue)"}
@@ -60,7 +68,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
             );
         case "textarea":
             return (
-                <div className={`flex flex-col gap-2`}>
+                <div className={`flex ${labelPos} gap-2`}>
                     {props.label && (
                         <label
                             className={props.labelClassName ?? "ml-1.5 font-semibold text-(--color-darkblue)"}
@@ -77,10 +85,55 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
                     />
                 </div>
             );
+        case "date":
+        case "datetime-local":
+            return (
+                <div className="flex flex-col gap-2">
+                    {props.label && (
+                        <label
+                            className={props.labelClassName ?? "ml-1.5 font-semibold text-(--color-darkblue)"}
+                            htmlFor={props.id}>
+                            {`${props.label} ${props.required ? "*" : ""}`}
+                        </label>
+                    )}
+
+                    <div className="relative">
+                        <input
+                            id={props.id}
+                            type={props.type}
+                            value={props.value}
+                            min={props.min}
+                            max={props.max}
+                            readOnly={props.readOnly}
+                            required={props.required}
+                            ref={ref as ForwardedRef<HTMLInputElement>}
+                            onChange={e => props.onChange?.(e.target.value)}
+                            className={`${
+                                props.className ??
+                                `px-[15px] py-3 bg-(--color-offwhite) rounded-xl
+                                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`
+                            } w-full outline-none transition-colors
+                            focus:shadow-[inset_0_0_0_1px_var(--color-darkblue)]
+                            ${props.readOnly ? "cursor-default" : "cursor-pointer"}
+                            [&::-webkit-calendar-picker-indicator]:size-5
+                            [&::-webkit-calendar-picker-indicator]:cursor-pointer
+                            ${props.icon ? "[&::-webkit-calendar-picker-indicator]:opacity-0" : ""}`}
+                        />
+
+                        {props.icon && (
+                            <img
+                                src={props.icon}
+                                className={`absolute right-[15px] top-1/2 -translate-y-1/2 size-[18px]
+                                    pointer-events-none select-none [-webkit-user-drag:none] ${props.iconClassName ?? ""}`}
+                            />
+                        )}
+                    </div>
+                </div>
+            );
         case "text":
         case "password":
             return (
-                <div className={`flex flex-col gap-2`}>
+                <div className={`flex ${labelPos} gap-2`}>
                     {props.label && (
                         <label
                             className={props.labelClassName ?? "ml-1.5 font-semibold text-(--color-darkblue)"}
@@ -94,7 +147,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
             );
         case "select":
             return (
-                <div className={`flex flex-col gap-2 ${props.className ?? ""}`}>
+                <div className={`flex ${labelPos} gap-2 ${props.className ?? ""}`}>
                     {props.label && (
                         <label
                             className={props.labelClassName ?? "ml-1.5 font-semibold text-(--color-darkblue)"}
@@ -107,7 +160,11 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
                         inputId={props.id}
                         options={props.options}
                         value={props.options.find(option => option.value === props.value) ?? null}
+                        inputValue={props.inputValue}
                         onChange={option => props.onChange?.(option?.value ?? "")}
+                        onMenuOpen={props.onMenuOpen}
+                        onMenuClose={props.onMenuClose}
+                        onInputChange={props.onInputChange}
                         isSearchable
                         isDisabled={props.readOnly}
                         required={props.required}
@@ -129,7 +186,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, IInput>((props,
                             input: () => "text-(--color-darkblue)",
                             dropdownIndicator: () => "text-(--color-darkblue)",
                             menu: () =>
-                                `py-2 text-(--color-darkblue) bg-(--color-white) rounded-xl shadow-lg overflow-hidden
+                                `py-2 text-(--color-darkblue) bg-(--color-white) rounded-xl overflow-hidden
                                 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`,
                             option: ({isFocused, isSelected}) =>
                                 `px-[15px] py-2 cursor-pointer transition-colors duration-300 ease-in-out ${

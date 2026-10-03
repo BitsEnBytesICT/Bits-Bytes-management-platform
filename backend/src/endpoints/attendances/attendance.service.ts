@@ -51,6 +51,32 @@ export default class AttendanceService implements serviceBase<IAttendance> {
         await this.participantService.update(["id", participant.id!], ["clockedin", 1]);
     }
 
+    async createManual(attendance: IAttendance) {
+        const invalidData = (message: string): IError => ({
+            date: new Date(),
+            errorMSG: new Error(message),
+            code: ErrorCodes.InvalidData,
+        });
+
+        const errors = attendanceValidator(attendance)
+            .filter((r) => r.kind === 'error')
+            .map((error) => error.errorMSG);
+        if (!attendance.clockoutDate) errors.push(invalidData("clockoutDate is required"));
+        if (errors.length > 0) throw errors;
+
+        const clockin = new Date(attendance.clockinDate).getTime();
+        const clockout = new Date(attendance.clockoutDate!).getTime();
+        if (clockout < clockin) throw [invalidData("clockoutDate must be after clockinDate")];
+
+        const participant = await this.participantService.findOne(["id", attendance.participantID]);
+        if (!participant) throw [invalidData("participant does not exist")];
+
+        await this.dao.create({
+            ...attendance,
+            workDuration: Math.round((clockout - clockin) / 60000),
+        });
+    }
+
     async update(where: KeyValuePair<IAttendance>, ...values: KeyValuePair<IAttendance>[]): Promise<void> {
         if (!where || !values) throw {
             date: new Date(),
@@ -72,6 +98,16 @@ export default class AttendanceService implements serviceBase<IAttendance> {
         await this.dao.delete(where);
     }
     
+    async deleteMany(ids: number[]): Promise<void> {
+        if (!Array.isArray(ids) || ids.length === 0 || !ids.every((id) => Number.isInteger(id) && id > 0)) throw {
+            date: new Date(),
+            errorMSG: new Error("ids must be a non-empty list of valid ids"),
+            code: ErrorCodes.InvalidData
+        } satisfies IError
+
+        await this.dao.deleteMany(ids);
+    }
+
     async list(...where: KeyValuePair<IAttendance>[]): Promise<IAttendance[]> {
         return await this.dao.list(...where);
     }

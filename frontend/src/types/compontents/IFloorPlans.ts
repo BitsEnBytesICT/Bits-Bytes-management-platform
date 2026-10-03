@@ -1,8 +1,16 @@
+import type {ComponentType} from "react";
 import type {IRoom} from "../floorPlans/IRoom";
-import type IParticipant from "./IParticipant";
+import type FloorplansPopUp from "../floorPlans/floorplantsPopUp";
+import type {IParticipantWithSchedules} from "./IParticipant";
+import type ISchedule from "../schedules/ISchedule";
 
-export default interface IFloorPlans {
+export default interface IFloorPlans<T> {
     rooms: IRoom[];
-    participants: IParticipant[];
+    participants: IParticipantWithSchedules[];
+    PopUpContent?: ComponentType<FloorplansPopUp<NoInfer<T>>>;
     dayButtons?: boolean;
+    stacked?: boolean;
+    popupPropsExtra?: T;
+    height?: string;
+    currentEditedScedule?: ISchedule;
 }
