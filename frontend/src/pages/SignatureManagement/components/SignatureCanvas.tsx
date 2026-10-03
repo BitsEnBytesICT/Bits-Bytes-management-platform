@@ -1,13 +1,11 @@
-import {useEffect, useRef, useState} from "react";
-import Button from "../../../common/components/Button";
+import {useEffect, useRef} from "react";
 import ConfirmButton from "../../../common/components/ConfirmButton";
-import PopUp from "../../../common/components/PopUp";
 
-type Point = [number, number];
+export type Point = [number, number];
 
-interface ISignatureCanvasPopUp {
-    onClose: () => void;
-    onSave: (svg: string) => void;
+interface ISignatureCanvas {
+    strokes: Point[][];
+    onChange: (strokes: Point[][], svg: string) => void;
 }
 
 const STROKE_COLOR = "#000000";
@@ -27,12 +25,11 @@ function strokesToSvg(strokes: Point[][], width: number, height: number) {
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">${paths}</svg>`;
 }
 
-export default function SignatureCanvasPopUp({onClose, onSave}: ISignatureCanvasPopUp) {
+// Strokes are owned by the parent so the drawing survives the canvas being unmounted (e.g. switching PopUp pages)
+export default function SignatureCanvas({strokes, onChange}: ISignatureCanvas) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const strokesRef = useRef<Point[][]>([]);
+    const strokesRef = useRef<Point[][]>([...strokes]);
     const isDrawingRef = useRef(false);
-    const [isEmpty, setIsEmpty] = useState(true);
-    const [error, setError] = useState<string[]>([]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -48,6 +45,15 @@ export default function SignatureCanvasPopUp({onClose, onSave}: ISignatureCanvas
         ctx.lineWidth = STROKE_WIDTH;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
+
+        for (const stroke of strokesRef.current) {
+            ctx.beginPath();
+            ctx.moveTo(...stroke[0]);
+            for (const point of stroke) {
+                ctx.lineTo(...point);
+            }
+            ctx.stroke();
+        }
     }, []);
 
     function getPoint(e: React.PointerEvent<HTMLCanvasElement>): Point {
@@ -67,9 +73,6 @@ export default function SignatureCanvasPopUp({onClose, onSave}: ISignatureCanvas
         ctx.moveTo(...point);
         ctx.lineTo(...point);
         ctx.stroke();
-
-        setIsEmpty(false);
-        setError([]);
     }
 
     function onPointerMove(e: React.PointerEvent<HTMLCanvasElement>) {
@@ -84,7 +87,11 @@ export default function SignatureCanvasPopUp({onClose, onSave}: ISignatureCanvas
     }
 
     function onPointerUp() {
+        if (!isDrawingRef.current) return;
         isDrawingRef.current = false;
+
+        const canvas = canvasRef.current;
+        onChange([...strokesRef.current], strokesToSvg(strokesRef.current, canvas.clientWidth, canvas.clientHeight));
     }
 
     function clear() {
@@ -93,51 +100,26 @@ export default function SignatureCanvasPopUp({onClose, onSave}: ISignatureCanvas
 
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
         strokesRef.current = [];
-        setIsEmpty(true);
-    }
-
-    function save() {
-        const canvas = canvasRef.current;
-        if (!canvas || isEmpty) {
-            setError(["Zet eerst een handtekening"]);
-            return;
-        }
-
-        onSave(strokesToSvg(strokesRef.current, canvas.clientWidth, canvas.clientHeight));
-        onClose();
+        onChange([], "");
     }
 
     return (
-        <PopUp
-            onClose={onClose}
-            title="Handtekening Tekenen"
-            errors={error}
-            children={[
-                <>
-                    <div className="flex flex-col gap-2">
-                        <span className="ml-1.5 text-[16px] font-semibold text-(--color-darkblue)">Handtekening *</span>
-                        <canvas
-                            ref={canvasRef}
-                            className="w-full h-64 bg-(--color-offwhite) rounded-xl cursor-crosshair touch-none
-                                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]"
-                            onPointerDown={onPointerDown}
-                            onPointerMove={onPointerMove}
-                            onPointerUp={onPointerUp}
-                            onPointerCancel={onPointerUp}
-                        />
-                        <div className="flex flex-row justify-end">
-                            <ConfirmButton onClick={clear} variant="secondary">
-                                Wissen
-                            </ConfirmButton>
-                        </div>
-                    </div>
-                </>,
-            ]}
-            button={
-                <div className="mt-auto">
-                    <Button onClick={save}>Opslaan</Button>
-                </div>
-            }
-        />
+        <div className="flex flex-col gap-2">
+            <span className="ml-1.5 text-[16px] font-semibold text-(--color-darkblue)">Handtekening *</span>
+            <canvas
+                ref={canvasRef}
+                className="w-full h-64 bg-(--color-offwhite) rounded-xl cursor-crosshair touch-none
+                    shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]"
+                onPointerDown={onPointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={onPointerUp}
+                onPointerCancel={onPointerUp}
+            />
+            <div className="flex flex-row justify-end">
+                <ConfirmButton onClick={clear} variant="secondary">
+                    Wissen
+                </ConfirmButton>
+            </div>
+        </div>
     );
 }
