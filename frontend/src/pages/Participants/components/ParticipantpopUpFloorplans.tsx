@@ -7,6 +7,7 @@ import type {IParticipant} from "../../../types/compontents/IParticipant";
 interface IParticipantpopUpFloorplans {
     currentScedule: ISchedule;
     setCurrentScedule: Dispatch<SetStateAction<ISchedule>>;
+    currentParticipant: IParticipant;
 }
 
 const scheduleFieldsByDay = [
@@ -79,7 +80,10 @@ export default function ParticipantpopUpFloorplans({
                         <Input
                             id={`${index}`}
                             type="checkbox"
-                            readOnly={currentParticipants !== undefined && currentParticipants[index] !== undefined}
+                            readOnly={
+                                currentParticipants?.[index]?.id !== undefined &&
+                                currentParticipants[index].id !== popupPropsExtra.currentParticipant.id
+                            }
                             label={
                                 currentParticipants && currentParticipants[index]
                                     ? `${currentParticipants[index].firstname} ${currentParticipants[index].lastname}`
