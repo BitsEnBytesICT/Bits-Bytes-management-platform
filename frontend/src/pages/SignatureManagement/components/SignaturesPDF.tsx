@@ -1,10 +1,10 @@
 import {Document, Image, Page, Path, StyleSheet, Svg, Text, View} from "@react-pdf/renderer";
 
 import type IAttendance from "../../../types/compontents/IAttendance";
-import type IParticipant from "../../../types/compontents/IParticipant";
 
 import {LogoDefaultPng} from "../../../assets";
 import {formatDate} from "../../../common/helperFunctions";
+import type {IParticipant} from "../../../types/compontents/IParticipant";
 
 interface ISignaturesPDF {
     signatures: IAttendance[];

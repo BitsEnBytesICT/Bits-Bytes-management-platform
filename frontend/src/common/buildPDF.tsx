@@ -1,8 +1,7 @@
 import {pdf} from "@react-pdf/renderer";
 
 import ParticipantsPDF from "./components/participantsPDF";
-
-import type IParticipant from "../types/compontents/IParticipant";
+import type {IParticipant} from "../types/compontents/IParticipant";
 
 export async function downloadPDF(document: Parameters<typeof pdf>[0], fileName: string) {
     const blob = await pdf(document).toBlob();

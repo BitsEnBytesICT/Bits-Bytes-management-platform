@@ -68,93 +68,71 @@ export default function CalendarPopUp({calendars, onClose, onSaved}: ICalendarPo
             <PopUp
                 onClose={onClose}
                 title="Agenda's beheren"
-                child={
+                errors={errors}
+                children={[
                     isEditing ? (
-                        <div className="flex flex-col justify-between grow">
-                            <div className="flex flex-col gap-7">
-                                <Input
-                                    id="calendarLabel"
-                                    type="text"
-                                    label="Naam"
-                                    required
-                                    placeholder="Naam van de agenda"
-                                    value={label}
-                                    onChange={setLabel}
-                                />
+                        <div className="flex flex-col gap-7 grow">
+                            <Input
+                                id="calendarLabel"
+                                type="text"
+                                label="Naam"
+                                required
+                                placeholder="Naam van de agenda"
+                                value={label}
+                                onChange={setLabel}
+                            />
 
-                                <Input
-                                    id="calendarUrl"
-                                    type="text"
-                                    label="Link"
-                                    required
-                                    placeholder="https://calendar.google.com/calendar/embed?src=..."
-                                    value={url}
-                                    onChange={setUrl}
-                                />
-
-                                {errors.length > 0 && (
-                                    <div
-                                        className="flex flex-col gap-1 text-(--color-red)
-                                            animate-[fade-in_0.3s_ease-in-out]">
-                                        {errors.map(error => (
-                                            <div key={error}>{error}</div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="flex flex-col gap-3">
-                                <Button onClick={closeForm}>Terug</Button>
-
-                                <Button onClick={save}>Opslaan</Button>
-                            </div>
+                            <Input
+                                id="calendarUrl"
+                                type="text"
+                                label="Link"
+                                required
+                                placeholder="https://calendar.google.com/calendar/embed?src=..."
+                                value={url}
+                                onChange={setUrl}
+                            />
                         </div>
                     ) : (
-                        <div className="flex flex-col gap-7 grow">
-                            <div className="flex flex-col gap-3 max-h-100 overflow-auto">
-                                {calendars.map((calendar, index) => (
-                                    <div
-                                        key={calendar.url}
-                                        className="px-[15px] py-3 flex flex-row gap-4 items-center bg-(--color-offwhite)
-                                            rounded-xl
-                                            shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
-                                        <span
-                                            className="min-w-0 grow font-semibold text-(--color-darkblue) truncate
-                                                select-none">
-                                            {calendar.label}
-                                        </span>
-
-                                        <img
-                                            onClick={() => openForm(index)}
-                                            src={IconEdit}
-                                            title="Aanpassen"
-                                            className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
-                                        />
-
-                                        <img
-                                            onClick={() => setDeleteIndex(index)}
-                                            src={IconDelete}
-                                            title="Verwijderen"
-                                            className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-
-                            {errors.length > 0 && (
+                        <div className="flex flex-col gap-3 max-h-100 overflow-auto">
+                            {calendars.map((calendar, index) => (
                                 <div
-                                    className="flex flex-col gap-1 text-(--color-red)
-                                        animate-[fade-in_0.3s_ease-in-out]">
-                                    {errors.map(error => (
-                                        <div key={error}>{error}</div>
-                                    ))}
-                                </div>
-                            )}
+                                    key={calendar.url}
+                                    className="px-[15px] py-3 flex flex-row gap-4 items-center bg-(--color-offwhite)
+                                        rounded-xl
+                                        shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
+                                    <span
+                                        className="min-w-0 grow font-semibold text-(--color-darkblue) truncate
+                                            select-none">
+                                        {calendar.label}
+                                    </span>
 
-                            <div className="mt-auto">
-                                <Button onClick={() => openForm()}>Agenda toevoegen</Button>
-                            </div>
+                                    <img
+                                        onClick={() => openForm(index)}
+                                        src={IconEdit}
+                                        title="Aanpassen"
+                                        className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+                                    />
+
+                                    <img
+                                        onClick={() => setDeleteIndex(index)}
+                                        src={IconDelete}
+                                        title="Verwijderen"
+                                        className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+                                    />
+                                </div>
+                            ))}
                         </div>
+                    ),
+                ]}
+                button={
+                    isEditing ? (
+                        <>
+                            <Button onClick={closeForm}>Terug</Button>
+
+                            <Button onClick={save}>Opslaan</Button>
+                        </>
+                    ) : (
+                        <Button onClick={() => openForm()}>Agenda toevoegen</Button>
                     )
                 }
             />

@@ -2,6 +2,9 @@ import type {ReactNode} from "react";
 
 export default interface IPopUp {
     onClose: () => void;
+    onPrevious?: () => void;
+    button: ReactNode;
     title?: string;
-    child: ReactNode;
+    children: ReactNode[];
+    errors: any[];
 }

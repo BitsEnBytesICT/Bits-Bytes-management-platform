@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 
 import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import Card from "../../common/components/Card";
-import FloorPlans from "../../common/components/FloorPlans";
+import FloorPlans from "../../common/components/floorplans/FloorPlans";
 import Shortcuts from "../../common/components/Shortcuts/Shortcuts";
 import Calendar from "../../common/components/Calendar/Calendar";
 import SmallButton from "../../common/components/SmallButton";
@@ -11,21 +11,24 @@ import SupportDashboardTable from "./components/SupportDashboardTable";
 
 import ParticipantPopUp from "../Participants/components/ParticipantPopUp";
 
+import FloorplansPopUp from "../../common/components/floorplans/FloorplansPopUp";
+
 import SupportDashboardService from "./SupportDashboard.service";
 
-import type IParticipant from "../../types/compontents/IParticipant";
 import type {IRoom} from "../../types/floorPlans/IRoom";
 
 import {IconAddUser, IconExport} from "../../assets";
 
 import buildPDF from "../../common/buildPDF";
+import {type IParticipant, type IParticipantWithSchedules} from "../../types/compontents/IParticipant";
 
 export default function SupportDashboard() {
     const [totalParticipants, setTotalParticipants] = useState(0);
-    const [presentParticipants, setPresentParticipants] = useState(0);
-    const [participants, setParticipants] = useState<IParticipant[]>([]);
+    const [presentParticipants, setPresentParticipants] = useState<IParticipant[]>([]);
+    const [participants, setParticipants] = useState<IParticipantWithSchedules[]>([]);
     const [rooms, setRooms] = useState<IRoom[]>([]);
     const [isAddParticipantShown, setIsAddParticipantShown] = useState(false);
+    const [clockedin, setClockedin] = useState(0);
 
     useEffect(() => {
         const service = new SupportDashboardService();
@@ -33,8 +36,18 @@ export default function SupportDashboard() {
         const getData = async () => {
             await service.getTotalParticipants().then(setTotalParticipants);
             await service.getPresentParticipants().then(setPresentParticipants);
-            await service.getParticipants().then(setParticipants);
+            await service.getParticipants().then(participants => {
+                service.getScedules().then(schedules => {
+                    setParticipants(
+                        participants.map(p => {
+                            const schedule = schedules.filter(s => s.participant === p.id);
+                            return {...p, schedules: schedule};
+                        }),
+                    );
+                });
+            });
             await service.getRooms().then(setRooms);
+            await service.getClockedinParticipants().then(setClockedin);
         };
 
         Promise.all([getData()]);
@@ -51,7 +64,7 @@ export default function SupportDashboard() {
                     </div>
 
                     <div className="flex flex-row gap-8 min-[1000px]:gap-16">
-                        <Card title="Deelnemers aanwezig:" value={presentParticipants} />
+                        <Card title="Deelnemers aanwezig:" value={clockedin} />
                         <Card title="Deelnemers totaal:" value={totalParticipants} />
                     </div>
                 </div>
@@ -77,11 +90,14 @@ export default function SupportDashboard() {
                     </div>
 
                     <div>
-                        <SupportDashboardTable participants={participants} setParticipants={setParticipants} />
+                        <SupportDashboardTable
+                            participants={presentParticipants}
+                            setParticipants={setPresentParticipants}
+                        />
                     </div>
                 </div>
 
-                <FloorPlans rooms={rooms} participants={participants} />
+                <FloorPlans rooms={rooms} participants={participants} PopUpContent={FloorplansPopUp} />
 
                 <Calendar />
             </div>
@@ -89,6 +105,8 @@ export default function SupportDashboard() {
             {isAddParticipantShown && (
                 <ParticipantPopUp
                     mode="add"
+                    participants={participants}
+                    rooms={rooms}
                     setParticipants={setParticipants}
                     onClose={() => setIsAddParticipantShown(false)}
                 />

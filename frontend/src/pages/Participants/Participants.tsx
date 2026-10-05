@@ -8,20 +8,23 @@ import ParticipantsTable from "./components/ParticipantsTable";
 
 import ParticipantsService from "./Participants.service";
 
-import type IParticipant from "../../types/compontents/IParticipant";
-
 import {IconAddUser, IconDelete, IconExport, IconFilter} from "../../assets";
 
 import buildPDF from "../../common/buildPDF";
 import SmallPopUp from "../../common/components/SmallPopUp";
+import type {IRoom} from "../../types/floorPlans/IRoom";
+import type {IParticipantWithSchedules} from "../../types/compontents/IParticipant";
 
 export default function Participants() {
-    const [participants, setParticipants] = useState<IParticipant[]>([]);
+    const [participants, setParticipants] = useState<IParticipantWithSchedules[]>([]);
     const [isFilterShown, setIsFilterShown] = useState(false);
     const [isAddParticipantShown, setIsAddParticipantShown] = useState(false);
-    const [filteredParticipants, setFilteredParticipants] = useState<(IParticipant & {checked: boolean})[]>([]);
+    const [filteredParticipants, setFilteredParticipants] = useState<
+        (IParticipantWithSchedules & {checked: boolean})[]
+    >([]);
     const [hasSelected, setHasSelected] = useState<boolean>();
     const [deleteParticipants, setDeleteParticipants] = useState<boolean>();
+    const [rooms, setRooms] = useState<IRoom[]>([]);
 
     const service = new ParticipantsService();
 
@@ -30,17 +33,33 @@ export default function Participants() {
     }, [filteredParticipants]);
 
     useEffect(() => {
-        service.getParticipants().then(participants => {
-            setParticipants(participants);
-        });
+        const getData = async () => {
+            await getParticipantsWithScedules();
+            await service.getRooms().then(setRooms);
+        };
+
+        Promise.all([getData()]);
     }, []);
+
+    async function getParticipantsWithScedules() {
+        await service.getParticipants().then(participants => {
+            service.getScedules().then(schedules => {
+                setParticipants(
+                    participants.map(p => {
+                        const schedule = schedules.filter(s => s.participant === p.id);
+                        return {...p, schedules: schedule};
+                    }),
+                );
+            });
+        });
+    }
 
     async function bulkDeleteParticipants() {
         const checkedParticipants = filteredParticipants.filter(p => p.checked);
         for (const participant of checkedParticipants) {
             await service.deleteAccount(participant.account);
         }
-        service.getParticipants().then(setParticipants);
+        await getParticipantsWithScedules();
     }
 
     return (
@@ -94,6 +113,8 @@ export default function Participants() {
                     <ParticipantsTable
                         filteredParticipants={filteredParticipants}
                         checkBox={true}
+                        participants={participants}
+                        rooms={rooms}
                         setParticipants={setParticipants}
                         setFilteredParticipants={setFilteredParticipants}
                     />
@@ -103,6 +124,8 @@ export default function Participants() {
             {isAddParticipantShown && (
                 <ParticipantPopUp
                     mode="add"
+                    rooms={rooms}
+                    participants={participants}
                     setParticipants={setParticipants}
                     onClose={() => setIsAddParticipantShown(false)}
                 />

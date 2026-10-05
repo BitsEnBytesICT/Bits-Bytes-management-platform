@@ -152,7 +152,11 @@ export default class ParticipantService implements serviceBase<IParticipant> {
         return await this.dao.count();
     }
 
-    async countPresent(): Promise<number> {
+    async countPresent(): Promise<IParticipant[]> {
         return await this.dao.countPresent();
+    }
+
+    async countClockedin(): Promise<number> {
+        return await this.dao.countClockedin();
     }
 }

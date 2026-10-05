@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import Button from "../../../common/components/Button";
 import Input from "../../../common/components/Input";
 import PopUp from "../../../common/components/PopUp";
@@ -6,9 +6,9 @@ import PopUp from "../../../common/components/PopUp";
 import {formatDate} from "../../../common/helperFunctions";
 
 import type IAttendance from "../../../types/compontents/IAttendance";
-import type IParticipant from "../../../types/compontents/IParticipant";
 import SignatureManagementService from "../SignatureManagentService";
-import SignatureCanvasPopUp from "./SignatureCanvasPopUp";
+import SignatureCanvas, {type Point} from "./SignatureCanvas";
+import type {IParticipant} from "../../../types/compontents/IParticipant";
 
 type SignaturePopUpMode = "info" | "edit";
 
@@ -26,27 +26,18 @@ const titles: Record<SignaturePopUpMode, string> = {
 };
 
 export default function SignaturePopUp({mode, signature, participant, onClose, onSaved}: ISignaturePopUp) {
+    const [strokes, setStrokes] = useState<Point[][]>([]);
     const [currentSignature, setCurrentSignature] = useState(signature.signature);
     const [error, setError] = useState<string[]>([]);
-    const [isDrawing, setIsDrawing] = useState(false);
     const isInfo = mode === "info";
 
     const service: SignatureManagementService = new SignatureManagementService();
 
-    useEffect(() => {
-        if (isInfo) {
+    async function save() {
+        if (!currentSignature) {
+            setError(["Zet eerst een handtekening"]);
             return;
         }
-
-        if (!currentSignature) {
-            setError(["De velden met * zijn verplicht"]);
-        } else {
-            setError([]);
-        }
-    }, [currentSignature]);
-
-    async function save() {
-        if (!currentSignature) return;
 
         if (currentSignature === signature.signature) {
             onClose();
@@ -67,7 +58,8 @@ export default function SignaturePopUp({mode, signature, participant, onClose, o
         <PopUp
             onClose={onClose}
             title={titles[mode]}
-            child={
+            errors={error}
+            children={[
                 <>
                     <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                         <Input
@@ -117,56 +109,36 @@ export default function SignaturePopUp({mode, signature, participant, onClose, o
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <span className="ml-1.5 text-[16px] font-semibold text-(--color-darkblue)">
-                            {`Handtekening ${isInfo ? "" : "*"}`}
-                        </span>
+                        <span className="ml-1.5 text-[16px] font-semibold text-(--color-darkblue)">Handtekening</span>
                         <div
-                            onClick={() => !isInfo && setIsDrawing(true)}
-                            title={isInfo ? undefined : "Klik om opnieuw te tekenen"}
-                            className={`h-32 flex items-center justify-center bg-(--color-offwhite) rounded-xl
-                            shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]
-                            ${isInfo ? "" : "cursor-pointer transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-darkblue)]"}`}>
+                            className="h-32 flex items-center justify-center bg-(--color-offwhite) rounded-xl
+                                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
                             {currentSignature ? (
                                 <img
                                     src={`data:image/svg+xml;utf8,${encodeURIComponent(currentSignature)}`}
                                     className="max-h-full max-w-full select-none [-webkit-user-drag:none]"
                                 />
                             ) : (
-                                <span className="text-(--color-offblack)/50">
-                                    {isInfo ? "Geen handtekening" : "Klik om te tekenen"}
-                                </span>
+                                <span className="text-(--color-offblack)/50">Geen handtekening</span>
                             )}
                         </div>
                     </div>
-
-                    {isDrawing && (
-                        <SignatureCanvasPopUp
-                            onClose={() => setIsDrawing(false)}
-                            onSave={(svg: string) => setCurrentSignature(svg)}
-                        />
-                    )}
-
-                    <div className="flex flex-col h-6">
-                        {error &&
-                            error.map(e => (
-                                <span
-                                    key={e}
-                                    className="text-[16px] font-semibold text-(--color-red)
-                                        animate-[fade-in_0.3s_ease-in-out]">
-                                    {e}
-                                </span>
-                            ))}
-                    </div>
-                    <div className="mt-auto">
-                        <Button
-                            onClick={async () => {
-                                isInfo ? onClose() : await save();
-                            }}>
-                            {isInfo ? "Terug" : "Bewerken"}
-                        </Button>
-                    </div>
-                </>
-            }
+                </>,
+                ...(isInfo
+                    ? []
+                    : [
+                          <SignatureCanvas
+                              strokes={strokes}
+                              onChange={(strokes, svg) => {
+                                  setStrokes(strokes);
+                                  // Clearing the canvas falls back to the existing signature
+                                  setCurrentSignature(svg || signature.signature);
+                                  setError([]);
+                              }}
+                          />,
+                      ]),
+            ]}
+            button={<Button onClick={isInfo ? onClose : save}>{isInfo ? "Terug" : "Bewerken"}</Button>}
         />
     );
 }

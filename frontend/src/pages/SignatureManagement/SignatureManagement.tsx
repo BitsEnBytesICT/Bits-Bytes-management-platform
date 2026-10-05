@@ -7,7 +7,6 @@ import Table from "../../common/components/Table";
 
 import type IAttendance from "../../types/compontents/IAttendance";
 import type {IDateRange} from "../../types/compontents/IDateRangePicker";
-import type IParticipant from "../../types/compontents/IParticipant";
 import type {ITableColumn} from "../../types/compontents/ITable";
 
 import {IconAddUser, IconDelete, IconDownload, IconEdit, IconExport, IconFilter, IconInfo} from "../../assets";
@@ -21,6 +20,7 @@ import SignatureCreatePopUp from "./components/SignatureCreatePopUp";
 import SignaturePopUp from "./components/SignaturePopUp";
 import SignaturesFilter from "./components/SignaturesFilter";
 import SignaturesPDF from "./components/SignaturesPDF";
+import type {IParticipant} from "../../types/compontents/IParticipant";
 
 type AttendanceRow = IAttendance & {checked: boolean};
 
@@ -131,6 +131,7 @@ export default function SignatureManagement() {
             clockinDate: string;
             clockoutDate?: string;
         })[] = await request.json();
+
         setSignatures(
             response.map(attendance => ({
                 ...attendance,

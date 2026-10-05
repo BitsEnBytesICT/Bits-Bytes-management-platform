@@ -8,7 +8,7 @@ import useLocalStorage from "../../../common/hooks/useLocalStorage";
 
 import type IAttendance from "../../../types/compontents/IAttendance";
 import type {IDateRange} from "../../../types/compontents/IDateRangePicker";
-import type IParticipant from "../../../types/compontents/IParticipant";
+import type {IParticipant} from "../../../types/compontents/IParticipant";
 
 interface ISignaturesFilter {
     signatures: IAttendance[];

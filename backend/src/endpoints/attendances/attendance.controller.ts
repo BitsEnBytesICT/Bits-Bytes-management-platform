@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import AuthenticationDecorator from '../../common/authenticationDecorator';
+import { PermissionsList } from '../../types/permissions/permissionsList';
 import ScanService from './attendance.service';
 import IAttendance from '../../types/attendance/IAttendance';
 import { KeyValuePair } from '../../common/Validator';
@@ -11,7 +12,7 @@ export default class AttendanceController {
         this.service = new ScanService();
     }
 
-    @AuthenticationDecorator('attendance.scan')
+    @AuthenticationDecorator(PermissionsList.attendanceScan)
     async scan(req: Request, res: Response) {
         const result = await this.service.scan(req.body.rfid_uid);
 
@@ -23,38 +24,38 @@ export default class AttendanceController {
         res.json(result);
     }
 
-    @AuthenticationDecorator("attendance.list")
+    @AuthenticationDecorator(PermissionsList.attendanceList)
     async list (req: Request, res: Response) {
         const attendances = await this.service.list(...(req.body?.where ?? []));
         res.json(attendances);
     }
 
-    @AuthenticationDecorator("attendance.delete")
+    @AuthenticationDecorator(PermissionsList.attendanceDelete)
     async delete (req: Request, res: Response) {
         await this.service.delete(req.body.where);
         res.sendStatus(200);
     }
 
-    @AuthenticationDecorator("attendance.delete")
+    @AuthenticationDecorator(PermissionsList.attendanceDelete)
     async deleteMany (req: Request, res: Response) {
         await this.service.deleteMany(req.body.ids);
         res.sendStatus(200);
     }
-
-    @AuthenticationDecorator('attendance.clock_in')
+    
+    @AuthenticationDecorator(PermissionsList.attendanceClockIn)
     async create(req: Request, res: Response) {
         await this.service.create(req.body.rfid_uid, req.body.signature);
         res.sendStatus(200);
     }
 
-    @AuthenticationDecorator('attendance.create')
+    @AuthenticationDecorator(PermissionsList.attendanceCreate)
     async createManual(req: Request, res: Response) {
         const { participantID, clockinDate, clockoutDate, signature } = req.body;
         await this.service.createManual({ participantID, clockinDate, clockoutDate, signature });
         res.sendStatus(200);
     }
 
-    @AuthenticationDecorator('attendance.update')
+    @AuthenticationDecorator(PermissionsList.attendanceUpdate)
     async update(req: Request, res: Response) {
         const { id, signature } = req.body;
 
@@ -71,7 +72,7 @@ export default class AttendanceController {
         res.sendStatus(200);
     }
 
-    @AuthenticationDecorator('attendance.list')
+    @AuthenticationDecorator(PermissionsList.attendanceList)
     async attendanceLast30(req: Request, res: Response) {
         const dates = await this.service.fetchLast30Days(req.body.rfid_uid);
         res.json({ dates });

@@ -69,91 +69,71 @@ export default function ShortcutPopUp({shortcuts, onClose, onSaved}: IShortcutPo
             <PopUp
                 onClose={onClose}
                 title="Snelkoppelingen beheren"
-                child={
+                errors={errors}
+                children={[
                     isEditing ? (
-                        <div className="flex flex-col justify-between grow">
-                            <div className="flex flex-col gap-7">
-                                <Input
-                                    id="shortcutLabel"
-                                    type="text"
-                                    label="Naam"
-                                    required
-                                    placeholder="Naam van de website"
-                                    value={label}
-                                    onChange={setLabel}
-                                />
+                        <div className="flex flex-col gap-7 grow">
+                            <Input
+                                id="shortcutLabel"
+                                type="text"
+                                label="Naam"
+                                required
+                                placeholder="Naam van de website"
+                                value={label}
+                                onChange={setLabel}
+                            />
 
-                                <Input
-                                    id="shortcutUrl"
-                                    type="text"
-                                    label="Link"
-                                    required
-                                    placeholder="https://www.voorbeeld.nl"
-                                    value={url}
-                                    onChange={setUrl}
-                                />
-
-                                {errors.length > 0 && (
-                                    <div
-                                        className="flex flex-col gap-1 text-(--color-red)
-                                            animate-[fade-in_0.3s_ease-in-out]">
-                                        {errors.map(error => (
-                                            <div key={error}>{error}</div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="flex flex-col gap-3">
-                                <Button onClick={closeForm}>Terug</Button>
-
-                                <Button onClick={handleSave}>Opslaan</Button>
-                            </div>
+                            <Input
+                                id="shortcutUrl"
+                                type="text"
+                                label="Link"
+                                required
+                                placeholder="https://www.voorbeeld.nl"
+                                value={url}
+                                onChange={setUrl}
+                            />
                         </div>
                     ) : (
-                        <div className="flex flex-col justify-between grow">
-                            <div className="flex flex-col gap-3 max-h-100 overflow-auto">
-                                {shortcuts.map((shortcut, index) => (
-                                    <div
-                                        key={shortcut.url}
-                                        className="px-[15px] py-3 flex flex-row gap-4 items-center bg-(--color-offwhite)
-                                            rounded-xl
-                                            shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
-                                        <span
-                                            className="min-w-0 grow font-semibold text-(--color-darkblue) truncate
-                                                select-none">
-                                            {shortcut.label}
-                                        </span>
-
-                                        <img
-                                            onClick={() => openForm(index)}
-                                            src={IconEdit}
-                                            title="Aanpassen"
-                                            className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
-                                        />
-
-                                        <img
-                                            onClick={() => setDeleteIndex(index)}
-                                            src={IconDelete}
-                                            title="Verwijderen"
-                                            className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-
-                            {errors.length > 0 && (
+                        <div className="flex flex-col gap-3 max-h-100 overflow-auto">
+                            {shortcuts.map((shortcut, index) => (
                                 <div
-                                    className="flex flex-col gap-1 text-(--color-red)
-                                        animate-[fade-in_0.3s_ease-in-out]">
-                                    {errors.map(error => (
-                                        <div key={error}>{error}</div>
-                                    ))}
-                                </div>
-                            )}
+                                    key={shortcut.url}
+                                    className="px-[15px] py-3 flex flex-row gap-4 items-center bg-(--color-offwhite)
+                                        rounded-xl
+                                        shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
+                                    <span
+                                        className="min-w-0 grow font-semibold text-(--color-darkblue) truncate
+                                            select-none">
+                                        {shortcut.label}
+                                    </span>
 
-                            <Button onClick={() => openForm()}>Snelkoppeling toevoegen</Button>
+                                    <img
+                                        onClick={() => openForm(index)}
+                                        src={IconEdit}
+                                        title="Aanpassen"
+                                        className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+                                    />
+
+                                    <img
+                                        onClick={() => setDeleteIndex(index)}
+                                        src={IconDelete}
+                                        title="Verwijderen"
+                                        className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+                                    />
+                                </div>
+                            ))}
                         </div>
+                    ),
+                ]}
+                button={
+                    isEditing ? (
+                        <>
+                            <Button onClick={closeForm}>Terug</Button>
+
+                            <Button onClick={handleSave}>Opslaan</Button>
+                        </>
+                    ) : (
+                        <Button onClick={() => openForm()}>Snelkoppeling toevoegen</Button>
                     )
                 }
             />

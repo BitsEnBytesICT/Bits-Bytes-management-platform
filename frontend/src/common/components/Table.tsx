@@ -7,7 +7,7 @@ export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITa
     const [tooltipKey, setTooltipKey] = useState<string | null>(null);
     const [sortKey, setSortKey] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-    const [allChecked, setAllChecked] = useState<boolean>();
+    const [allChecked, setAllChecked] = useState<boolean>(false);
 
     function sortRows<R>(rows: readonly R[]): R[] {
         const sorted = [...rows].sort((a, b) => {
@@ -22,7 +22,7 @@ export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITa
 
     useEffect(() => {
         if (!checkBox) return;
-        setAllChecked(rows.find(r => r.checked == false) ? false : true);
+        setAllChecked(rows.length ? (rows.find(r => r.checked == false) ? false : true) : false);
     }, [rows]);
 
     useEffect(() => {
@@ -99,10 +99,12 @@ export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITa
     }
 
     return (
-        <div className="relative overflow-auto w-full h-full">
-            <table className="table-fixed w-full text-sm text-left" id="data-table">
-                <thead>
-                    <tr className="sticky top-0 bg-(--color-lightwhite) rounded-lg">
+        <div className="relative w-full h-full max-h-[inherit]">
+            <table className="flex flex-col w-full h-full max-h-[inherit] text-sm text-left" id="data-table">
+                <thead
+                    className="block shrink-0 relative z-1 overflow-hidden scrollbar-gutter-stable
+                        bg-(--color-lightwhite) rounded-lg">
+                    <tr className="table table-fixed w-full">
                         {checkBox && (
                             <th
                                 key="checkBox"
@@ -130,9 +132,9 @@ export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITa
                     </tr>
                 </thead>
 
-                <tbody>
+                <tbody className="overflow-auto scrollbar-gutter-stable">
                     {rows.map((row, index) => (
-                        <tr key={String(row[rowKey])}>
+                        <tr key={String(row[rowKey])} className="table table-fixed w-full">
                             {checkBox && (
                                 <td>
                                     <Input
