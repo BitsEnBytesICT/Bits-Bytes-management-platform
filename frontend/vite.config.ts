@@ -9,6 +9,8 @@ export default defineConfig({
     build: {
         rolldownOptions: {
             output: {
+                // Vendor chunks can form cycles; initialize PDF dependencies before their consumers.
+                strictExecutionOrder: true,
                 codeSplitting: {
                     groups: [
                         {
