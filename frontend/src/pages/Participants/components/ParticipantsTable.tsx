@@ -17,7 +17,7 @@ interface IParticipantsTable {
     filteredParticipants: (IParticipantWithSchedules & {checked: boolean})[];
     participants: IParticipantWithSchedules[];
     rooms: IRoom[];
-    setParticipants: (value: IParticipantWithSchedules[]) => void;
+    setParticipants: React.Dispatch<React.SetStateAction<IParticipantWithSchedules[]>>;
     setFilteredParticipants: (value: (IParticipantWithSchedules & {checked: boolean})[]) => void;
     checkBox?: true;
 }

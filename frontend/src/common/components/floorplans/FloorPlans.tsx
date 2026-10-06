@@ -14,6 +14,7 @@ import FloorplansService from "./floorplans.service";
 export default function FloorPlans<T>({
     rooms,
     participants,
+    setParticipants,
     PopUpContent,
     dayButtons,
     stacked,
@@ -91,6 +92,7 @@ export default function FloorPlans<T>({
     useEffect(() => {
         const element = canvas.current;
         if (!element) return;
+        if (!rooms[active]?.scale) return;
 
         let timer: ReturnType<typeof setTimeout>;
 
@@ -233,6 +235,7 @@ export default function FloorPlans<T>({
                                 canvas={canvas}
                                 currentWorkplace={currentWorkplace}
                                 participants={participants}
+                                setParticipants={setParticipants}
                                 setCurrentWorkplace={setCurrentWorkplace}
                                 currentScale={currentScale}
                                 setWorkplaces={setWorkplaces}

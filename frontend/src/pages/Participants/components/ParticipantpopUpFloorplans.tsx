@@ -97,15 +97,22 @@ export default function ParticipantpopUpFloorplans({
                             onChange={value => {
                                 if (!scheduleField || !popupPropsExtra) return;
 
+                                const previousWorkplace = workplaces.find(
+                                    wp => wp.id === popupPropsExtra.currentScedule[scheduleField],
+                                );
+
                                 popupPropsExtra.setCurrentScedule(schedule => ({
                                     ...schedule,
                                     [scheduleField]: value ? currentWorkplace.id : undefined,
                                 }));
 
-                                if (index === 0)
+                                if (index === 0) {
+                                    if (previousWorkplace) previousWorkplace.timeslots[currentDay].Ochtend = "Vrij";
                                     currentWorkplace.timeslots[currentDay].Ochtend = value ? "temp bezet" : "Vrij";
-                                else if (index === 1)
+                                } else if (index === 1) {
+                                    if (previousWorkplace) previousWorkplace.timeslots[currentDay].Middag = "Vrij";
                                     currentWorkplace.timeslots[currentDay].Middag = value ? "temp bezet" : "Vrij";
+                                }
 
                                 const updatedWorkplace = {
                                     ...currentWorkplace,
@@ -113,7 +120,11 @@ export default function ParticipantpopUpFloorplans({
                                 };
 
                                 const updatedWorkplaces = workplaces.map(workplace =>
-                                    workplace.id === updatedWorkplace.id ? updatedWorkplace : workplace,
+                                    workplace.id === updatedWorkplace.id
+                                        ? updatedWorkplace
+                                        : previousWorkplace && workplace.id === previousWorkplace.id
+                                          ? previousWorkplace
+                                          : workplace,
                                 );
 
                                 setCurrentWorkplace(updatedWorkplace);

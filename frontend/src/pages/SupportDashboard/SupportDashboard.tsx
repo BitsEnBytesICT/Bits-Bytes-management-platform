@@ -108,7 +108,12 @@ export default function SupportDashboard() {
                     </div>
                 </div>
 
-                <FloorPlans rooms={rooms} participants={participants} PopUpContent={FloorplansPopUp} />
+                <FloorPlans
+                    rooms={rooms}
+                    participants={participants}
+                    PopUpContent={FloorplansPopUp}
+                    setParticipants={setParticipants}
+                />
 
                 <Calendar />
             </div>

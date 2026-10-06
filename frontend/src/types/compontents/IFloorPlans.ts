@@ -7,6 +7,7 @@ import type ISchedule from "../schedules/ISchedule";
 export default interface IFloorPlans<T> {
     rooms: IRoom[];
     participants: IParticipantWithSchedules[];
+    setParticipants: React.Dispatch<React.SetStateAction<IParticipantWithSchedules[]>>;
     PopUpContent?: ComponentType<FloorplansPopUp<NoInfer<T>>>;
     dayButtons?: boolean;
     stacked?: boolean;

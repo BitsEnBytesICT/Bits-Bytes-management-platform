@@ -26,7 +26,7 @@ interface IParticipantPopUp {
     participant?: IParticipantWithSchedules;
     account?: IAccount;
     onClose: () => void;
-    setParticipants?: (value: IParticipantWithSchedules[]) => void;
+    setParticipants?: React.Dispatch<React.SetStateAction<IParticipantWithSchedules[]>>;
 }
 
 const titles: Record<ParticipantPopUpMode, string> = {
@@ -413,6 +413,7 @@ export default function ParticipantPopUp({
 
                             <FloorPlans
                                 participants={participants}
+                                setParticipants={setParticipants}
                                 rooms={rooms}
                                 height="h-42"
                                 stacked
