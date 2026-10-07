@@ -4,9 +4,11 @@ import type ISmallPopUp from "../../types/compontents/ISmallPopUp";
 
 import {IconClose} from "../../assets";
 
-export default function SmallPopUp({title, message, onConfirm, onCancel}: ISmallPopUp) {
+export default function SmallPopUp({title, message, onConfirm, onCancel, nested}: ISmallPopUp) {
     return (
-        <div className="flex items-center justify-center fixed inset-0 z-50 bg-(--color-black)/50">
+        <div
+            className={`flex items-center justify-center fixed inset-0 z-50
+                ${nested ? "bg-(--color-black)/25" : "bg-(--color-black)/50"}`}>
             <div
                 className="px-10 py-8 flex flex-col gap-6 justify-between relative w-full max-w-100 h-75
                     bg-(--color-white) rounded-2xl
