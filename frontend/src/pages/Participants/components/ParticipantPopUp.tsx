@@ -421,8 +421,9 @@ export default function ParticipantPopUp({
                                     currentScedule: currentScedule,
                                     setCurrentScedule: setCurrentScedule,
                                     currentParticipant: currentParticipant,
+                                    isInfo: isInfo,
                                 }}
-                                PopUpContent={!isInfo ? ParticipantpopUpFloorplans : undefined}
+                                PopUpContent={ParticipantpopUpFloorplans}
                                 currentEditedScedule={currentScedule}></FloorPlans>
                         </div>
                     ) : (

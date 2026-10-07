@@ -51,7 +51,7 @@ export default function FloorPlans<T>({
     useEffect(() => {
         if (!rooms[active]) return;
 
-        if (workplaces.length > 0) setOccupancy(workplaces.filter(wp => wp.RoomID === rooms[active].id));
+        if (workplaces?.length > 0) setOccupancy(workplaces.filter(wp => wp.RoomID === rooms[active].id));
         else floorplansService.getWorkplaces(rooms[active].id).then(setOccupancy);
         floorplansService.getWalls(rooms[active].id).then(setWalls);
     }, [rooms, active]);

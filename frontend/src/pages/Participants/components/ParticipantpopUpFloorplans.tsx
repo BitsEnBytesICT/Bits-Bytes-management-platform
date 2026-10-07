@@ -8,6 +8,7 @@ interface IParticipantpopUpFloorplans {
     currentScedule: ISchedule;
     setCurrentScedule: Dispatch<SetStateAction<ISchedule>>;
     currentParticipant: IParticipant;
+    isInfo: boolean;
 }
 
 const scheduleFieldsByDay = [
@@ -81,8 +82,9 @@ export default function ParticipantpopUpFloorplans({
                             id={`${index}`}
                             type="checkbox"
                             readOnly={
-                                currentParticipants?.[index]?.id !== popupPropsExtra.currentParticipant.id &&
-                                currentWorkplace.id !== popupPropsExtra.currentScedule[scheduleField]
+                                (currentParticipants?.[index]?.id !== popupPropsExtra.currentParticipant.id &&
+                                    currentWorkplace.id !== popupPropsExtra.currentScedule[scheduleField]) ||
+                                popupPropsExtra.isInfo
                             }
                             label={
                                 currentParticipants && currentParticipants[index]
