@@ -1,3 +1,4 @@
+import {useEffect, useRef} from "react";
 import type {IParticipantWithSchedules} from "../../../types/compontents/IParticipant";
 import type IFloorplansPopUp from "../../../types/floorPlans/floorplantsPopUp";
 import type ISchedule from "../../../types/schedules/ISchedule";
@@ -15,6 +16,9 @@ export default function FloorplansPopUp({
     workplaces,
     currentDay,
 }: IFloorplansPopUp<unknown>) {
+    const extraInfoChanged = useRef<boolean>(false);
+    const latestWorkplace = useRef(currentWorkplace);
+
     const occupancyStatuses = [
         {label: "Vrij", color: "text-(--color-green)"},
         {label: "Deels", color: "text-(--color-yellow)"},
@@ -29,6 +33,20 @@ export default function FloorplansPopUp({
         ];
 
     const floorplansService: FloorplansService = new FloorplansService();
+
+    useEffect(() => {
+        latestWorkplace.current = currentWorkplace;
+    }, [currentWorkplace]);
+
+    useEffect(() => {
+        return () => {
+            if (extraInfoChanged.current)
+                floorplansService.updateWorkplace(
+                    ["id", latestWorkplace.current.id],
+                    ["extraInfo", latestWorkplace.current.extraInfo],
+                );
+        };
+    }, []);
 
     return (
         <div
@@ -150,6 +168,7 @@ export default function FloorplansPopUp({
                             workplace.id === updatedWorkplace.id ? updatedWorkplace : workplace,
                         ),
                     );
+                    extraInfoChanged.current = true;
                 }}
                 id="notities"
                 type="textarea"

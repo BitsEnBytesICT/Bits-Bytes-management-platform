@@ -1,30 +1,52 @@
 import Table from "../../../common/components/Table";
-import type {IParticipant} from "../../../types/compontents/IParticipant";
+import type {IParticipantWithSchedules} from "../../../types/compontents/IParticipant";
 
 import type {ITableColumn} from "../../../types/compontents/ITable";
+import type {IWorkplace} from "../../../types/floorPlans/IWorkplace";
+import {scheduleFieldsByDay} from "../../../types/schedules/ISchedule";
 
 interface ISupportDashboardTable {
-    participants: IParticipant[];
-    setParticipants: (value: IParticipant[]) => void;
+    participants: IParticipantWithSchedules[];
+    setParticipants: (value: IParticipantWithSchedules[]) => void;
+    workplaces: IWorkplace[];
 }
 
-const participantColumns: ITableColumn<IParticipant>[] = [
-    {key: "firstname", label: "Naam"},
-    {key: "lastname", label: "Achternaam"},
-    {key: "organisation", label: "Organisatie"},
-    {
-        key: "clockedin",
-        label: "Aanwezig",
-        render: row => {
-            const isPresent = row.clockedin === 1;
-            const presenceColor = isPresent ? "text-(--color-green)" : "text-(--color-red)";
+export default function SupportDashboardTable({participants, setParticipants, workplaces}: ISupportDashboardTable) {
+    const participantColumns: ITableColumn<IParticipantWithSchedules>[] = [
+        {key: "firstname", label: "Naam"},
+        {key: "lastname", label: "Achternaam"},
+        {
+            key: "clockedin",
+            label: "Ingeklokt",
+            render: row => {
+                const isPresent = row.clockedin === 1;
+                const presenceColor = isPresent ? "text-(--color-green)" : "text-(--color-red)";
 
-            return <div className={`font-semibold ${presenceColor}`}>{isPresent ? "Aanwezig" : "Afwezig"}</div>;
+                return <div className={`font-semibold ${presenceColor}`}>{isPresent ? "Ingeklokt" : "Uitgeklokt"}</div>;
+            },
         },
-    },
-];
+        {
+            key: "schedules",
+            label: "plek",
+            render: row => {
+                const weekday = new Date().getDay() - 1;
+                const day = weekday < 0 || weekday > 4 ? 0 : weekday;
+                const morningField = scheduleFieldsByDay[day * 2][0];
+                const afternoonField = scheduleFieldsByDay[day * 2 + 1][0];
+                const now = Date.now();
 
-export default function SupportDashboardTable({participants, setParticipants}: ISupportDashboardTable) {
+                const workplaceIds = new Set(
+                    row.schedules
+                        .filter(s => !s.endDate || s.endDate.getTime() > now)
+                        .flatMap(s => [s[morningField], s[afternoonField]])
+                        .filter(id => id != null),
+                );
+
+                return workplaces.filter(wp => workplaceIds.has(wp.id)).map(wp => <div key={wp.id}>{wp.name}</div>);
+            },
+        },
+    ];
+
     return (
         <div className="max-h-120">
             <Table

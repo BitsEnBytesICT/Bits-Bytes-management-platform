@@ -3,6 +3,7 @@ import type {IRoom} from "../floorPlans/IRoom";
 import type FloorplansPopUp from "../floorPlans/floorplantsPopUp";
 import type {IParticipantWithSchedules} from "./IParticipant";
 import type ISchedule from "../schedules/ISchedule";
+import type {IWorkplace} from "../floorPlans/IWorkplace";
 
 export default interface IFloorPlans<T> {
     rooms: IRoom[];
@@ -14,4 +15,5 @@ export default interface IFloorPlans<T> {
     popupPropsExtra?: T;
     height?: string;
     currentEditedScedule?: ISchedule;
+    workplaces?: IWorkplace[];
 }

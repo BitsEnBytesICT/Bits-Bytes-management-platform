@@ -19,22 +19,33 @@ import type {IRoom} from "../../types/floorPlans/IRoom";
 import {IconAddUser, IconLink, IconExport} from "../../assets";
 
 import buildPDF from "../../common/buildPDF";
-import {type IParticipant, type IParticipantWithSchedules} from "../../types/compontents/IParticipant";
+import {type IParticipantWithSchedules} from "../../types/compontents/IParticipant";
+import {type IWorkplace} from "../../types/floorPlans/IWorkplace";
 
 export default function SupportDashboard() {
     const [totalParticipants, setTotalParticipants] = useState(0);
-    const [presentParticipants, setPresentParticipants] = useState<IParticipant[]>([]);
+    const [presentParticipants, setPresentParticipants] = useState<IParticipantWithSchedules[]>([]);
     const [participants, setParticipants] = useState<IParticipantWithSchedules[]>([]);
     const [rooms, setRooms] = useState<IRoom[]>([]);
     const [isAddParticipantShown, setIsAddParticipantShown] = useState(false);
     const [clockedin, setClockedin] = useState(0);
+    const [workplaces, setWorkplaces] = useState<IWorkplace[]>([]);
 
     useEffect(() => {
         const service = new SupportDashboardService();
 
         const getData = async () => {
             await service.getTotalParticipants().then(setTotalParticipants);
-            await service.getPresentParticipants().then(setPresentParticipants);
+            await service.getPresentParticipants().then(participants => {
+                service.getScedules().then(schedules => {
+                    setPresentParticipants(
+                        participants.map(p => {
+                            const schedule = schedules.filter(s => s.participant === p.id);
+                            return {...p, schedules: schedule};
+                        }),
+                    );
+                });
+            });
             await service.getParticipants().then(participants => {
                 service.getScedules().then(schedules => {
                     setParticipants(
@@ -45,6 +56,7 @@ export default function SupportDashboard() {
                     );
                 });
             });
+            await service.getWorkplaces().then(setWorkplaces);
             await service.getRooms().then(setRooms);
             await service.getClockedinParticipants().then(setClockedin);
         };
@@ -104,18 +116,20 @@ export default function SupportDashboard() {
                         <SupportDashboardTable
                             participants={presentParticipants}
                             setParticipants={setPresentParticipants}
+                            workplaces={workplaces}
                         />
                     </div>
                 </div>
+
+                <Calendar />
 
                 <FloorPlans
                     rooms={rooms}
                     participants={participants}
                     PopUpContent={FloorplansPopUp}
                     setParticipants={setParticipants}
+                    workplaces={workplaces}
                 />
-
-                <Calendar />
             </div>
 
             {isAddParticipantShown && (

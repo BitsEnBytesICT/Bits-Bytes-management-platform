@@ -96,6 +96,7 @@ export default function ParticipantPopUp({
             schedules.filter(
                 s =>
                     (!s.endDate || s.endDate.getTime() > currentScedule.startDate.getTime()) &&
+                    s.id !== currentScedule.id &&
                     ((s.monMorning != null && currentScedule.monMorning != null) ||
                         (s.monEvening != null && currentScedule.monEvening != null) ||
                         (s.thuesMorning != null && currentScedule.thuesMorning != null) ||
@@ -120,9 +121,8 @@ export default function ParticipantPopUp({
 
     async function deleteSchedule(index: number) {
         const scedule = schedules[index];
-        if (scedule.id) await service.deleteScedule(scedule.id);
-
         setSchedules(schedules.filter((_, i) => i !== index));
+        if (scedule.id) await service.deleteScedule(scedule.id);
     }
 
     async function save() {
