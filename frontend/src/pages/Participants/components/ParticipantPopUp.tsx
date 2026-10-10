@@ -14,7 +14,7 @@ import FloorPlans from "../../../common/components/floorplans/FloorPlans";
 import type {IRoom} from "../../../types/floorPlans/IRoom";
 import ParticipantpopUpFloorplans from "./ParticipantpopUpFloorplans";
 import type ISchedule from "../../../types/schedules/ISchedule";
-import {fromDateString, toDateString} from "../../../common/helperFunctions";
+import {fromDateString, toShortDateString} from "../../../common/helperFunctions";
 import type {IParticipant, IParticipantWithSchedules} from "../../../types/compontents/IParticipant";
 
 type ParticipantPopUpMode = "info" | "add" | "edit";
@@ -92,30 +92,33 @@ export default function ParticipantPopUp({
     function saveSchedule() {
         if (!currentScedule.name || !currentScedule.startDate) return;
 
-        if (
-            schedules.filter(
-                s =>
-                    (!s.endDate || s.endDate.getTime() > currentScedule.startDate.getTime()) &&
-                    s.id !== currentScedule.id &&
-                    ((s.monMorning != null && currentScedule.monMorning != null) ||
-                        (s.monEvening != null && currentScedule.monEvening != null) ||
-                        (s.thuesMorning != null && currentScedule.thuesMorning != null) ||
-                        (s.thuesEvening != null && currentScedule.thuesEvening != null) ||
-                        (s.wedMorning != null && currentScedule.wedMorning != null) ||
-                        (s.wedEvening != null && currentScedule.wedEvening != null) ||
-                        (s.thursMorning != null && currentScedule.thursMorning != null) ||
-                        (s.thursEvening != null && currentScedule.thursEvening != null) ||
-                        (s.friMorning != null && currentScedule.friMorning != null) ||
-                        (s.friEvening != null && currentScedule.friEvening != null)),
-            ).length > 0
-        )
+        const result = schedules.filter(
+            s =>
+                (!s.endDate || s.endDate.getTime() > currentScedule.startDate.getTime()) &&
+                s.id !== currentScedule.id &&
+                ((s.monMorning != null && currentScedule.monMorning != null) ||
+                    (s.monEvening != null && currentScedule.monEvening != null) ||
+                    (s.thuesMorning != null && currentScedule.thuesMorning != null) ||
+                    (s.thuesEvening != null && currentScedule.thuesEvening != null) ||
+                    (s.wedMorning != null && currentScedule.wedMorning != null) ||
+                    (s.wedEvening != null && currentScedule.wedEvening != null) ||
+                    (s.thursMorning != null && currentScedule.thursMorning != null) ||
+                    (s.thursEvening != null && currentScedule.thursEvening != null) ||
+                    (s.friMorning != null && currentScedule.friMorning != null) ||
+                    (s.friEvening != null && currentScedule.friEvening != null)),
+        );
+
+        if (result.length > 0) {
+            setError([`De nieuwe schedule overlapt met de schedules: ${result.map(s => s.name).join(", ")}`]);
             return;
+        }
 
         const index = schedules.findIndex(scedule => scedule.name === currentScedule.name);
         if (index === -1) schedules.push({...currentScedule});
         else schedules[index] = {...currentScedule};
 
         setSchedules([...schedules]);
+        setError([]);
         closeScheduleForm();
     }
 
@@ -384,13 +387,13 @@ export default function ParticipantPopUp({
                                 <Input
                                     key={`startDate-${currentScedule.id ?? "new"}`}
                                     id="startDate"
-                                    type="datetime-local"
+                                    type="date"
                                     label="Vanaf"
                                     required
                                     readOnly={isInfo}
-                                    value={toDateString(currentScedule.startDate)}
+                                    value={toShortDateString(currentScedule.startDate)}
                                     icon={IconCalendarAfter}
-                                    max={toDateString(currentScedule.endDate) || undefined}
+                                    max={toShortDateString(currentScedule.endDate) || undefined}
                                     onChange={value =>
                                         setCurrentScedule({...currentScedule, startDate: fromDateString(value)})
                                     }
@@ -399,12 +402,12 @@ export default function ParticipantPopUp({
                                 <Input
                                     key={`endDate-${currentScedule.id ?? "new"}`}
                                     id="endDate"
-                                    type="datetime-local"
+                                    type="date"
                                     label="Tot en met"
                                     readOnly={isInfo}
-                                    value={toDateString(currentScedule.endDate)}
+                                    value={toShortDateString(currentScedule.endDate)}
                                     icon={IconCalendarBefore}
-                                    min={toDateString(currentScedule.startDate) || undefined}
+                                    min={toShortDateString(currentScedule.startDate) || undefined}
                                     onChange={value =>
                                         setCurrentScedule({...currentScedule, endDate: fromDateString(value)})
                                     }
@@ -428,7 +431,7 @@ export default function ParticipantPopUp({
                         </div>
                     ) : (
                         <>
-                            <div className="flex flex-col gap-3 max-h-100 overflow-auto">
+                            <div className="flex flex-col gap-3 max-h-100 overflow-auto mb-6">
                                 {schedules.map((scedule, index) => (
                                     <div
                                         key={scedule.id ?? scedule.name}

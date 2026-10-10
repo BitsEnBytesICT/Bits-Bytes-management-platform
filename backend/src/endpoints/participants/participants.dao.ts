@@ -42,7 +42,7 @@ export default class ParticipantDao extends daoBase<IParticipant> implements dao
     async countPresent(): Promise<IParticipant[]> {
         const now = new Date();
         const today = toDateString(now).slice(0, 10);
-        const weekday = [null, "mon", "thues", "wed", "thurs", "fri", null][now.getUTCDay()];
+        const weekday = ["mon", "mon", "thues", "wed", "thurs", "fri", "mon"][now.getUTCDay()];
         if (!weekday) return [];
 
         const result = await dbAll<IParticipant>(

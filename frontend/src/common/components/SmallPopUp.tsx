@@ -9,7 +9,7 @@ export default function SmallPopUp(props: ISmallPopUp) {
             className={`flex items-center justify-center fixed inset-0 z-50
                 ${props.nested ? "bg-(--color-black)/25" : "bg-(--color-black)/50"}`}>
             <div
-                className="px-10 py-8 flex flex-col gap-6 justify-between relative w-full max-w-100 h-75
+                className="px-10 py-8 flex flex-col gap-6 justify-between relative w-full max-w-100 min-h-75
                     bg-(--color-white) rounded-2xl
                     shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
                 <img

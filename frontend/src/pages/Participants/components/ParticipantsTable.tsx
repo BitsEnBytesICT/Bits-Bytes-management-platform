@@ -14,6 +14,10 @@ import type {IRoom} from "../../../types/floorPlans/IRoom";
 import type {IParticipantWithSchedules} from "../../../types/compontents/IParticipant";
 import Input from "../../../common/components/Input";
 import type {IDateRange} from "../../../types/compontents/IDateRangePicker";
+import Button from "../../../common/components/Button";
+import type ISchedule from "../../../types/schedules/ISchedule";
+import {fromShortDateString} from "../../../common/helperFunctions";
+import type {KeyValuePair} from "../../../types/validation/keyvaluePair";
 
 interface IParticipantsTable {
     filteredParticipants: (IParticipantWithSchedules & {checked: boolean})[];
@@ -160,42 +164,109 @@ export default function ParticipantsTable({
                 <SmallPopUp
                     title="Afwezig melden"
                     message={
-                        <div className="items-center">
-                            <Input
-                                id="dateFrom"
-                                type="date"
-                                label="Van"
-                                labelClassName="opacity-50"
-                                value={dateRange.from}
-                                max={dateRange.to}
-                                icon={IconCalendarAfter}
-                                className={`px-3 py-2 bg-(--color-offwhite) rounded-lg
-                                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`}
-                                iconClassName="right-3"
-                                onChange={from => setDateRange({...dateRange, from})}
-                            />
+                        <div className="flex flex-col h-full gap-y-6">
+                            <div className="items-center">
+                                <Input
+                                    id="dateFrom"
+                                    type="date"
+                                    label="Van"
+                                    required={true}
+                                    labelClassName="opacity-50"
+                                    value={dateRange.from}
+                                    max={dateRange.to}
+                                    icon={IconCalendarAfter}
+                                    className={`px-3 py-2 bg-(--color-offwhite) rounded-lg
+                                    shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`}
+                                    iconClassName="right-3"
+                                    onChange={from => setDateRange({...dateRange, from})}
+                                />
 
-                            <Input
-                                id="dateTo"
-                                type="date"
-                                label="Tot en met"
-                                labelClassName="opacity-50"
-                                value={dateRange.to}
-                                min={dateRange.from}
-                                icon={IconCalendarBefore}
-                                className={`px-3 py-2 bg-(--color-offwhite) rounded-lg
-                                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`}
-                                iconClassName="right-3"
-                                onChange={to => setDateRange({...dateRange, to})}
-                            />
+                                <Input
+                                    id="dateTo"
+                                    type="date"
+                                    label="Tot en met"
+                                    labelClassName="opacity-50"
+                                    value={dateRange.to}
+                                    min={dateRange.from}
+                                    icon={IconCalendarBefore}
+                                    className={`px-3 py-2 bg-(--color-offwhite) rounded-lg
+                                    shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`}
+                                    iconClassName="right-3"
+                                    onChange={to => setDateRange({...dateRange, to})}
+                                />
 
-                            <button onClick={() => setDateRange({from: "", to: ""})} className="mr-auto cursor-pointer">
-                                Reset
-                            </button>
+                                <button
+                                    onClick={() => setDateRange({from: "", to: ""})}
+                                    className="mr-auto cursor-pointer">
+                                    Reset
+                                </button>
+                            </div>
+
+                            <div className="mt-auto">
+                                <Button
+                                    onClick={async () => {
+                                        const newSchedules: ISchedule[] = [];
+                                        const modifiedSchedules = absentParticipant.schedules.map(s => {
+                                            if (
+                                                !s.endDate ||
+                                                (s.endDate && s.endDate.getTime() < new Date().getTime())
+                                            ) {
+                                                if (dateRange.to) {
+                                                    const startDate = fromShortDateString(dateRange.to);
+                                                    startDate.setDate(startDate.getDate() + 1);
+                                                    newSchedules.push({
+                                                        ...s,
+                                                        id: undefined,
+                                                        name: `${s.name} na afwezigheid`,
+                                                        startDate: startDate,
+                                                        endDate: undefined,
+                                                    });
+                                                }
+                                                return {...s, endDate: new Date()} as ISchedule;
+                                            }
+                                            return s;
+                                        });
+                                        const absentSchedule: ISchedule = {
+                                            name: `absentie ${dateRange.from} ${dateRange.to}`,
+                                            startDate: fromShortDateString(dateRange.from),
+                                            participant: absentParticipant.id,
+                                        };
+                                        if (dateRange.to) absentSchedule.endDate = fromShortDateString(dateRange.to);
+
+                                        absentParticipant.schedules = modifiedSchedules.concat(newSchedules);
+                                        await Promise.all([
+                                            ...modifiedSchedules
+                                                .map(s =>
+                                                    service.updateScedule(
+                                                        ["id", s.id],
+                                                        ...(Object.entries(s) as KeyValuePair<ISchedule>[]),
+                                                    ),
+                                                )
+                                                .concat(newSchedules.map(s => service.createScedule(s))),
+                                            service.createScedule(absentSchedule),
+                                        ]);
+                                        absentParticipant.schedules.push(absentSchedule);
+
+                                        //setAbsentParticipant({...absentParticipant});
+                                        setParticipants(
+                                            participants.map(p => {
+                                                if (p.id === absentParticipant.id) return {...absentParticipant};
+                                                return p;
+                                            }),
+                                        );
+                                        setAbsentParticipant(null);
+                                        setDateRange({from: "", to: ""});
+                                    }}>
+                                    Afwezig melden
+                                </Button>
+                            </div>
                         </div>
                     }
                     confirmationButtons={[]}
-                    onCancel={() => setAbsentParticipant(null)}></SmallPopUp>
+                    onCancel={() => {
+                        setAbsentParticipant(null);
+                        setDateRange({from: "", to: ""});
+                    }}></SmallPopUp>
             )}
 
             {deleteParticipant && (

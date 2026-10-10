@@ -103,7 +103,8 @@ export default function FloorPlans<T>({
         for (const participant of participants) {
             if (!participant.schedules) continue;
             for (const schedule of participant.schedules) {
-                if (schedule.endDate && schedule.endDate.getTime() < now) continue;
+                if ((schedule.endDate && schedule.endDate.getTime() < now) || schedule.startDate.getTime() > now)
+                    continue;
 
                 for (const [field, dayIndex, period] of scheduleFieldsByDay) {
                     const workplaceId = schedule[field];

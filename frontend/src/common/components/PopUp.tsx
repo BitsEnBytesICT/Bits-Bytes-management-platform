@@ -22,11 +22,11 @@ export default function PopUp({onClose, onPrevious, title, children, button, err
 
                 <div className="flex flex-1 flex-col gap-y-7">
                     {children[page]}
-                    <div className="flex flex-col h-6">
+                    <div className="flex flex-col min-h-6 max-h-22 overflow-y-auto">
                         {errors &&
-                            errors.map(e => (
+                            errors.map((e, index) => (
                                 <span
-                                    key={e}
+                                    key={index}
                                     className="text-[16px] font-semibold text-(--color-red)
                                         animate-[fade-in_0.3s_ease-in-out]">
                                     {e}

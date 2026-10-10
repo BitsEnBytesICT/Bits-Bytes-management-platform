@@ -82,7 +82,8 @@ export default function ParticipantpopUpFloorplans({
                             id={`${index}`}
                             type="checkbox"
                             readOnly={
-                                (currentParticipants?.[index]?.id !== popupPropsExtra.currentParticipant.id &&
+                                (currentParticipants?.[index]?.id !== undefined &&
+                                    currentParticipants?.[index]?.id !== popupPropsExtra.currentParticipant.id &&
                                     currentWorkplace.id !== popupPropsExtra.currentScedule[scheduleField]) ||
                                 popupPropsExtra.isInfo
                             }
