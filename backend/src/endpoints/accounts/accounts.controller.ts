@@ -39,4 +39,28 @@ export default class AccountController {
         await this.service.update(req.body.where, ...req.body.values);
         res.sendStatus(200);
     }
+
+    @AuthenticationDecorator(PermissionsList.accountCurrent)
+    async calendars (req: Request, res: Response) {
+        const calendars = await this.service.calendars(req.cookies["login"]);
+        res.status(200).json(calendars);
+    }
+
+    @AuthenticationDecorator(PermissionsList.accountUpdate)
+    async updateCalendars (req: Request, res: Response) {
+        await this.service.updateCalendars(req.cookies["login"], req.body.calendars);
+        res.sendStatus(200);
+    }
+
+    @AuthenticationDecorator(PermissionsList.accountCurrent)
+    async shortcuts (req: Request, res: Response) {
+        const shortcuts = await this.service.shortcuts(req.cookies["login"]);
+        res.status(200).json(shortcuts);
+    }
+
+    @AuthenticationDecorator(PermissionsList.accountUpdate)
+    async updateShortcuts (req: Request, res: Response) {
+        await this.service.updateShortcuts(req.cookies["login"], req.body.shortcuts);
+        res.sendStatus(200);
+    }
 }

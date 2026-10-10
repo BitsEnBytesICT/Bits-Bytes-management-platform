@@ -34,6 +34,18 @@ export const setupDatabase = () => {
     db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Milan', 'MilanD', 'Dekker', 'admin', encrypt('test123'));
     db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Lotte', 'LotteV', 'van Dijk', 'admin', encrypt('test123'));
 
+    const calendars = JSON.stringify([
+        { label: 'Algemeen', url: 'https://calendar.google.com/calendar/embed?src=bnglprk6ouafmihk094plj9gu0%40group.calendar.google.com&ctz=Europe%2FAmsterdam' },
+        { label: 'Jantine', url: 'https://calendar.google.com/calendar/embed?src=bitsenbytesjantine%40gmail.com&ctz=UTC' },
+    ]);
+    db.prepare("UPDATE Accounts SET calendars = ? WHERE type = ?").run(calendars, 'support');
+
+    const shortcuts = JSON.stringify([
+        { label: 'Cliendo', url: 'https://www.cliendo.nl' },
+        { label: 'ZilliZ', url: 'https://zilliz.com' },
+    ]);
+    db.prepare("UPDATE Accounts SET shortcuts = ? WHERE type = ?").run(shortcuts, 'support');
+
     const now = getCurrentDate();
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Jan', 'de Vries', 'WMO', 3, '11F3EF12', now, 1, 0, 'Develop');
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Maria', 'Jansen', 'Orionis', 4, 'E1C7A710', now, 1, 1, 'Zorg');
