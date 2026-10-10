@@ -7,11 +7,13 @@ import ParticipantPopUp from "./ParticipantPopUp";
 
 import type {ITableColumn} from "../../../types/compontents/ITable";
 
-import {IconDelete, IconEdit, IconInfo} from "../../../assets";
+import {IconDelete, IconEdit, IconInfo, IconAbsent, IconCalendarAfter, IconCalendarBefore} from "../../../assets";
 import ParticipantsService from "../Participants.service";
 import type IAccount from "../../../types/accounts/IAccount";
 import type {IRoom} from "../../../types/floorPlans/IRoom";
 import type {IParticipantWithSchedules} from "../../../types/compontents/IParticipant";
+import Input from "../../../common/components/Input";
+import type {IDateRange} from "../../../types/compontents/IDateRangePicker";
 
 interface IParticipantsTable {
     filteredParticipants: (IParticipantWithSchedules & {checked: boolean})[];
@@ -27,6 +29,7 @@ function ActionIcons(
     onInfoClick: (participantAndAccount: [IParticipantWithSchedules, IAccount]) => void,
     onEditClick: (participantAndAccount: [IParticipantWithSchedules, IAccount]) => void,
     onDeleteClick: (participant: IParticipantWithSchedules) => void,
+    onAbsentClick: (participant: IParticipantWithSchedules) => void,
 ) {
     const service: ParticipantsService = new ParticipantsService();
 
@@ -59,6 +62,11 @@ function ActionIcons(
                 className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
             />
             <img
+                onClick={async () => onAbsentClick(participant)}
+                src={IconAbsent}
+                className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+            />
+            <img
                 onClick={async () => onDeleteClick(participant)}
                 src={IconDelete}
                 className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
@@ -77,7 +85,10 @@ export default function ParticipantsTable({
 }: IParticipantsTable) {
     const [infoParticipant, setInfoParticipant] = useState<[IParticipantWithSchedules, IAccount] | null>(null);
     const [editParticipant, setEditParticipant] = useState<[IParticipantWithSchedules, IAccount] | null>(null);
+    const [absentParticipant, setAbsentParticipant] = useState<IParticipantWithSchedules | null>(null);
     const [deleteParticipant, setDeleteParticipant] = useState<IParticipantWithSchedules | null>(null);
+
+    const [dateRange, setDateRange] = useState<IDateRange>({from: "", to: ""});
 
     const service: ParticipantsService = new ParticipantsService();
 
@@ -107,7 +118,8 @@ export default function ParticipantsTable({
             label: "Acties",
             copyable: false,
             sortable: false,
-            render: row => ActionIcons(row, setInfoParticipant, setEditParticipant, setDeleteParticipant),
+            render: row =>
+                ActionIcons(row, setInfoParticipant, setEditParticipant, setDeleteParticipant, setAbsentParticipant),
         },
     ];
 
@@ -142,6 +154,48 @@ export default function ParticipantsTable({
                     account={editParticipant[1]}
                     onClose={() => setEditParticipant(null)}
                 />
+            )}
+
+            {absentParticipant && (
+                <SmallPopUp
+                    title="Afwezig melden"
+                    message={
+                        <div className="items-center">
+                            <Input
+                                id="dateFrom"
+                                type="date"
+                                label="Van"
+                                labelClassName="opacity-50"
+                                value={dateRange.from}
+                                max={dateRange.to}
+                                icon={IconCalendarAfter}
+                                className={`px-3 py-2 bg-(--color-offwhite) rounded-lg
+                                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`}
+                                iconClassName="right-3"
+                                onChange={from => setDateRange({...dateRange, from})}
+                            />
+
+                            <Input
+                                id="dateTo"
+                                type="date"
+                                label="Tot en met"
+                                labelClassName="opacity-50"
+                                value={dateRange.to}
+                                min={dateRange.from}
+                                icon={IconCalendarBefore}
+                                className={`px-3 py-2 bg-(--color-offwhite) rounded-lg
+                                shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]`}
+                                iconClassName="right-3"
+                                onChange={to => setDateRange({...dateRange, to})}
+                            />
+
+                            <button onClick={() => setDateRange({from: "", to: ""})} className="mr-auto cursor-pointer">
+                                Reset
+                            </button>
+                        </div>
+                    }
+                    confirmationButtons={[]}
+                    onCancel={() => setAbsentParticipant(null)}></SmallPopUp>
             )}
 
             {deleteParticipant && (

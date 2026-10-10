@@ -90,7 +90,9 @@ export default function ShortcutPopUp({shortcuts, onClose, onSaved}: IShortcutPo
                                 required
                                 placeholder="https://www.voorbeeld.nl"
                                 value={url}
-                                onChange={setUrl}
+                                onChange={value =>
+                                    value.indexOf("https://") !== -1 ? setUrl(value) : setUrl(`https://${value}`)
+                                }
                             />
                         </div>
                     ) : (

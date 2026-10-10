@@ -42,7 +42,14 @@ export default function SupportDashboardTable({participants, setParticipants, wo
                         .filter(id => id != null),
                 );
 
-                return workplaces.filter(wp => workplaceIds.has(wp.id)).map(wp => <div key={wp.id}>{wp.name}</div>);
+                return (
+                    <div className="flex flex-wrap">
+                        {workplaces
+                            .filter(wp => workplaceIds.has(wp.id))
+                            .map(wp => wp.name)
+                            .join(", ")}
+                    </div>
+                );
             },
         },
     ];
