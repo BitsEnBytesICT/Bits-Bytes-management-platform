@@ -125,7 +125,7 @@ export const inventoryDBQuery = async<T>(sql: string, values?: any[]): Promise<T
         if (process.env.DATABASE_TYPE === "sqllite") {
             let result;
             if (values) result = inventoryDBSQLLITE.prepare(sql).run(values);
-            else result = db.prepare(sql).run();
+            else result = inventoryDBSQLLITE.prepare(sql).run();
             if (Array.isArray(result)) return result as T[];
             return [result] as T[];
         }

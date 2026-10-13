@@ -12,7 +12,8 @@ export default class InventoryController {
 
     @AuthenticationDecorator(PermissionsList.createInventory)
     async create(req: Request, res: Response) {
-        // await this.service.create();
+        await this.service.create(req.body?.inventory);
+        res.sendStatus(200);
     }
 
     @AuthenticationDecorator(PermissionsList.updateInventory)

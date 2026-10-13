@@ -8,5 +8,6 @@ export enum Tables {
     Workplaces = "Workplaces",
     Schedules = "Schedules",
     SchedulesParticipants = "SchedulesParticipants",
-    Categories = "Categories"
+    Categories = "Categories",
+    Items = "Items"
 }
