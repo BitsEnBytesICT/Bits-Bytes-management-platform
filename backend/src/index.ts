@@ -11,6 +11,7 @@ import participantRouter from './endpoints/participants/participants.routes';
 import AccountRouter from './endpoints/accounts/accounts.routes';
 import roomRouter from './endpoints/rooms/rooms.routes';
 import wallRouter from './endpoints/walls/walls.routes';
+import inventoryRouter from './endpoints/inventory/inventory.routes';
 import workplaceRouter from './endpoints/workplaces/workplaces.routes';
 import scheduleRouter from './endpoints/schedules/schedules.routes';
 import { setupDatabase } from './setupDatabases';
@@ -69,6 +70,7 @@ const startServer = async () => {
     app.use(wallRouter);
     app.use(workplaceRouter);
     app.use(scheduleRouter);
+    app.use(inventoryRouter);
 
     app.use((err: IError[] | IError, req: Request, res: Response, next: NextFunction) => {
         console.log(err)

@@ -96,6 +96,26 @@ entity Schedule {
     friEvening: number <<foreign key Workplace.id>>
 }
 
+package "Inventory database" {
+    entity Category {
+        * id: number <<primary key>>
+        * name: string
+        --
+        description: string
+    }
+
+    entity Item {
+        * id: number <<primary key>>
+        * name: string
+        * categoryID: number <<foreign key Category.id>>
+        * quantity: number
+        * createdAt: Date
+        --
+        description: string
+        serialNumber: string
+    }
+}
+
 Permission ||--o{ Account
 Permission ||--o{ ApiKey
 Account ||--o{ Participant
@@ -113,4 +133,10 @@ Workplace |o--o{ Schedule : thursMorning
 Workplace |o--o{ Schedule : thursEvening
 Workplace |o--o{ Schedule : friMorning
 Workplace |o--o{ Schedule : friEvening
+
+Category ||--o{ Item
+Item ||--o{ Loan
+' cross-database references (no enforced foreign key)
+Room |o..o{ Item : location
+Participant ||..o{ Loan : participantID
 @enduml

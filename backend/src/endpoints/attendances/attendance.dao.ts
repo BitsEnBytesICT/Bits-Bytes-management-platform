@@ -11,14 +11,14 @@ export default class AttendanceDao extends daoBase<IAttendance> implements daoBa
         );
     }
 
-    async update(where: KeyValuePair<IAttendance>, ...values: KeyValuePair<IAttendance>[]) {
+    async update(where: KeyValuePair<IAttendance>, ...values: KeyValuePair<IAttendance>[]){
         await this.updateFunc(Tables.Attendances, where, ...values);
     }
     
     async delete(where: KeyValuePair<IAttendance>) {
         await this.deleteFunc(Tables.Attendances, where);
     }
-    
+
     async deleteMany(ids: number[]) {
         await dbQuery(`DELETE FROM ${Tables.Attendances} WHERE id IN (${ids.map(() => "?").join(", ")})`, ids);
     }

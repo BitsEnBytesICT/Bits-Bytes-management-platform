@@ -22,4 +22,7 @@ export enum PermissionsList {
     scheduleDelete = "schedule.delete",
     wallList = "wall.list",
     workplaceList = "workplace.list",
+    createInventory = "inventory.create",
+    updateInventory = "update.inventory",
+    deleteInventory = "delete.inventory",
 }
