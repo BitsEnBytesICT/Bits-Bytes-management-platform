@@ -1,28 +1,23 @@
 import {useEffect, useState} from "react";
-import http from "../../common/http";
 import SmallButton from "../../common/components/SmallButton.tsx";
-import {IconFilter} from "../../assets";
 import type IInventory from "../../types/Inventory/IInventory.ts";
 import InventoryTable from "./components/InventoryTable.tsx";
 import InventoryFilter from "./components/InventoryFilter.tsx";
+import {InventoryService} from "./inventory.service.ts";
+import {IconFilter} from "../../assets";
 
 export default function Inventory() {
     const [inventoryItems, setInventoryItems] = useState<IInventory[]>([]);
     const [filteredInventoryItems, setFilteredInventoryItems] = useState<IInventory[]>([]);
     const [isFilterShown, setIsFilterShown] = useState(false);
 
+    const service = new InventoryService();
+
     useEffect(() => {
         const fetchInventoryItems = async (): Promise<void> => {
-            const response: Response = await http("/api/inventory/list", "GET");
-            if (response.status === 200) {
-                const items = await response.json();
-                setInventoryItems(items);
-            } else {
-                alert("Er is iets fout gegaan bij het ophalen van de inventarisatie, bekijk console");
-                console.log("Inventarisatie geeft error", response.status);
-            }
+            const items = await service.getInventoryItems();
+            setInventoryItems(items);
         };
-
         fetchInventoryItems().catch(console.error);
     }, []);
 
@@ -36,12 +31,11 @@ export default function Inventory() {
                     onClick={() => setIsFilterShown(!isFilterShown)}
                 />
             </div>
-            <div>
-                <InventoryFilter
-                    inventory={inventoryItems}
-                    isShown={isFilterShown}
-                    setFilteredInventory={setFilteredInventoryItems}></InventoryFilter>
-            </div>
+            <InventoryFilter
+                inventory={inventoryItems}
+                isShown={isFilterShown}
+                setFilteredInventory={setFilteredInventoryItems}
+            />
             <InventoryTable inventory={filteredInventoryItems} setInventory={setFilteredInventoryItems} />
         </div>
     );

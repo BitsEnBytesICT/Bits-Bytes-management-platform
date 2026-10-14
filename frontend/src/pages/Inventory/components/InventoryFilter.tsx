@@ -1,5 +1,4 @@
 import {useEffect, useRef, useState} from "react";
-import type {ReactNode} from "react";
 
 import Filter from "../../../common/components/Filter";
 
@@ -9,11 +8,10 @@ import type IInventory from "../../../types/Inventory/IInventory.ts";
 interface IInventoryFilter {
     inventory: IInventory[];
     isShown: boolean;
-    children: ReactNode;
     setFilteredInventory: (value: IInventory[]) => void;
 }
 
-export default function InventoryFilter({inventory, isShown, children, setFilteredInventory}: IInventoryFilter) {
+export default function InventoryFilter({inventory, isShown, setFilteredInventory}: IInventoryFilter) {
     const [searchTerm, setSearchTerm] = useLocalStorage("inventory.searchTerm", "");
     const [categoryFilter, setCategoryFilter] = useLocalStorage("inventory.categoryFilter", "");
     const [filterHeight, setFilterHeight] = useState(0);
@@ -72,8 +70,6 @@ export default function InventoryFilter({inventory, isShown, children, setFilter
                     />
                 </div>
             </div>
-
-            {children}
         </>
     );
 }
