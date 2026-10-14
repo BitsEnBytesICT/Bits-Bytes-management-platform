@@ -167,5 +167,37 @@ export const setupDatabase = () => {
         });
     }
 
+    const inventoryDb = new Database('inventoryDatabase.db', { verbose: console.log });
+
+    inventoryDb.prepare('DELETE FROM Items WHERE id > ?').run(-1);
+    inventoryDb.prepare('DELETE FROM Categories WHERE id > ?').run(-1);
+
+    inventoryDb.pragma('foreign_keys = ON');
+
+    const insertCategory = inventoryDb.prepare("INSERT INTO Categories (name, description) VALUES (?, ?)");
+    const categoryIds: Record<string, number> = {
+        Laptops: Number(insertCategory.run('Laptops', 'Laptops voor deelnemers en begeleiders').lastInsertRowid),
+        Monitoren: Number(insertCategory.run('Monitoren', 'Losse beeldschermen voor werkplekken').lastInsertRowid),
+        Randapparatuur: Number(insertCategory.run('Randapparatuur', 'Toetsenborden, muizen en headsets').lastInsertRowid),
+        Kabels: Number(insertCategory.run('Kabels', null).lastInsertRowid),
+    };
+
+    const items = [
+        { category: 'Laptops', description: 'Dell Latitude 5440', quantity: 8, serialNumber: 'DL5440-0001' },
+        { category: 'Laptops', description: 'Lenovo ThinkPad T14', quantity: 4, serialNumber: 'LT14-0001' },
+        { category: 'Monitoren', description: 'Dell P2422H 24 inch', quantity: 12, serialNumber: 'DP2422H-0001' },
+        { category: 'Monitoren', description: 'Samsung S27 27 inch', quantity: 3, serialNumber: 'SS27-0001' },
+        { category: 'Randapparatuur', description: 'Logitech K120 toetsenbord', quantity: 20, serialNumber: '' },
+        { category: 'Randapparatuur', description: 'Logitech M90 muis', quantity: 20, serialNumber: '' },
+        { category: 'Randapparatuur', description: 'Jabra Evolve2 30 headset', quantity: 6, serialNumber: 'JE230-0001' },
+        { category: 'Kabels', description: 'HDMI kabel 2m', quantity: 15, serialNumber: '' },
+        { category: 'Kabels', description: 'USB-C oplaadkabel', quantity: 10, serialNumber: '' },
+    ];
+    const insertItem = inventoryDb.prepare("INSERT INTO Items (category, categoryId, description, quantity, serialNumber, createdAt) VALUES (?, ?, ?, ?, ?, ?)");
+
+    for (const item of items) {
+        insertItem.run(item.category, categoryIds[item.category], item.description, item.quantity, item.serialNumber, now);
+    }
+
     console.log('Seed data inserted');
 }

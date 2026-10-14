@@ -16,6 +16,7 @@ import {
     IconLogout,
 } from "../../assets";
 import SignatureManagement from "../../pages/SignatureManagement/SignatureManagement";
+import Inventory from "../../pages/Inventory/Inventory.tsx";
 
 export const navigationItemsMenu: INavigationItem[] = [
     {
@@ -40,6 +41,7 @@ export const navigationItemsMenu: INavigationItem[] = [
         name: "Inventarisatie",
         path: "/inventarisatie",
         icon: IconInventory,
+        page: <Inventory />,
     },
     {
         name: "Kennisbank",
