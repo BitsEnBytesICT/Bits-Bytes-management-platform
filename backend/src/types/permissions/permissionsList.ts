@@ -23,6 +23,7 @@ export enum PermissionsList {
     wallList = "wall.list",
     workplaceList = "workplace.list",
     createInventory = "inventory.create",
-    updateInventory = "update.inventory",
-    deleteInventory = "delete.inventory",
+    updateInventory = "inventory.update",
+    deleteInventory = "inventory.delete",
+    listInventory = "inventory.list"
 }

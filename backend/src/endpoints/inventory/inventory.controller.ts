@@ -10,6 +10,11 @@ export default class InventoryController {
         this.service = new InventoryService();
     }
 
+    @AuthenticationDecorator(PermissionsList.listInventory)
+    async list(_req: Request, res: Response) {
+        res.json(await this.service.list());
+    }
+
     @AuthenticationDecorator(PermissionsList.createInventory)
     async create(req: Request, res: Response) {
         await this.service.create(req.body?.inventory);

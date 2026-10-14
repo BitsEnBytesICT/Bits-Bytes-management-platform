@@ -138,3 +138,22 @@ export const inventoryDBQuery = async<T>(sql: string, values?: any[]): Promise<T
         } as IError
     }
 }
+
+export const inventoryDBAll = async<T>(sql: string, values?: any[]): Promise<T[]> => {
+    try {
+        if (process.env.DATABASE_TYPE === "sqllite") {
+            let result;
+            if (values) result = inventoryDBSQLLITE.prepare(sql).all(values);
+            else result = inventoryDBSQLLITE.prepare(sql).all();
+            if (Array.isArray(result)) return result as T[];
+            return [result] as T[];
+        }
+        return (await inventoryDB.query(sql, values))[0] as T[];
+    } catch (err) {
+        throw {
+            date: new Date(),
+            errorMSG: err,
+            code: ErrorCodes.sqlError
+        } as IError
+    }
+}

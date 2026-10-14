@@ -43,7 +43,7 @@ export default class InventoryService implements serviceBase<IInventory> {
         throw new Error("Method not implemented.");
     }
     list(...args: any[]): Promise<IInventory[]> {
-        throw new Error("Method not implemented.");
+        return this.dao.list(...args);
     }
     findOne(...args: KeyValuePair<IInventory>[]): Promise<IInventory | undefined> {
         throw new Error("Method not implemented.");

@@ -1,5 +1,4 @@
-import express from 'express';
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import InventoryController from "./inventory.controller";
 
 class InventoryRouter {
@@ -13,6 +12,7 @@ class InventoryRouter {
 
     initializeRoutes(): void {
        this.router.post("/api/inventory/create", this.controller.create.bind(this.controller));
+       this.router.get("/api/inventory/list", this.controller.list.bind(this.controller));
        this.router.patch("/api/inventory/update", this.controller.update.bind(this.controller));
        this.router.delete("/api/inventory/delete", this.controller.delete.bind(this.controller));
     }
