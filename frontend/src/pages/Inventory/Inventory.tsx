@@ -1,34 +1,15 @@
 import {useEffect, useState} from "react";
 import http from "../../common/http";
-import Table from "../../common/components/Table";
-import {formatDate, fromBackendDate} from "../../common/helperFunctions";
-import type {ITableColumn} from "../../types/compontents/ITable";
-
-interface IInventory {
-    id?: number;
-    category: string;
-    categoryId: number;
-    description: string;
-    quantity: number;
-    serialNumber: string;
-    createdAt?: string;
-}
-
-const inventoryColumns: ITableColumn<IInventory>[] = [
-    {key: "id", label: "ID"},
-    {key: "category", label: "Categorie", sortable: true},
-    {key: "description", label: "Omschrijving"},
-    {key: "quantity", label: "Aantal", sortable: true},
-    {key: "serialNumber", label: "Serienummer"},
-    {
-        key: "createdAt",
-        label: "Aangemaakt",
-        render: row => (row.createdAt ? formatDate(fromBackendDate(row.createdAt)) : "-"),
-    },
-];
+import SmallButton from "../../common/components/SmallButton.tsx";
+import {IconFilter} from "../../assets";
+import type IInventory from "../../types/Inventory/IInventory.ts";
+import InventoryTable from "./components/InventoryTable.tsx";
+import InventoryFilter from "./components/InventoryFilter.tsx";
 
 export default function Inventory() {
     const [inventoryItems, setInventoryItems] = useState<IInventory[]>([]);
+    const [filteredInventoryItems, setFilteredInventoryItems] = useState<IInventory[]>([]);
+    const [isFilterShown, setIsFilterShown] = useState(false);
 
     useEffect(() => {
         const fetchInventoryItems = async (): Promise<void> => {
@@ -47,15 +28,21 @@ export default function Inventory() {
 
     return (
         <div className="flex flex-col h-[calc(100vh-10rem)]">
-            <div className="flex-1 min-h-0">
-                <Table
-                    columns={inventoryColumns}
-                    rows={inventoryItems}
-                    setRows={setInventoryItems}
-                    rowKey="id"
-                    checkBox={false}
+            <div className={"mb-4 flex flex-row justify-between"}>
+                <SmallButton
+                    label={"Filter"}
+                    active={isFilterShown}
+                    icon={<img src={IconFilter} className="select-none [-webkit-user-drag:none]" />}
+                    onClick={() => setIsFilterShown(!isFilterShown)}
                 />
             </div>
+            <div>
+                <InventoryFilter
+                    inventory={inventoryItems}
+                    isShown={isFilterShown}
+                    setFilteredInventory={setFilteredInventoryItems}></InventoryFilter>
+            </div>
+            <InventoryTable inventory={filteredInventoryItems} setInventory={setFilteredInventoryItems} />
         </div>
     );
 }
