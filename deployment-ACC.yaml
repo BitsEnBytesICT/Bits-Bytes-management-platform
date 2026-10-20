@@ -1,4 +1,267 @@
-#frontend
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bitsenbytes-management-platform
+---
+# Applicatie-Secret voor ACC. De waarden staan voorlopig als tekst in de YAML.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bitsenbytes-backend-acc-secret
+  namespace: bitsenbytes-management-platform
+type: Opaque
+stringData:
+  NODE_ENV: "production"
+  DATABASE_TYPE: "mysql"
+  DATABASE_URL: "bitsenbytes-mysql-acc"
+  DATABASE_USERNAME: "bitsenbytes"
+  DATABASE_PASSWORD: "fdD6@Ba_6*B.Fa"
+  DATABASE_NAME: "managementDB"
+  INVENTORYDB_NAME: "managementDB"
+  DATABASE_PORT: "3306"
+  BACKEND_SNAPSHOT_VERSION: "${BACKEND_SNAPSHOT_VERSION}"
+  BACKEND_VERSION: "${BACKEND_VERSION}"
+  JWT_SECRET: "DJFDG#!N4EW87R9(FHFD^F32"
+  ENCRYPTION_KEY: "b6424bcf211217cc99e17c27f1d36dafbe6ab3db75c65b3a10c3ab8162d1e2cd"
+  ALLOWED_ORIGIN: "https://management-acc.bitsenbytes.net"
+---
+# Root-account voor het NIEUWE cluster. De operator leest precies deze sleutels.
+# Een latere wijziging van alleen dit Secret roteert geen bestaand SQL-wachtwoord.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bitsenbytes-mysql-acc-root
+  namespace: bitsenbytes-management-platform
+type: Opaque
+stringData:
+  rootUser: "root"
+  rootHost: "%"
+  rootPassword: "fdD6@Ba_6*B.Fa"
+---
+apiVersion: mysql.oracle.com/v2
+kind: InnoDBCluster
+metadata:
+  name: bitsenbytes-mysql-acc
+  namespace: bitsenbytes-management-platform
+spec:
+  secretName: bitsenbytes-mysql-acc-root
+  version: "8.0.46"
+  instances: 3
+  tlsUseSelfSigned: true
+  imagePullPolicy: IfNotPresent
+  datadirVolumeClaimTemplate:
+    accessModes:
+      - ReadWriteOnce
+    storageClassName: microk8s-hostpath
+    resources:
+      requests:
+        storage: 10Gi
+  podLabels:
+    bitsenbytes.net/mysql-role: database-acc
+  podSpec:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                mysql.oracle.com/cluster: bitsenbytes-mysql-acc
+                bitsenbytes.net/mysql-role: database-acc
+            topologyKey: kubernetes.io/hostname
+  router:
+    instances: 2
+    version: "8.0.46"
+    podLabels:
+      bitsenbytes.net/mysql-role: router-acc
+    podSpec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  mysql.oracle.com/cluster: bitsenbytes-mysql-acc
+                  bitsenbytes.net/mysql-role: router-acc
+              topologyKey: kubernetes.io/hostname
+---
+# De interne Service bitsenbytes-mysql-acc wordt door de operator aangemaakt.
+# De bestaande externe poort 30307 gaat nu eveneens via MySQL Router.
+apiVersion: v1
+kind: Service
+metadata:
+  name: bitsenbytes-mysql-nodeport
+  namespace: bitsenbytes-management-platform
+spec:
+  type: NodePort
+  selector:
+    mysql.oracle.com/cluster: bitsenbytes-mysql-acc
+    component: mysqlrouter
+    tier: mysql
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 6446
+      nodePort: 30307
+---
+# Eenmalige initialisatie en verbindingscontrole gebruiken MySQL Shell.
+# Wachtwoorden worden uit Secrets gelezen en niet in SQL/scripts opgenomen.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bitsenbytes-mysql-acc-scripts
+  namespace: bitsenbytes-management-platform
+data:
+  database.py: |
+    import os
+    import sys
+    import time
+    from mysqlsh import mysql
+
+    bootstrap = sys.argv[1] == "bootstrap"
+    options = {
+        "host": os.environ["DATABASE_URL"],
+        "port": int(os.environ["DATABASE_PORT"]),
+        "user": os.environ["ROOT_USER"] if bootstrap else os.environ["DATABASE_USERNAME"],
+        "password": os.environ["ROOT_PASSWORD"] if bootstrap else os.environ["DATABASE_PASSWORD"],
+        "connect-timeout": 5000,
+    }
+    if not bootstrap:
+        options["schema"] = os.environ["DATABASE_NAME"]
+
+    session = None
+    for attempt in range(180):
+        try:
+            session = mysql.get_classic_session(options)
+            readonly = session.run_sql("SELECT @@super_read_only").fetch_one()[0]
+            if readonly:
+                raise RuntimeError("De primaire instance is nog niet schrijfbaar.")
+            if bootstrap:
+                online = session.run_sql(
+                    "SELECT COUNT(*) FROM performance_schema.replication_group_members "
+                    "WHERE MEMBER_STATE = 'ONLINE'"
+                ).fetch_one()[0]
+                if online != 3:
+                    raise RuntimeError("Nog geen drie ONLINE database-instances.")
+            else:
+                session.run_sql("SELECT 1")
+            break
+        except Exception:
+            if session is not None:
+                try:
+                    session.close()
+                except Exception:
+                    pass
+                session = None
+            if attempt % 6 == 0:
+                print("Wachten op MySQL Router en database...", flush=True)
+            time.sleep(5)
+    else:
+        raise RuntimeError("MySQL was niet op tijd beschikbaar; controleer cluster, pods en Secrets.")
+
+    try:
+        if bootstrap:
+            username = os.environ["DATABASE_USERNAME"]
+            password = os.environ["DATABASE_PASSWORD"]
+            databases = dict.fromkeys([
+                os.environ["DATABASE_NAME"],
+                os.environ["INVENTORYDB_NAME"],
+            ])
+            session.run_sql(
+                "CREATE USER IF NOT EXISTS ?@? IDENTIFIED BY ?",
+                [username, "%", password],
+            )
+            session.run_sql(
+                "ALTER USER ?@? IDENTIFIED BY ?",
+                [username, "%", password],
+            )
+            for database in databases:
+                identifier = "`" + database.replace("`", "``") + "`"
+                session.run_sql("CREATE DATABASE IF NOT EXISTS " + identifier)
+                session.run_sql(
+                    "GRANT ALL PRIVILEGES ON " + identifier + ".* TO ?@?",
+                    [username, "%"],
+                )
+            print("Applicatiedatabase en gebruiker zijn aangemaakt.", flush=True)
+        else:
+            print("Databaseverbinding voor de backend werkt.", flush=True)
+    finally:
+        session.close()
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bitsenbytes-mysql-acc-init
+  namespace: bitsenbytes-management-platform
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 1800
+  template:
+    metadata:
+      labels:
+        app: bitsenbytes-mysql-acc-init
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      containers:
+        - name: initialize-database
+          # Deze operatorimage is reeds succesvol opgehaald in jouw cluster.
+          # Hier wordt alleen mysqlsh als client gebruikt; dit start geen operator.
+          image: container-registry.oracle.com/mysql/community-operator:8.0.45-2.0.21
+          imagePullPolicy: IfNotPresent
+          command: ["mysqlsh", "--py", "--file", "/scripts/database.py", "bootstrap"]
+          env:
+            - name: MYSQLSH_USER_CONFIG_HOME
+              value: /tmp/mysqlsh
+            - name: MYSQLSH_CREDENTIAL_STORE_SAVE_PASSWORDS
+              value: never
+            - name: ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-mysql-acc-root
+                  key: rootUser
+            - name: ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-mysql-acc-root
+                  key: rootPassword
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-acc-secret
+                  key: DATABASE_URL
+            - name: DATABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-acc-secret
+                  key: DATABASE_PORT
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-acc-secret
+                  key: DATABASE_USERNAME
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-acc-secret
+                  key: DATABASE_PASSWORD
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-acc-secret
+                  key: DATABASE_NAME
+            - name: INVENTORYDB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: bitsenbytes-backend-acc-secret
+                  key: INVENTORYDB_NAME
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+              readOnly: true
+      volumes:
+        - name: scripts
+          configMap:
+            name: bitsenbytes-mysql-acc-scripts
+---
+# Frontend
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -50,7 +313,6 @@ spec:
                 name: bitsenbytes-backend-acc
                 port:
                   number: 3000
-
           - path: /
             pathType: Prefix
             backend:
@@ -59,7 +321,7 @@ spec:
                 port:
                   number: 8080
 ---
-#backend
+# Backend: start pas nadat de applicatiegebruiker kan verbinden.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -76,76 +338,57 @@ spec:
       labels:
         app: bitsenbytes-backend-acc
     spec:
-      containers:
-        - name: bitsenbytes-backend-acc
-          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesbackendACC_${BACKEND_VERSION}_snapshot_${BACKEND_SNAPSHOT_VERSION}
-          imagePullPolicy: Always
+      automountServiceAccountToken: false
+      initContainers:
+        - name: wait-for-mysql
+          image: container-registry.oracle.com/mysql/community-operator:8.0.45-2.0.21
+          imagePullPolicy: IfNotPresent
+          command: ["mysqlsh", "--py", "--file", "/scripts/database.py", "wait"]
           env:
-            - name: NODE_ENV
+            - name: MYSQLSH_USER_CONFIG_HOME
+              value: /tmp/mysqlsh
+            - name: MYSQLSH_CREDENTIAL_STORE_SAVE_PASSWORDS
+              value: never
+            - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: bitsenbytes-backend-secret
-                  key: NODE_ENV
-            - name: DATABASE_TYPE
+                  name: bitsenbytes-backend-acc-secret
+                  key: DATABASE_URL
+            - name: DATABASE_PORT
               valueFrom:
                 secretKeyRef:
-                  name: bitsenbytes-backend-secret
-                  key: DATABASE_TYPE
+                  name: bitsenbytes-backend-acc-secret
+                  key: DATABASE_PORT
             - name: DATABASE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: bitsenbytes-backend-secret
+                  name: bitsenbytes-backend-acc-secret
                   key: DATABASE_USERNAME
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: bitsenbytes-backend-secret
+                  name: bitsenbytes-backend-acc-secret
                   key: DATABASE_PASSWORD
             - name: DATABASE_NAME
               valueFrom:
                 secretKeyRef:
-                  name: bitsenbytes-backend-secret
+                  name: bitsenbytes-backend-acc-secret
                   key: DATABASE_NAME
-            - name: INVENTORYDB_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: bitsenbytes-backend-secret
-                  key: INVENTORYDB_NAME
-            - name: DATABASE_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: bitsenbytes-backend-secret
-                  key: DATABASE_PORT
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: bitsenbytes-backend-secret
-                  key: DATABASE_URL
-            - name: BACKEND_VERSION
-              valueFrom:
-                secretKeyRef:
-                  name: bitsenbytes-backend-secret
-                  key: BACKEND_VERSION
-            - name: BACKEND_SNAPSHOT_VERSION
-              valueFrom:
-                secretKeyRef:
-                  name: bitsenbytes-backend-secret
-                  key: BACKEND_SNAPSHOT_VERSION
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: bitsenbytes-backend-secret
-                  key: JWT_SECRET
-            - name: ENCRYPTION_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: bitsenbytes-backend-secret
-                  key: ENCRYPTION_KEY
-            - name: ALLOWED_ORIGIN
-              valueFrom:
-                secretKeyRef:
-                  name: bitsenbytes-backend-secret
-                  key: ALLOWED_ORIGIN
+          volumeMounts:
+            - name: mysql-scripts
+              mountPath: /scripts
+              readOnly: true
+      containers:
+        - name: bitsenbytes-backend-acc
+          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesbackendACC_${BACKEND_VERSION}_snapshot_${BACKEND_SNAPSHOT_VERSION}
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: bitsenbytes-backend-acc-secret
+      volumes:
+        - name: mysql-scripts
+          configMap:
+            name: bitsenbytes-mysql-acc-scripts
 ---
 apiVersion: v1
 kind: Service
@@ -159,142 +402,3 @@ spec:
     - port: 3000
       targetPort: 3000
   type: ClusterIP
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: bitsenbytes-backend-secret
-  namespace: bitsenbytes-management-platform
-type: Opaque
-stringData:
-  NODE_ENV: "production"
-  DATABASE_TYPE: "mysql"
-  DATABASE_URL: "bitsenbytes-mysql"
-  DATABASE_USERNAME: "bitsenbytes"
-  DATABASE_PASSWORD: "fdD6@Ba_6*B.Fa"
-  DATABASE_NAME: "managementDB"
-  INVENTORYDB_NAME: "managementDB"
-  DATABASE_PORT: "3306"
-  BACKEND_SNAPSHOT_VERSION: "${BACKEND_SNAPSHOT_VERSION}"
-  BACKEND_VERSION: "${BACKEND_VERSION}"
-  JWT_SECRET: DJFDG#!N4EW87R9(FHFD^F32
-  ENCRYPTION_KEY: b6424bcf211217cc99e17c27f1d36dafbe6ab3db75c65b3a10c3ab8162d1e2cd
-  ALLOWED_ORIGIN: "https://management-acc.bitsenbytes.net"
----
-
-#Mysql
-
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: bitsenbytes-mysql-secret
-  namespace: bitsenbytes-management-platform
-type: Opaque
-stringData:
-  MYSQL_ROOT_PASSWORD: "fdD6@Ba_6*B.Fa"
-  MYSQL_DATABASE: "managementDB"
-  MYSQL_USER: "bitsenbytes"
-  MYSQL_PASSWORD: "fdD6@Ba_6*B.Fa"
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: bitsenbytes-mysql-pvc
-  namespace: bitsenbytes-management-platform
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: bitsenbytes-mysql
-  namespace: bitsenbytes-management-platform
-spec:
-  replicas: 1
-  strategy:
-    type: Recreate
-  selector:
-    matchLabels:
-      app: bitsenbytes-mysql
-  template:
-    metadata:
-      labels:
-        app: bitsenbytes-mysql
-    spec:
-      containers:
-        - name: bitsenbytes-mysql
-          image: mysql:8.0
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 3306
-          env:
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: bitsenbytes-mysql-secret
-                  key: MYSQL_ROOT_PASSWORD
-
-            - name: MYSQL_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: bitsenbytes-mysql-secret
-                  key: MYSQL_DATABASE
-
-            - name: MYSQL_USER
-              valueFrom:
-                secretKeyRef:
-                  name: bitsenbytes-mysql-secret
-                  key: MYSQL_USER
-
-            - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: bitsenbytes-mysql-secret
-                  key: MYSQL_PASSWORD
-
-          volumeMounts:
-            - name: mysql-data
-              mountPath: /var/lib/mysql
-
-      volumes:
-        - name: mysql-data
-          persistentVolumeClaim:
-            claimName: bitsenbytes-mysql-pvc
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: bitsenbytes-mysql
-  namespace: bitsenbytes-management-platform
-spec:
-  type: ClusterIP
-  selector:
-    app: bitsenbytes-mysql
-  ports:
-    - name: mysql
-      port: 3306
-      targetPort: 3306
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: bitsenbytes-mysql-nodeport
-  namespace: bitsenbytes-management-platform
-spec:
-  type: NodePort
-  selector:
-    app: bitsenbytes-mysql
-  ports:
-    - name: mysql
-      port: 3306
-      targetPort: 3306
-      nodePort: 30307

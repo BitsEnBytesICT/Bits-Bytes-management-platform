@@ -209,7 +209,9 @@ export default function ParticipantsTable({
                                         const modifiedSchedules = absentParticipant.schedules.map(s => {
                                             if (
                                                 !s.endDate ||
-                                                (s.endDate && s.endDate.getTime() < new Date().getTime())
+                                                (s.endDate &&
+                                                    s.endDate.setHours(0, 0, 0, 0) <=
+                                                        fromShortDateString(dateRange.from).setHours(0, 0, 0, 0))
                                             ) {
                                                 if (dateRange.to) {
                                                     const startDate = fromShortDateString(dateRange.to);
@@ -222,7 +224,9 @@ export default function ParticipantsTable({
                                                         endDate: undefined,
                                                     });
                                                 }
-                                                return {...s, endDate: new Date()} as ISchedule;
+                                                const endDate = fromShortDateString(dateRange.from);
+                                                endDate.setDate(endDate.getDate() - 1);
+                                                return {...s, endDate: endDate} as ISchedule;
                                             }
                                             return s;
                                         });
@@ -247,7 +251,6 @@ export default function ParticipantsTable({
                                         ]);
                                         absentParticipant.schedules.push(absentSchedule);
 
-                                        //setAbsentParticipant({...absentParticipant});
                                         setParticipants(
                                             participants.map(p => {
                                                 if (p.id === absentParticipant.id) return {...absentParticipant};
