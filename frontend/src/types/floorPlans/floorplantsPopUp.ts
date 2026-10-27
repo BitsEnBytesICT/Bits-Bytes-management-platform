@@ -7,6 +7,7 @@ import type {IParticipantWithSchedules} from "../compontents/IParticipant";
 export default interface IFloorplansPopUp<T> {
     canvas?: RefObject<HTMLCanvasElement | null>;
     currentWorkplace: WorkplaceWithOccupancy;
+    setParticipants: React.Dispatch<React.SetStateAction<IParticipantWithSchedules[]>>;
     participants?: IParticipantWithSchedules[];
     setCurrentWorkplace?: (workplace: WorkplaceWithOccupancy) => void;
     currentScale?: RefObject<number | undefined>;

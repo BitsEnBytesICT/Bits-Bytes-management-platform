@@ -6,7 +6,7 @@ import Tabs from "../Tabs";
 import {ArrowBox, IconProduct} from "../../../assets";
 import drawFloorPlan from "./DrawFloorPlan";
 import type {IWall} from "../../../types/floorPlans/IWall";
-import type {WorkplaceWithOccupancy} from "../../../types/floorPlans/IWorkplace";
+import type {IWorkplace, WorkplaceWithOccupancy} from "../../../types/floorPlans/IWorkplace";
 import type IFloorPlans from "../../../types/compontents/IFloorPlans";
 import {scheduleFieldsByDay} from "../../../types/schedules/ISchedule";
 import FloorplansService from "./floorplans.service";
@@ -14,12 +14,14 @@ import FloorplansService from "./floorplans.service";
 export default function FloorPlans<T>({
     rooms,
     participants,
+    setParticipants,
     PopUpContent,
     dayButtons,
     stacked,
     height,
     popupPropsExtra,
     currentEditedScedule,
+    workplaces,
 }: IFloorPlans<T>) {
     const [active, setActive] = useState(0);
     const [currentDay, setCurrentDay] = useState(0);
@@ -29,7 +31,7 @@ export default function FloorPlans<T>({
     const [arrowSide, setArrowSide] = useState<keyof typeof arrowClassName>("left");
     const [arrowOffset, setArrowOffset] = useState(0);
     const [currentWorkplace, setCurrentWorkplace] = useState<WorkplaceWithOccupancy>();
-    const [workplaces, setWorkplaces] = useState<WorkplaceWithOccupancy[]>([]);
+    const [workplacesWithOccupancy, setWorkplacesWithOccupancy] = useState<WorkplaceWithOccupancy[]>([]);
     const [walls, setWalls] = useState<IWall[]>([]);
     const canvas = useRef<HTMLCanvasElement>(null);
     const popup = useRef<HTMLDivElement>(null);
@@ -49,36 +51,8 @@ export default function FloorPlans<T>({
     useEffect(() => {
         if (!rooms[active]) return;
 
-        floorplansService.getWorkplaces(rooms[active].id).then(workplaces => {
-            const workplacesWithOccupancy: WorkplaceWithOccupancy[] = workplaces.map(wp => ({
-                ...wp,
-                timeslots: [0, 1, 2, 3, 4].map(() => ({Ochtend: "Vrij", Middag: "Vrij"})),
-            }));
-
-            const now = Date.now();
-
-            for (const participant of participants) {
-                if (!participant.schedules) continue;
-                for (const schedule of participant.schedules) {
-                    if (schedule.endDate && schedule.endDate.getTime() < now) continue;
-
-                    for (const [field, dayIndex, period] of scheduleFieldsByDay) {
-                        const workplaceId = schedule[field];
-
-                        if (workplaceId === undefined || workplaceId === null) continue;
-
-                        const workplace = workplacesWithOccupancy.find(wp => wp.id === workplaceId);
-
-                        if (!workplace) continue;
-
-                        workplace.timeslots[dayIndex][period] = `${participant.firstname} ${participant.lastname}`;
-                    }
-                }
-            }
-
-            setWorkplaces(workplacesWithOccupancy);
-        });
-
+        if (workplaces?.length > 0) setOccupancy(workplaces.filter(wp => wp.RoomID === rooms[active].id));
+        else floorplansService.getWorkplaces(rooms[active].id).then(setOccupancy);
         floorplansService.getWalls(rooms[active].id).then(setWalls);
     }, [rooms, active]);
 
@@ -91,6 +65,7 @@ export default function FloorPlans<T>({
     useEffect(() => {
         const element = canvas.current;
         if (!element) return;
+        if (!rooms[active]?.scale) return;
 
         let timer: ReturnType<typeof setTimeout>;
 
@@ -101,7 +76,7 @@ export default function FloorPlans<T>({
                     canvas,
                     rooms[active],
                     currentDay,
-                    workplaces,
+                    workplacesWithOccupancy,
                     walls,
                     currentEditedScedule,
                 );
@@ -115,7 +90,38 @@ export default function FloorPlans<T>({
             clearTimeout(timer);
             observer.disconnect();
         };
-    }, [rooms, workplaces, walls, currentDay, currentEditedScedule]);
+    }, [rooms, workplacesWithOccupancy, walls, currentDay, currentEditedScedule]);
+
+    function setOccupancy(workplaces: IWorkplace[]) {
+        const workplacesWithOccupancy: WorkplaceWithOccupancy[] = workplaces.map(wp => ({
+            ...wp,
+            timeslots: [0, 1, 2, 3, 4].map(() => ({Ochtend: "Vrij", Middag: "Vrij"})),
+        }));
+
+        const now = Date.now();
+
+        for (const participant of participants) {
+            if (!participant.schedules) continue;
+            for (const schedule of participant.schedules) {
+                if ((schedule.endDate && schedule.endDate.getTime() < now) || schedule.startDate.getTime() > now)
+                    continue;
+
+                for (const [field, dayIndex, period] of scheduleFieldsByDay) {
+                    const workplaceId = schedule[field];
+
+                    if (workplaceId === undefined || workplaceId === null) continue;
+
+                    const workplace = workplacesWithOccupancy.find(wp => wp.id === workplaceId);
+
+                    if (!workplace) continue;
+
+                    workplace.timeslots[dayIndex][period] = `${participant.firstname} ${participant.lastname}`;
+                }
+            }
+        }
+
+        setWorkplacesWithOccupancy(workplacesWithOccupancy);
+    }
 
     function onMouseHover(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
         const canvas = e.currentTarget;
@@ -127,7 +133,7 @@ export default function FloorPlans<T>({
 
         if (!rooms[active]) return;
 
-        for (const workplace of workplaces) {
+        for (const workplace of workplacesWithOccupancy) {
             const left = workplace.xpos / currentScale.current + widthOffset;
             const top = workplace.ypos / currentScale.current + heightOffset;
             const width = (workplace.rotation === 90 ? 1600 : 800) / currentScale.current;
@@ -233,11 +239,12 @@ export default function FloorPlans<T>({
                                 canvas={canvas}
                                 currentWorkplace={currentWorkplace}
                                 participants={participants}
+                                setParticipants={setParticipants}
                                 setCurrentWorkplace={setCurrentWorkplace}
                                 currentScale={currentScale}
-                                setWorkplaces={setWorkplaces}
+                                setWorkplaces={setWorkplacesWithOccupancy}
                                 room={rooms[active]}
-                                workplaces={workplaces}
+                                workplaces={workplacesWithOccupancy}
                                 walls={walls}
                                 popupPropsExtra={popupPropsExtra}
                                 currentDay={currentDay}

@@ -3,6 +3,7 @@ import http from "../../common/http";
 import type {IParticipant} from "../../types/compontents/IParticipant";
 
 import type {IRoom} from "../../types/floorPlans/IRoom";
+import type {IWorkplace} from "../../types/floorPlans/IWorkplace";
 import type ISchedule from "../../types/schedules/ISchedule";
 
 export default class SupportDashboardService {
@@ -64,5 +65,9 @@ export default class SupportDashboardService {
         });
 
         return rooms;
+    };
+
+    getWorkplaces = async (): Promise<IWorkplace[]> => {
+        return await (await http("/api/workplaces", "POST")).json();
     };
 }

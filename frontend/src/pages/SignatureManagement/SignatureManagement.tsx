@@ -9,7 +9,7 @@ import type IAttendance from "../../types/compontents/IAttendance";
 import type {IDateRange} from "../../types/compontents/IDateRangePicker";
 import type {ITableColumn} from "../../types/compontents/ITable";
 
-import {IconAddUser, IconDelete, IconDownload, IconEdit, IconExport, IconFilter, IconInfo} from "../../assets";
+import {IconAddUser, IconDelete, IconDownload, IconExport, IconFilter, IconInfo} from "../../assets";
 import {downloadPDF} from "../../common/buildPDF";
 import {formatDate, fromBackendDate, isSvg} from "../../common/helperFunctions";
 import useLocalStorage from "../../common/hooks/useLocalStorage";
@@ -26,7 +26,6 @@ type AttendanceRow = IAttendance & {checked: boolean};
 
 function ActionIcons(
     signature: IAttendance,
-    onEditClick: (signature: IAttendance) => void,
     onExportClick: (signature: IAttendance) => void,
     onDeleteClick: (signature: IAttendance) => void,
     onInfoClick: (signature: IAttendance) => void,
@@ -36,11 +35,6 @@ function ActionIcons(
             <img
                 onClick={() => onInfoClick(signature)}
                 src={IconInfo}
-                className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
-            />
-            <img
-                onClick={() => onEditClick(signature)}
-                src={IconEdit}
                 className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
             />
             <img
@@ -65,7 +59,6 @@ export default function SignatureManagement() {
     const [dateRange, setDateRange] = useLocalStorage<IDateRange>("signatures.dateRange", {from: "", to: ""});
 
     const [infoSignature, setInfoSignature] = useState<IAttendance | null>(null);
-    const [editSignature, setEditSignature] = useState<IAttendance | null>(null);
     const [deleteSignature, setDeleteSignature] = useState<IAttendance | null>(null);
     const [isCreateShown, setIsCreateShown] = useState(false);
     const [deleteSelection, setDeleteSelection] = useState<IAttendance[]>([]);
@@ -117,7 +110,6 @@ export default function SignatureManagement() {
             render: row =>
                 ActionIcons(
                     row,
-                    setEditSignature,
                     signature => exportSignatures([signature], `handtekening-${signature.id}.pdf`),
                     setDeleteSignature,
                     setInfoSignature,
@@ -215,10 +207,7 @@ export default function SignatureManagement() {
                 isShown={isFilterShown}
                 dateRange={dateRange}
                 setFilteredSignatures={setFilteredSignatures}>
-                <div
-                    className="flex-1 min-h-0 [&_td:first-child]:w-12 [&_td:first-child]:overflow-hidden
-                        [&_td:last-child]:w-32 [&_td:last-child]:overflow-hidden [&_th:first-child]:w-12
-                        [&_th:last-child]:w-32">
+                <div>
                     <Table
                         columns={signatureColumns}
                         rows={filteredSignatures}
@@ -242,16 +231,6 @@ export default function SignatureManagement() {
                 <SignatureCreatePopUp
                     participants={participants}
                     onClose={() => setIsCreateShown(false)}
-                    onSaved={fetchData}
-                />
-            )}
-
-            {editSignature && (
-                <SignaturePopUp
-                    mode="edit"
-                    signature={editSignature}
-                    participant={findParticipant(editSignature.participantID)}
-                    onClose={() => setEditSignature(null)}
                     onSaved={fetchData}
                 />
             )}

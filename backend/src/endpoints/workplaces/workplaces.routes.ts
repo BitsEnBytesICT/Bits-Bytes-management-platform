@@ -12,6 +12,8 @@ class WorkplaceRouter {
 
     private initializeRoutes() {
         this.router.post('/api/workplaces', this.controller.list.bind(this.controller));
+        this.router.post("/api/workplaces/create", this.controller.create.bind(this.controller));
+        this.router.post("/api/workplaces/update", this.controller.update.bind(this.controller));
     }
 
     getRouter() {
