@@ -9,7 +9,9 @@ export function toDateString(date: Date): string {
 
 export function fromDateString(dateString: string): Date {
     if (!dateString) return;
-    return new Date(dateString.replace(" ", "T") + "Z");
+    let date = new Date(dateString.replace(" ", "T") + "Z");
+    if (!date.getTime()) return new Date(dateString.replace(".000", ""));
+    return date;
 }
 
 export function toShortDateString(date: Date): string {
@@ -23,11 +25,6 @@ export function fromShortDateString(dateString: string): Date {
 }
 
 export const isSvg = (signature?: string): boolean => signature?.trimStart().startsWith("<svg") ?? false;
-
-// the backend stores dates as UTC strings without timezone ("YYYY-MM-DD HH:mm:ss")
-export const fromBackendDate = (value: string): Date => new Date(`${value.replace(" ", "T")}Z`);
-
-export const toBackendDate = (date: Date): string => date.toISOString().slice(0, 19).replace("T", " ");
 
 export const formatDate = (date?: Date): string => {
     if (!date || isNaN(date.getTime())) return "-";

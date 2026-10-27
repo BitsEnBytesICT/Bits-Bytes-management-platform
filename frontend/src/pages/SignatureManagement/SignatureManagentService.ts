@@ -1,5 +1,5 @@
+import {toDateString} from "../../common/helperFunctions";
 import http from "../../common/http";
-import {toBackendDate} from "../../common/helperFunctions";
 import type IAttendance from "../../types/compontents/IAttendance";
 
 export default class SignatureManagementService {
@@ -15,8 +15,8 @@ export default class SignatureManagementService {
     createSignature = async (attendance: IAttendance): Promise<string[]> => {
         const response = await http("/api/attendance/create", "POST", {
             ...attendance,
-            clockinDate: toBackendDate(attendance.clockinDate),
-            clockoutDate: attendance.clockoutDate ? toBackendDate(attendance.clockoutDate) : undefined,
+            clockinDate: toDateString(attendance.clockinDate),
+            clockoutDate: attendance.clockoutDate ? toDateString(attendance.clockoutDate) : undefined,
         });
         if (response.status === 200) return;
         else return await response.json();

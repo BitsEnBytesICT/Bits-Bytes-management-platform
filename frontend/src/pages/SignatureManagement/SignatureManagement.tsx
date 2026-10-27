@@ -11,7 +11,7 @@ import type {ITableColumn} from "../../types/compontents/ITable";
 
 import {IconAddUser, IconDelete, IconDownload, IconExport, IconFilter, IconInfo} from "../../assets";
 import {downloadPDF} from "../../common/buildPDF";
-import {formatDate, fromBackendDate, isSvg} from "../../common/helperFunctions";
+import {formatDate, fromDateString, isSvg} from "../../common/helperFunctions";
 import useLocalStorage from "../../common/hooks/useLocalStorage";
 import http from "../../common/http";
 import ParticipantsService from "../Participants/Participants.service";
@@ -127,8 +127,8 @@ export default function SignatureManagement() {
         setSignatures(
             response.map(attendance => ({
                 ...attendance,
-                clockinDate: fromBackendDate(attendance.clockinDate),
-                clockoutDate: attendance.clockoutDate ? fromBackendDate(attendance.clockoutDate) : undefined,
+                clockinDate: fromDateString(attendance.clockinDate),
+                clockoutDate: attendance.clockoutDate ? fromDateString(attendance.clockoutDate) : undefined,
             })),
         );
     };
