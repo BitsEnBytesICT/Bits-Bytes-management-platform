@@ -209,7 +209,7 @@ spec:
           command: ["mysqlsh", "--py", "--file", "/scripts/database.py", "bootstrap"]
           env:
             - name: MYSQLSH_USER_CONFIG_HOME
-              value: /tmp/mysqlsh
+              value: /tmp
             - name: MYSQLSH_CREDENTIAL_STORE_SAVE_PASSWORDS
               value: never
             - name: ROOT_USER
@@ -346,7 +346,7 @@ spec:
           command: ["mysqlsh", "--py", "--file", "/scripts/database.py", "wait"]
           env:
             - name: MYSQLSH_USER_CONFIG_HOME
-              value: /tmp/mysqlsh
+              value: /tmp
             - name: MYSQLSH_CREDENTIAL_STORE_SAVE_PASSWORDS
               value: never
             - name: DATABASE_URL
