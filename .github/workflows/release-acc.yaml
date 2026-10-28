@@ -11,6 +11,7 @@ jobs:
   build-and-deploy-acc:
     if: "${{ startsWith(github.event.head_commit.message, 'chore: bump snapshot versions after PR') }}"
     runs-on: [self-hosted]
+    environment: acc
 
     steps:
       - name: Checkout merged commit
@@ -44,14 +45,36 @@ jobs:
         run: docker compose --env-file .env.versions -f compose-acc.yaml push
 
       - name: Deploy to Kubernetes
+        shell: bash
+        env:
+          NODE_ENV: ${{ vars.NODE_ENV }}
+          DATABASE_TYPE: ${{ vars.DATABASE_TYPE }}
+          DATABASE_URL: ${{ vars.DATABASE_URL }}
+          DATABASE_USERNAME: ${{ vars.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ vars.DATABASE_PASSWORD }}
+          DATABASE_NAME: ${{ vars.DATABASE_NAME }}
+          INVENTORYDB_NAME: ${{ vars.INVENTORYDB_NAME }}
+          DATABASE_PORT: ${{ vars.DATABASE_PORT }}
+          JWT_SECRET: ${{ vars.JWT_SECRET }}
+          ENCRYPTION_KEY: ${{ vars.ENCRYPTION_KEY }}
+          ALLOWED_ORIGIN: ${{ vars.ALLOWED_ORIGIN }}
         run: |
           set -euo pipefail
           set -a
           source .env.versions
           set +a
 
+          for variable in NODE_ENV DATABASE_TYPE DATABASE_URL DATABASE_USERNAME DATABASE_PASSWORD DATABASE_NAME INVENTORYDB_NAME DATABASE_PORT JWT_SECRET ENCRYPTION_KEY ALLOWED_ORIGIN; do
+            if [[ -z "${!variable}" ]]; then
+              echo "::error::GitHub environment acc: variable ${variable} is missing or empty."
+              exit 1
+            fi
+            # Escape values for the double-quoted YAML strings before substitution.
+            printf -v "$variable" '%s' "$(node -p 'JSON.stringify(process.env[process.argv[1]]).slice(1, -1)' "$variable")"
+          done
+
           envsubst \
-          '${VITE_FRONTEND_SNAPSHOT_VERSION} ${BACKEND_SNAPSHOT_VERSION} ${BACKEND_VERSION} ${VITE_FRONTEND_VERSION}' \
+          '${VITE_FRONTEND_SNAPSHOT_VERSION} ${BACKEND_SNAPSHOT_VERSION} ${BACKEND_VERSION} ${VITE_FRONTEND_VERSION} ${NODE_ENV} ${DATABASE_TYPE} ${DATABASE_URL} ${DATABASE_USERNAME} ${DATABASE_PASSWORD} ${DATABASE_NAME} ${INVENTORYDB_NAME} ${DATABASE_PORT} ${JWT_SECRET} ${ENCRYPTION_KEY} ${ALLOWED_ORIGIN}' \
           < deployment-ACC.yaml \
           | kubectl apply -f -
 

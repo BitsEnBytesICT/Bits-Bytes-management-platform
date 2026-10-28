@@ -3,7 +3,7 @@ kind: Namespace
 metadata:
   name: bitsenbytes-management-platform
 ---
-# Applicatie-Secret voor ACC. De waarden staan voorlopig als tekst in de YAML.
+# Applicatie-Secret voor ACC. De workflow vult waarden uit GitHub environment acc in.
 apiVersion: v1
 kind: Secret
 metadata:
@@ -11,19 +11,19 @@ metadata:
   namespace: bitsenbytes-management-platform
 type: Opaque
 stringData:
-  NODE_ENV: "production"
-  DATABASE_TYPE: "mysql"
-  DATABASE_URL: "bitsenbytes-mysql-acc"
-  DATABASE_USERNAME: "bitsenbytes"
-  DATABASE_PASSWORD: "fdD6@Ba_6*B.Fa"
-  DATABASE_NAME: "managementDB"
-  INVENTORYDB_NAME: "inventoryDB"
-  DATABASE_PORT: "3306"
+  NODE_ENV: "${NODE_ENV}"
+  DATABASE_TYPE: "${DATABASE_TYPE}"
+  DATABASE_URL: "${DATABASE_URL}"
+  DATABASE_USERNAME: "${DATABASE_USERNAME}"
+  DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
+  DATABASE_NAME: "${DATABASE_NAME}"
+  INVENTORYDB_NAME: "${INVENTORYDB_NAME}"
+  DATABASE_PORT: "${DATABASE_PORT}"
   BACKEND_SNAPSHOT_VERSION: "${BACKEND_SNAPSHOT_VERSION}"
   BACKEND_VERSION: "${BACKEND_VERSION}"
-  JWT_SECRET: "DJFDG#!N4EW87R9(FHFD^F32"
-  ENCRYPTION_KEY: "b6424bcf211217cc99e17c27f1d36dafbe6ab3db75c65b3a10c3ab8162d1e2cd"
-  ALLOWED_ORIGIN: "https://management-acc.bitsenbytes.net"
+  JWT_SECRET: "${JWT_SECRET}"
+  ENCRYPTION_KEY: "${ENCRYPTION_KEY}"
+  ALLOWED_ORIGIN: "${ALLOWED_ORIGIN}"
 ---
 # Root-account voor het NIEUWE cluster. De operator leest precies deze sleutels.
 # Een latere wijziging van alleen dit Secret roteert geen bestaand SQL-wachtwoord.
@@ -36,7 +36,7 @@ type: Opaque
 stringData:
   rootUser: "root"
   rootHost: "%"
-  rootPassword: "fdD6@Ba_6*B.Fa"
+  rootPassword: "${DATABASE_PASSWORD}"
 ---
 apiVersion: mysql.oracle.com/v2
 kind: InnoDBCluster
