@@ -2,7 +2,7 @@
 <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
             d="M10 4.16667V15.8333M4.16667 10H15.8333"
-            stroke="#F7FBFF"
+            stroke="#000"
             stroke-width="1.5"
             stroke-linecap="square"
             stroke-linejoin="round"
