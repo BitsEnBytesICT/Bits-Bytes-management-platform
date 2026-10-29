@@ -31,3 +31,6 @@ export {default as IconClose} from "./ui/icon-close.svg";
 export {default as LogoWhite} from "./logo/logo-white.svg";
 export {default as LogoDefault} from "./logo/logo-default.svg";
 export {default as LogoDefaultPng} from "./logo/logo-default.png";
+
+//other
+export {default as PlusIcon} from "./ui/plus-icon.svg";
