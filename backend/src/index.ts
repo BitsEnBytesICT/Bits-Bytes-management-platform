@@ -38,6 +38,7 @@ const startServer = async () => {
     await createEnforcer();
 
     const app: Express = express();
+    
     app.set("trust proxy", 2);
 
     app.use(cors({
