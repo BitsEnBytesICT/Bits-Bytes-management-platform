@@ -3,7 +3,6 @@ kind: Namespace
 metadata:
   name: bitsenbytes-management-platform
 ---
-# Applicatie-Secret voor ACC. De workflow vult waarden uit GitHub environment acc in.
 apiVersion: v1
 kind: Secret
 metadata:
@@ -25,12 +24,10 @@ stringData:
   ENCRYPTION_KEY: "${ENCRYPTION_KEY}"
   ALLOWED_ORIGIN: "${ALLOWED_ORIGIN}"
 ---
-# Root-account voor het NIEUWE cluster. De operator leest precies deze sleutels.
-# Een latere wijziging van alleen dit Secret roteert geen bestaand SQL-wachtwoord.
 apiVersion: v1
 kind: Secret
 metadata:
-  name: bitsenbytes-mysql-acc-root
+  name: bitsenbytes-mysql-root
   namespace: bitsenbytes-management-platform
 type: Opaque
 stringData:
@@ -41,10 +38,10 @@ stringData:
 apiVersion: mysql.oracle.com/v2
 kind: InnoDBCluster
 metadata:
-  name: bitsenbytes-mysql-acc
+  name: bitsenbytes-mysql
   namespace: bitsenbytes-management-platform
 spec:
-  secretName: bitsenbytes-mysql-acc-root
+  secretName: bitsenbytes-mysql-root
   version: "8.0.46"
   instances: 3
   tlsUseSelfSigned: true
@@ -57,33 +54,31 @@ spec:
       requests:
         storage: 10Gi
   podLabels:
-    bitsenbytes.net/mysql-role: database-acc
+    bitsenbytes.net/mysql-role: database
   podSpec:
     affinity:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchLabels:
-                mysql.oracle.com/cluster: bitsenbytes-mysql-acc
-                bitsenbytes.net/mysql-role: database-acc
+                mysql.oracle.com/cluster: bitsenbytes-mysql
+                bitsenbytes.net/mysql-role: database
             topologyKey: kubernetes.io/hostname
   router:
     instances: 2
     version: "8.0.46"
     podLabels:
-      bitsenbytes.net/mysql-role: router-acc
+      bitsenbytes.net/mysql-role: router
     podSpec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchLabels:
-                  mysql.oracle.com/cluster: bitsenbytes-mysql-acc
-                  bitsenbytes.net/mysql-role: router-acc
+                  mysql.oracle.com/cluster: bitsenbytes-mysql
+                  bitsenbytes.net/mysql-role: router
               topologyKey: kubernetes.io/hostname
 ---
-# De interne Service bitsenbytes-mysql-acc wordt door de operator aangemaakt.
-# De bestaande externe poort 30307 gaat nu eveneens via MySQL Router.
 apiVersion: v1
 kind: Service
 metadata:
@@ -92,7 +87,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    mysql.oracle.com/cluster: bitsenbytes-mysql-acc
+    mysql.oracle.com/cluster: bitsenbytes-mysql
     component: mysqlrouter
     tier: mysql
   ports:
@@ -101,12 +96,10 @@ spec:
       targetPort: 6446
       nodePort: 30307
 ---
-# Eenmalige initialisatie en verbindingscontrole gebruiken MySQL Shell.
-# Wachtwoorden worden uit Secrets gelezen en niet in SQL/scripts opgenomen.
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: bitsenbytes-mysql-acc-scripts
+  name: bitsenbytes-mysql-scripts
   namespace: bitsenbytes-management-platform
 data:
   database.py: |
@@ -188,7 +181,7 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: bitsenbytes-mysql-acc-init
+  name: bitsenbytes-mysql-init
   namespace: bitsenbytes-management-platform
 spec:
   backoffLimit: 2
@@ -196,14 +189,12 @@ spec:
   template:
     metadata:
       labels:
-        app: bitsenbytes-mysql-acc-init
+        app: bitsenbytes-mysql-init
     spec:
       restartPolicy: Never
       automountServiceAccountToken: false
       containers:
         - name: initialize-database
-          # Deze operatorimage is reeds succesvol opgehaald in jouw cluster.
-          # Hier wordt alleen mysqlsh als client gebruikt; dit start geen operator.
           image: container-registry.oracle.com/mysql/community-operator:8.0.45-2.0.21
           imagePullPolicy: IfNotPresent
           command: ["mysqlsh", "--py", "--file", "/scripts/database.py", "bootstrap"]
@@ -215,12 +206,12 @@ spec:
             - name: ROOT_USER
               valueFrom:
                 secretKeyRef:
-                  name: bitsenbytes-mysql-acc-root
+                  name: bitsenbytes-mysql-root
                   key: rootUser
             - name: ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: bitsenbytes-mysql-acc-root
+                  name: bitsenbytes-mysql-root
                   key: rootPassword
             - name: DATABASE_URL
               valueFrom:
@@ -259,7 +250,7 @@ spec:
       volumes:
         - name: scripts
           configMap:
-            name: bitsenbytes-mysql-acc-scripts
+            name: bitsenbytes-mysql-scripts
 ---
 # Frontend
 apiVersion: apps/v1
@@ -388,7 +379,7 @@ spec:
       volumes:
         - name: mysql-scripts
           configMap:
-            name: bitsenbytes-mysql-acc-scripts
+            name: bitsenbytes-mysql-scripts
 ---
 apiVersion: v1
 kind: Service
