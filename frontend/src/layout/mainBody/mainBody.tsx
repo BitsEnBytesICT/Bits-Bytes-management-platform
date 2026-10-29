@@ -45,6 +45,9 @@ export default function MainBody({setIsOpen}) {
                         if (currentAccountType === PermissionsList.participant) {
                             return <Route path={route.path} element={route.page[1]} />;
                         }
+                        if (currentAccountType === PermissionsList.it) {
+                            return <Route path={route.path} element={route.page[2]} />;
+                        }
 
                         return null;
                     }

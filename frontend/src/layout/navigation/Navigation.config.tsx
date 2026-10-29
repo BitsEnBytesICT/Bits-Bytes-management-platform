@@ -1,5 +1,6 @@
 import ParticipantDashboard from "../../pages/ParticipantDashboard/ParticipantDashboard";
 import SupportDashboard from "../../pages/SupportDashboard/SupportDashboard";
+import IctDashboard from "../../pages/IctDashboard/IctDashboard";
 import Participants from "../../pages/Participants/Participants";
 
 import type {INavigationItem} from "../../types/navigation/INavigation";
@@ -22,7 +23,7 @@ export const navigationItemsMenu: INavigationItem[] = [
         name: "Dashboard",
         path: "/",
         icon: IconDashboard,
-        page: [<SupportDashboard />, <ParticipantDashboard />],
+        page: [<SupportDashboard />, <ParticipantDashboard />, <IctDashboard />],
     },
     {
         name: "Deelnemers",
