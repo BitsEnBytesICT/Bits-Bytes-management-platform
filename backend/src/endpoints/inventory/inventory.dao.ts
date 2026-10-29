@@ -4,6 +4,49 @@ import { inventoryDBAll, inventoryDBQuery } from "../../common/db";
 import { KeyValuePair } from "../../common/Validator";
 import { Tables } from "../../types/tables/tablesList";
 
+type ColumnType = "string" | "number" | "boolean";
+
+const categoriesWithColumns = [
+    {
+        name: "cpu",
+        columns: [
+            ["id", "number"],
+            ["model", "string"],
+            ["base speed", "number"],
+            ["boost speed", "number"],
+            ["cores", "number"],
+            ["threads", "number"],
+        ],
+    },
+    {
+        name: "ram",
+        columns: [
+            ["id", "number"],
+            ["model", "string"],
+            ["capacity", "number"],
+            ["speed", "number"],
+        ],
+    },
+] as const satisfies readonly {
+    name: string;
+    columns: readonly (readonly [string, ColumnType])[];
+}[];
+
+interface TypeMapping {
+    string: string;
+    number: number;
+    boolean: boolean;
+}
+
+type ExtractColumns<T extends readonly (readonly [string, string])[]> = {
+    [K in T[number] as K[0]]: K[1] extends keyof TypeMapping ? TypeMapping[K[1]] : any;
+};
+
+const a: Partial<ExtractColumns<typeof categoriesWithColumns[0]["columns"]>> = {
+
+};
+console.log(a);
+
 export default class InventoryDao extends daoBase<IInventory> implements daoBaseType<IInventory> {
     async create(item: IInventory): Promise<void> {
         const values = Object.entries(item).filter(([, value]) => value !== undefined) as KeyValuePair<IInventory>[];

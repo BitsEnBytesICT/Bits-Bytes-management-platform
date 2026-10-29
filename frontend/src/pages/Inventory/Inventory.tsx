@@ -4,12 +4,14 @@ import type IInventory from "../../types/Inventory/IInventory.ts";
 import InventoryTable from "./components/InventoryTable.tsx";
 import InventoryFilter from "./components/InventoryFilter.tsx";
 import {InventoryService} from "./inventory.service.ts";
-import {IconFilter} from "../../assets";
+import {IconEdit, IconFilter} from "../../assets";
 
 export default function Inventory() {
     const [inventoryItems, setInventoryItems] = useState<IInventory[]>([]);
     const [filteredInventoryItems, setFilteredInventoryItems] = useState<IInventory[]>([]);
     const [isFilterShown, setIsFilterShown] = useState(false);
+
+    const [isCategorySelected, setCategorySelected] = useState<boolean>(false);
 
     const service = new InventoryService();
 
@@ -30,6 +32,13 @@ export default function Inventory() {
                     icon={<img src={IconFilter} className="select-none [-webkit-user-drag:none]" />}
                     onClick={() => setIsFilterShown(!isFilterShown)}
                 />
+                <div className={"flex flex-col justify-end"}>
+                    <SmallButton
+                        label={"Voeg item toe"}
+                        active={isCategorySelected}
+                        icon={<img src={IconEdit} className="select-none [-webkit-user-drag:none]" />}
+                    />
+                </div>
             </div>
             <InventoryFilter
                 inventory={inventoryItems}
