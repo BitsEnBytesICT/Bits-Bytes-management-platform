@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: bitsenbytes-frontend-prod
-          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesfrontendPROD_0.0.4
+          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesfrontendPROD_0.1
           imagePullPolicy: Always
 ---
 apiVersion: v1
@@ -78,7 +78,7 @@ spec:
     spec:
       containers:
         - name: bitsenbytes-backend-prod
-          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesbackendPROD_0.0.2_test_deployment_3
+          image: docker-registry.bitsenbytes.net/managementplatform:bitsenbytesbackendPROD_0.1
           imagePullPolicy: Always
           env:
             - name: NODE_ENV

@@ -8,16 +8,16 @@ jobs:
   build-and-deploy-prod:
     if: ${{ github.event.release.target_commitish == 'main' }}
     runs-on: [self-hosted]
+    environment: prod
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout merged commit
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Install frontend dependencies
         working-directory: ./frontend
@@ -25,7 +25,7 @@ jobs:
 
       - name: Build frontend
         working-directory: ./frontend
-        run: npm run build
+        run: npm run build:prod
 
       - name: Install backend dependencies
         working-directory: ./backend
@@ -36,10 +36,44 @@ jobs:
         run: npm run build
 
       - name: Build Docker images
-        run: docker compose -f compose-prod.yaml build
+        run: docker compose --env-file .env.versions -f compose-prod.yaml build
 
       - name: Push Docker images
-        run: docker compose -f compose-prod.yaml push
+        run: docker compose --env-file .env.versions -f compose-prod.yaml push
 
       - name: Deploy to Kubernetes
-        run: kubectl apply -f ./deployment-PROD.yaml
+        shell: bash
+        env:
+          NODE_ENV: ${{ vars.NODE_ENV }}
+          DATABASE_TYPE: ${{ vars.DATABASE_TYPE }}
+          DATABASE_URL: ${{ vars.DATABASE_URL }}
+          DATABASE_USERNAME: ${{ vars.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ vars.DATABASE_PASSWORD }}
+          DATABASE_NAME: ${{ vars.DATABASE_NAME }}
+          INVENTORYDB_NAME: ${{ vars.INVENTORYDB_NAME }}
+          DATABASE_PORT: ${{ vars.DATABASE_PORT }}
+          JWT_SECRET: ${{ vars.JWT_SECRET }}
+          ENCRYPTION_KEY: ${{ vars.ENCRYPTION_KEY }}
+          ALLOWED_ORIGIN: ${{ vars.ALLOWED_ORIGIN }}
+        run: |
+          set -euo pipefail
+          set -a
+          source .env.versions
+          set +a
+
+          for variable in NODE_ENV DATABASE_TYPE DATABASE_URL DATABASE_USERNAME DATABASE_PASSWORD DATABASE_NAME INVENTORYDB_NAME DATABASE_PORT JWT_SECRET ENCRYPTION_KEY ALLOWED_ORIGIN; do
+            if [[ -z "${!variable}" ]]; then
+              echo "::error::GitHub environment acc: variable ${variable} is missing or empty."
+              exit 1
+            fi
+            # Escape values for the double-quoted YAML strings before substitution.
+            printf -v "$variable" '%s' "$(node -p 'JSON.stringify(process.env[process.argv[1]]).slice(1, -1)' "$variable")"
+          done
+
+          envsubst \
+          '${VITE_FRONTEND_SNAPSHOT_VERSION} ${BACKEND_SNAPSHOT_VERSION} ${BACKEND_VERSION} ${VITE_FRONTEND_VERSION} ${NODE_ENV} ${DATABASE_TYPE} ${DATABASE_URL} ${DATABASE_USERNAME} ${DATABASE_PASSWORD} ${DATABASE_NAME} ${INVENTORYDB_NAME} ${DATABASE_PORT} ${JWT_SECRET} ${ENCRYPTION_KEY} ${ALLOWED_ORIGIN}' \
+          < deployment-ACC.yaml \
+          | kubectl apply -f -
+
+      - name: cleanup docker
+        run: docker builder prune -af && docker image prune -af && docker container prune -f
