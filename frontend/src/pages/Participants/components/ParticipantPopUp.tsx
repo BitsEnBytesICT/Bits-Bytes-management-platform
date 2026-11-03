@@ -282,6 +282,15 @@ export default function ParticipantPopUp({
                             }
                         />
                         <Input
+                            label="Verjaardag"
+                            placeholder="Verjaardag"
+                            id="location"
+                            type="text"
+                            readOnly={isInfo}
+                            value={currentParticipant?.bday}
+                            onChange={(value: string) => setCurrentParticipant({...currentParticipant, bday: value})}
+                        />
+                        <Input
                             label="Organisatie"
                             placeholder="Organisatie"
                             id="organisation"
@@ -355,7 +364,7 @@ export default function ParticipantPopUp({
                                 setCurrentParticipant({...currentParticipant, financing: value})
                             }
                         />
-                        {isInfo && (
+                        {/* {isInfo && (
                             <Input
                                 label="Huidige plek"
                                 placeholder="Huidige plek"
@@ -363,7 +372,7 @@ export default function ParticipantPopUp({
                                 type="text"
                                 readOnly={isInfo}
                             />
-                        )}
+                        )} */}
                     </div>
                 </>,
                 <div className="flex flex-col justify-between grow">

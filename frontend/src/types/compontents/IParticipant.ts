@@ -11,6 +11,7 @@ export interface IParticipant {
     active: number;
     clockedin?: number;
     financing?: string;
+    bday?: string;
 }
 
 export interface IParticipantWithSchedules extends IParticipant {

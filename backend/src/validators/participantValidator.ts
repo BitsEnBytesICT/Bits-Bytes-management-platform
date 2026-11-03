@@ -7,6 +7,17 @@ const validateNotNegative = Fun<number, boolean>(id => id >= 0);
 const validateOneorZero = Fun<number, boolean>(id => id === 0 || id === 1);
 const validateOneorZeroUndefined = Fun<number | undefined, boolean>(id => id === undefined ? true : id === 0 || id === 1);
 const validateStringNotEmptyAndLenBelow50CharAndUndefined = Fun<string | undefined, boolean>(str => str === undefined ? true : str.length > 0 && str.length < 51);
+const validateBirthdayOrUndefined = Fun<string | undefined, boolean>(value => {
+    if (value === undefined) return true;
+    if (typeof value !== "string" || value.length !== 5 || !/^\d{2}-\d{2}$/.test(value)) return false;
+
+    const day = Number(value.slice(0, 2));
+    const month = Number(value.slice(3, 5));
+    // Without a birth year, February 29 is a valid birthday.
+    const maxDay = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1] ?? 0;
+
+    return day >= 1 && day <= maxDay;
+});
 
 export const participantValidatorFunctors: ValidatorMap<IParticipant> = {
     id: [validateNotNegativeOrUndefined, "id cannot be negative"],
@@ -15,10 +26,11 @@ export const participantValidatorFunctors: ValidatorMap<IParticipant> = {
     organisation: [validateStringNotEmptyAndLenBelow50Char, "organisation cannot be empty or above 50 chars"],
     account: [validateNotNegative, "account id cannot be negative"],
     rfid: [validateStringNotEmptyAndLenBelow50Char, "rfid cannot be empty or above 50 chars"],
-    createdAt: [validateDate, "createdAt time not valid"],
+    createdAt: [validateDate, "createdAt time is not valid"],
     active: [validateOneorZero, "active can only be a one or a zero"],
     clockedin: [validateOneorZeroUndefined, "clockin state can only be a one or a zero"],
-    financing: [validateStringNotEmptyAndLenBelow50CharAndUndefined, "financing cannot be above 50 chars"]
+    financing: [validateStringNotEmptyAndLenBelow50CharAndUndefined, "financing cannot be above 50 chars"],
+    bday: [validateBirthdayOrUndefined, "bday must be a valid date in dd-mm format"]
 }
 
 export function ParticipantValidator(participant: IParticipant) {
