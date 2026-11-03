@@ -32,8 +32,16 @@ export default function ParticipantpopUpFloorplans({
 
     useEffect(() => {
         setCurrentParticipants([
-            participants.find(p => `${p.firstname} ${p.lastname}` === currentWorkplace.timeslots[currentDay].Ochtend),
-            participants.find(p => `${p.firstname} ${p.lastname}` === currentWorkplace.timeslots[currentDay].Middag),
+            participants.find(
+                p =>
+                    `${p.firstname} ${p.lastname}` === currentWorkplace.timeslots[currentDay].Ochtend &&
+                    p.id !== popupPropsExtra.currentParticipant.id,
+            ),
+            participants.find(
+                p =>
+                    `${p.firstname} ${p.lastname}` === currentWorkplace.timeslots[currentDay].Middag &&
+                    p.id !== popupPropsExtra.currentParticipant.id,
+            ),
         ]);
     }, [participants, currentDay]);
 
@@ -130,6 +138,10 @@ export default function ParticipantpopUpFloorplans({
                                           : workplace,
                                 );
 
+                                setCurrentParticipants([
+                                    index === 0 ? undefined : currentParticipants[0],
+                                    index === 1 ? undefined : currentParticipants[1],
+                                ]);
                                 setCurrentWorkplace(updatedWorkplace);
                                 setWorkplaces(updatedWorkplaces);
                             }}
