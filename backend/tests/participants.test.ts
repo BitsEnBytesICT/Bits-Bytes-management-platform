@@ -127,6 +127,7 @@ describe("ParticipantValidator", () => {
             active: -1,
             clockedin: -1,
             financing: "",
+            bday: ""
         });
 
         assert.ok(results.every((r) => r.kind === "error"));
