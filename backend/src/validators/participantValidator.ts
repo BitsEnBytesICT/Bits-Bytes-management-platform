@@ -18,7 +18,7 @@ const validateBirthdayOrUndefined = Fun<string | undefined, boolean>(value => {
 
     return day >= 1 && day <= maxDay;
 });
-const validateNotANumberNotEmptyAndLenBelow50 = Fun<string, boolean>(value => value.length > 0 && value.length < 51 && /^[\p{L}-]+$/u.test(value));
+const validateNotANumberNotEmptyAndLenBelow50 = Fun<string, boolean>(value => value.length > 0 && value.length < 51 && /^[\p{L} '’-]+$/u.test(value));
 
 export const participantValidatorFunctors: ValidatorMap<IParticipant> = {
     id: [validateNotNegativeOrUndefined, "id cannot be negative"],

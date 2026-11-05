@@ -99,11 +99,11 @@ describe("ParticipantService", () => {
 describe("ParticipantValidator", () => {
     const validParticipant: IParticipant = {
         id: 1,
-        firstname: "test",
-        lastname: "test",
+        firstname: "Jan",
+        lastname: "de Vries",
         organisation: "IT Afdeling",
         account: 1,
-        rfid: "test",
+        rfid: "11F3EF12",
         createdAt: getCurrentDate(),
         active: 1,
         clockedin: 0,
