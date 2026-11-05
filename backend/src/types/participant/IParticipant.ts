@@ -9,4 +9,5 @@ export default interface IParticipant {
     active: number;
     clockedin?: number;
     financing?: string;
+    bday?: string;
 }
