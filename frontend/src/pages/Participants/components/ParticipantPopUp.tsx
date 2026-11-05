@@ -282,7 +282,7 @@ export default function ParticipantPopUp({
                             }
                         />
                         <Input
-                            label="Verjaardag"
+                            label="Verjaardag (dd-mm)"
                             placeholder="Verjaardag"
                             id="location"
                             type="text"

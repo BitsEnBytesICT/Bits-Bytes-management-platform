@@ -18,11 +18,12 @@ const validateBirthdayOrUndefined = Fun<string | undefined, boolean>(value => {
 
     return day >= 1 && day <= maxDay;
 });
+const validateNotANumberNotEmptyAndLenBelow50 = Fun<string, boolean>(value => value.length > 0 && value.length < 51 && /^[\p{L}-]+$/u.test(value));
 
 export const participantValidatorFunctors: ValidatorMap<IParticipant> = {
     id: [validateNotNegativeOrUndefined, "id cannot be negative"],
-    firstname: [validateStringNotEmptyAndLenBelow50Char, "firstname cannot be empty or above 50 chars"],
-    lastname: [validateStringNotEmptyAndLenBelow50Char, "lastname cannot be empty or above 50 chars"],
+    firstname: [validateNotANumberNotEmptyAndLenBelow50, "firstname cannot be empty or above 50 chars and can not contain numbers or special characters"],
+    lastname: [validateNotANumberNotEmptyAndLenBelow50, "lastname cannot be empty or above 50 chars and can not contain numbers or special characters"],
     organisation: [validateStringNotEmptyAndLenBelow50Char, "organisation cannot be empty or above 50 chars"],
     account: [validateNotNegative, "account id cannot be negative"],
     rfid: [validateStringNotEmptyAndLenBelow50Char, "rfid cannot be empty or above 50 chars"],
