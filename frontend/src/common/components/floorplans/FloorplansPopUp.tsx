@@ -1,3 +1,5 @@
+import {useEffect, useRef} from "react";
+import type {IParticipantWithSchedules} from "../../../types/compontents/IParticipant";
 import type IFloorplansPopUp from "../../../types/floorPlans/floorplantsPopUp";
 import type ISchedule from "../../../types/schedules/ISchedule";
 import {scheduleFieldsByDay} from "../../../types/schedules/ISchedule";
@@ -8,11 +10,15 @@ import FloorplansService from "./floorplans.service";
 export default function FloorplansPopUp({
     currentWorkplace,
     participants,
+    setParticipants,
     setCurrentWorkplace,
     setWorkplaces,
     workplaces,
     currentDay,
 }: IFloorplansPopUp<unknown>) {
+    const extraInfoChanged = useRef<boolean>(false);
+    const latestWorkplace = useRef(currentWorkplace);
+
     const occupancyStatuses = [
         {label: "Vrij", color: "text-(--color-green)"},
         {label: "Deels", color: "text-(--color-yellow)"},
@@ -27,6 +33,20 @@ export default function FloorplansPopUp({
         ];
 
     const floorplansService: FloorplansService = new FloorplansService();
+
+    useEffect(() => {
+        latestWorkplace.current = currentWorkplace;
+    }, [currentWorkplace]);
+
+    useEffect(() => {
+        return () => {
+            if (extraInfoChanged.current)
+                floorplansService.updateWorkplace(
+                    ["id", latestWorkplace.current.id],
+                    ["extraInfo", latestWorkplace.current.extraInfo],
+                );
+        };
+    }, []);
 
     return (
         <div
@@ -64,8 +84,8 @@ export default function FloorplansPopUp({
                             })),
                         ]}
                         value={currentWorkplace.timeslots[currentDay][timeslot]}
-                        onChange={value => {
-                            let participant;
+                        onChange={async value => {
+                            let participant: IParticipantWithSchedules;
                             if (value !== "Vrij")
                                 participant = participants.find(p => `${p.firstname} ${p.lastname}` === value);
                             else
@@ -74,18 +94,28 @@ export default function FloorplansPopUp({
                                         `${p.firstname} ${p.lastname}` ===
                                         currentWorkplace.timeslots[currentDay][timeslot],
                                 );
-                            const schedule = participant.schedules.find(
+
+                            const changedSchedule = participant.schedules.find(
+                                schedule => schedule[scheduleFieldsByDay[currentDay * 2 + index][0]] !== null,
+                            );
+
+                            const openSchedule = participant.schedules.find(
                                 s => !s.endDate || s.endDate.getTime() > Date.now(),
                             );
 
+                            const schedule = changedSchedule ? changedSchedule : openSchedule;
+
                             if (!schedule) {
-                                floorplansService.createScedule({
+                                const newSchedule = {
                                     name: "gemaakt via floorplanner",
                                     startDate: new Date(),
                                     participant: participant.id,
                                     [scheduleFieldsByDay[currentDay * 2 + index][0]]:
                                         value === "Vrij" ? undefined : currentWorkplace.id,
-                                });
+                                };
+                                await floorplansService.createScedule(newSchedule);
+                                participant.schedules.push(newSchedule);
+                                setParticipants(participants.map(p => (p.id === participant.id ? participant : p)));
                             } else {
                                 schedule[scheduleFieldsByDay[currentDay * 2 + index][0]] =
                                     value === "Vrij" ? undefined : currentWorkplace.id;
@@ -93,7 +123,7 @@ export default function FloorplansPopUp({
                                     key,
                                     schedule[key],
                                 ]);
-                                floorplansService.updateScedule(
+                                await floorplansService.updateScedule(
                                     ["id", schedule.id],
                                     ...(updatedFields as KeyValuePair<ISchedule>[]),
                                 );
@@ -138,6 +168,7 @@ export default function FloorplansPopUp({
                             workplace.id === updatedWorkplace.id ? updatedWorkplace : workplace,
                         ),
                     );
+                    extraInfoChanged.current = true;
                 }}
                 id="notities"
                 type="textarea"

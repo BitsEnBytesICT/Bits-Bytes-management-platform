@@ -2,7 +2,7 @@ import Table from "../../../common/components/Table";
 
 import type {ITableColumn} from "../../../types/compontents/ITable";
 import type IInventory from "../../../types/Inventory/IInventory.ts";
-import {formatDate, fromBackendDate} from "../../../common/helperFunctions.ts";
+import {formatDate, fromDateString} from "../../../common/helperFunctions.ts";
 
 interface IInventoryTable {
     inventory: IInventory[];
@@ -19,7 +19,7 @@ const inventoryColumns: ITableColumn<IInventory>[] = [
         key: "createdAt",
         label: "Aangemaakt",
         sortable: true,
-        render: row => (row.createdAt ? formatDate(fromBackendDate(row.createdAt)) : "-"),
+        render: row => (row.createdAt ? formatDate(fromDateString(row.createdAt)) : "-"),
     },
 ];
 

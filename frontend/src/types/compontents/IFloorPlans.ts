@@ -3,14 +3,17 @@ import type {IRoom} from "../floorPlans/IRoom";
 import type FloorplansPopUp from "../floorPlans/floorplantsPopUp";
 import type {IParticipantWithSchedules} from "./IParticipant";
 import type ISchedule from "../schedules/ISchedule";
+import type {IWorkplace} from "../floorPlans/IWorkplace";
 
 export default interface IFloorPlans<T> {
     rooms: IRoom[];
     participants: IParticipantWithSchedules[];
+    setParticipants: React.Dispatch<React.SetStateAction<IParticipantWithSchedules[]>>;
     PopUpContent?: ComponentType<FloorplansPopUp<NoInfer<T>>>;
     dayButtons?: boolean;
     stacked?: boolean;
     popupPropsExtra?: T;
     height?: string;
     currentEditedScedule?: ISchedule;
+    workplaces?: IWorkplace[];
 }

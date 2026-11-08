@@ -27,7 +27,6 @@ function Mobile() {
 
 function App() {
     const [isOpen, setIsOpen] = useState(false);
-
     const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
 
     useEffect(() => {

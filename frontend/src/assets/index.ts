@@ -26,6 +26,7 @@ export {default as IconDelete} from "./ui/icon-delete.svg";
 export {default as IconInfo} from "./ui/icon-info.svg";
 export {default as IconFilter} from "./ui/icon-filter.svg";
 export {default as IconClose} from "./ui/icon-close.svg";
+export {default as IconAbsent} from "./ui/icon-absent.svg";
 
 // logo
 export {default as LogoWhite} from "./logo/logo-white.svg";

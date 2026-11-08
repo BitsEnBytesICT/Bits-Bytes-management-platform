@@ -28,7 +28,7 @@ export default function InventoryCategoryPopup({onClose}: IInventoryCategoryPopu
                 </div>
             }
             children={[
-                <div className="w-full max-w-md mx-auto">
+                <div className="flex w-full max-w-md mx-auto items-center">
                     <div
                         className="w-full min-h-[160px] px-6 py-6 flex items-center justify-center text-sm font-medium
                             text-(--color-darkblue) bg-(--color-white) rounded-2xl

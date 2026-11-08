@@ -23,9 +23,11 @@ export function isMySqlDateTime(value: string): boolean {
 }
 
 export const validatePositiveNumber = Fun<number, boolean>(value => value > 0);
+export const validateNotNegativeNumber = Fun<number, boolean>(value => value >= 0);
 export const validatePositiveNumberOrUndefined = Fun<number | undefined, boolean>(value => value === undefined || value > 0);
 export const validateNotNegativeOrUndefined = Fun<number | undefined, boolean>(value => value === undefined || value >= 0);
 export const validateStringNotEmpty = Fun<string, boolean>(value => value.length > 0);
 export const validateStringNotEmptyAndLenBelow50Char = Fun<string, boolean>(value => value.length > 0 && value.length < 51);
 export const validateDate = Fun<string, boolean>(isMySqlDateTime);
 export const validateDateOrUndefined = Fun<string | undefined, boolean>(value => value === undefined || isMySqlDateTime(value));
+export const identityValidator = Fun<any, boolean>((_ => true));

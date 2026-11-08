@@ -136,7 +136,7 @@ export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITa
                     {rows.map((row, index) => (
                         <tr key={String(row[rowKey])} className="table table-fixed w-full">
                             {checkBox && (
-                                <td>
+                                <td className="w-10">
                                     <Input
                                         id="checkBox"
                                         type="checkbox"

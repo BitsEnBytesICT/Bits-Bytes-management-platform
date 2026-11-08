@@ -7,6 +7,8 @@ import type {IParticipant} from "../../../types/compontents/IParticipant";
 interface IParticipantpopUpFloorplans {
     currentScedule: ISchedule;
     setCurrentScedule: Dispatch<SetStateAction<ISchedule>>;
+    currentParticipant: IParticipant;
+    isInfo: boolean;
 }
 
 const scheduleFieldsByDay = [
@@ -79,7 +81,12 @@ export default function ParticipantpopUpFloorplans({
                         <Input
                             id={`${index}`}
                             type="checkbox"
-                            readOnly={currentParticipants !== undefined && currentParticipants[index] !== undefined}
+                            readOnly={
+                                (currentParticipants?.[index]?.id !== undefined &&
+                                    currentParticipants?.[index]?.id !== popupPropsExtra.currentParticipant.id &&
+                                    currentWorkplace.id !== popupPropsExtra.currentScedule[scheduleField]) ||
+                                popupPropsExtra.isInfo
+                            }
                             label={
                                 currentParticipants && currentParticipants[index]
                                     ? `${currentParticipants[index].firstname} ${currentParticipants[index].lastname}`
@@ -87,21 +94,28 @@ export default function ParticipantpopUpFloorplans({
                             }
                             labelPos="right"
                             checked={
-                                scheduleField !== undefined &&
-                                popupPropsExtra?.currentScedule[scheduleField] === currentWorkplace.id
+                                popupPropsExtra?.currentScedule[scheduleField] === currentWorkplace.id ||
+                                popupPropsExtra?.currentScedule.participant === currentParticipants?.[index]?.id
                             }
                             onChange={value => {
                                 if (!scheduleField || !popupPropsExtra) return;
+
+                                const previousWorkplace = workplaces.find(
+                                    wp => wp.id === popupPropsExtra.currentScedule[scheduleField],
+                                );
 
                                 popupPropsExtra.setCurrentScedule(schedule => ({
                                     ...schedule,
                                     [scheduleField]: value ? currentWorkplace.id : undefined,
                                 }));
 
-                                if (index === 0)
+                                if (index === 0) {
+                                    if (previousWorkplace) previousWorkplace.timeslots[currentDay].Ochtend = "Vrij";
                                     currentWorkplace.timeslots[currentDay].Ochtend = value ? "temp bezet" : "Vrij";
-                                else if (index === 1)
+                                } else if (index === 1) {
+                                    if (previousWorkplace) previousWorkplace.timeslots[currentDay].Middag = "Vrij";
                                     currentWorkplace.timeslots[currentDay].Middag = value ? "temp bezet" : "Vrij";
+                                }
 
                                 const updatedWorkplace = {
                                     ...currentWorkplace,
@@ -109,7 +123,11 @@ export default function ParticipantpopUpFloorplans({
                                 };
 
                                 const updatedWorkplaces = workplaces.map(workplace =>
-                                    workplace.id === updatedWorkplace.id ? updatedWorkplace : workplace,
+                                    workplace.id === updatedWorkplace.id
+                                        ? updatedWorkplace
+                                        : previousWorkplace && workplace.id === previousWorkplace.id
+                                          ? previousWorkplace
+                                          : workplace,
                                 );
 
                                 setCurrentWorkplace(updatedWorkplace);

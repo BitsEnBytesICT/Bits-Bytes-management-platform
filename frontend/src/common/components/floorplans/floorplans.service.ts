@@ -40,6 +40,16 @@ export default class FloorplansService {
         else return await response.json();
     };
 
+    updateWorkplace = async (where: KeyValuePair<IWorkplace>, ...values: KeyValuePair<IWorkplace>[]) => {
+        const response = await http("/api/workplaces/update", "POST", {
+            where,
+            values,
+        });
+
+        if (response.status === 200) return [];
+        else return await response.json();
+    };
+
     getWalls = async (roomID: number): Promise<IWall[]> => {
         return await (
             await http("/api/walls", "POST", {where: [["RoomID", roomID]] satisfies KeyValuePair<IWall>[]})

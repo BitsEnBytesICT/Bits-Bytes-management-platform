@@ -14,7 +14,7 @@ import FloorPlans from "../../../common/components/floorplans/FloorPlans";
 import type {IRoom} from "../../../types/floorPlans/IRoom";
 import ParticipantpopUpFloorplans from "./ParticipantpopUpFloorplans";
 import type ISchedule from "../../../types/schedules/ISchedule";
-import {fromDateString, toDateString} from "../../../common/helperFunctions";
+import {fromDateString, toShortDateString} from "../../../common/helperFunctions";
 import type {IParticipant, IParticipantWithSchedules} from "../../../types/compontents/IParticipant";
 
 type ParticipantPopUpMode = "info" | "add" | "edit";
@@ -26,7 +26,7 @@ interface IParticipantPopUp {
     participant?: IParticipantWithSchedules;
     account?: IAccount;
     onClose: () => void;
-    setParticipants?: (value: IParticipantWithSchedules[]) => void;
+    setParticipants?: React.Dispatch<React.SetStateAction<IParticipantWithSchedules[]>>;
 }
 
 const titles: Record<ParticipantPopUpMode, string> = {
@@ -56,10 +56,10 @@ export default function ParticipantPopUp({
     const service: ParticipantsService = new ParticipantsService();
 
     useEffect(() => {
-        if (mode !== "add") {
-            setSchedules([...participants.find(p => p.id === currentParticipant.id).schedules]);
-        }
+        if (mode !== "add") setSchedules([...participant.schedules]);
+    }, [participant]);
 
+    useEffect(() => {
         if (isInfo) {
             return;
         }
@@ -92,23 +92,40 @@ export default function ParticipantPopUp({
     function saveSchedule() {
         if (!currentScedule.name || !currentScedule.startDate) return;
 
+        const result = schedules.filter(
+            s =>
+                (!s.endDate || s.endDate.getTime() > currentScedule.startDate.getTime()) &&
+                s.id !== currentScedule.id &&
+                ((s.monMorning != null && currentScedule.monMorning != null) ||
+                    (s.monEvening != null && currentScedule.monEvening != null) ||
+                    (s.thuesMorning != null && currentScedule.thuesMorning != null) ||
+                    (s.thuesEvening != null && currentScedule.thuesEvening != null) ||
+                    (s.wedMorning != null && currentScedule.wedMorning != null) ||
+                    (s.wedEvening != null && currentScedule.wedEvening != null) ||
+                    (s.thursMorning != null && currentScedule.thursMorning != null) ||
+                    (s.thursEvening != null && currentScedule.thursEvening != null) ||
+                    (s.friMorning != null && currentScedule.friMorning != null) ||
+                    (s.friEvening != null && currentScedule.friEvening != null)),
+        );
+
+        if (result.length > 0) {
+            setError([`De nieuwe schedule overlapt met de schedules: ${result.map(s => s.name).join(", ")}`]);
+            return;
+        }
+
         const index = schedules.findIndex(scedule => scedule.name === currentScedule.name);
-        if (index === -1) schedules.push(currentScedule);
-        else schedules[index] = currentScedule;
+        if (index === -1) schedules.push({...currentScedule});
+        else schedules[index] = {...currentScedule};
 
         setSchedules([...schedules]);
+        setError([]);
         closeScheduleForm();
     }
 
     async function deleteSchedule(index: number) {
         const scedule = schedules[index];
-        if (scedule.id) await service.deleteScedule(scedule.id);
-
         setSchedules(schedules.filter((_, i) => i !== index));
-        setCurrentParticipant({
-            ...currentParticipant,
-            schedules: currentParticipant.schedules?.filter(current => current.id !== scedule.id),
-        });
+        if (scedule.id) await service.deleteScedule(scedule.id);
     }
 
     async function save() {
@@ -176,45 +193,44 @@ export default function ParticipantPopUp({
                 }
             }
 
-            const newSchedules = schedules.splice(currentParticipant.schedules.length);
+            const newSchedules = schedules.filter(scedule => scedule.id == null);
+            if (newSchedules.length > 0) {
+                const errors = (
+                    await Promise.all(
+                        newSchedules.map(scedule =>
+                            service.createScedule({...scedule, participant: currentParticipant.id}),
+                        ),
+                    )
+                ).flat();
+                if (errors.length > 0) {
+                    setError(errors.flatMap(err => err));
+                    return;
+                }
+            }
+
+            const existingSchedules = schedules.filter(scedule => scedule.id != null);
             const errors = (
                 await Promise.all(
-                    newSchedules.map(scedule =>
-                        service.createScedule({...scedule, participant: currentParticipant.id}),
-                    ),
+                    existingSchedules.map(scedule => {
+                        const originalSchedule = participant.schedules.find(original => original.id === scedule.id);
+                        if (!originalSchedule) return [];
+
+                        const updatedFields = (Object.keys(scedule) as Array<keyof ISchedule>)
+                            .filter(key => scedule[key] !== originalSchedule[key])
+                            .map(key => [key, scedule[key]]);
+
+                        return updatedFields.length === 0
+                            ? []
+                            : service.updateScedule(
+                                  ["id", scedule.id],
+                                  ...(updatedFields as KeyValuePair<ISchedule>[]),
+                              );
+                    }),
                 )
             ).flat();
             if (errors.length > 0) {
-                setError(errors.flatMap(err => err));
+                setError(errors);
                 return;
-            }
-
-            setSchedules([...schedules.splice(0, currentParticipant.schedules.length)]);
-            if (schedules.length > 0) {
-                const updatedFieldsSchedules = schedules.map((scedule, index) =>
-                    (Object.keys(scedule) as Array<keyof ISchedule>)
-                        .filter(key => scedule[key] !== currentParticipant.schedules[index][key])
-                        .map(key => [key, scedule[key]]),
-                );
-
-                if (updatedFieldsSchedules.some(fields => fields.length > 0)) {
-                    const errors = (
-                        await Promise.all(
-                            schedules.map((scedule, index) =>
-                                updatedFieldsSchedules[index].length === 0
-                                    ? []
-                                    : service.updateScedule(
-                                          ["id", scedule.id],
-                                          ...(updatedFieldsSchedules[index] as KeyValuePair<ISchedule>[]),
-                                      ),
-                            ),
-                        )
-                    ).flat();
-                    if (errors.length > 0) {
-                        setError(errors);
-                        return;
-                    }
-                }
             }
         }
 
@@ -371,13 +387,13 @@ export default function ParticipantPopUp({
                                 <Input
                                     key={`startDate-${currentScedule.id ?? "new"}`}
                                     id="startDate"
-                                    type="datetime-local"
+                                    type="date"
                                     label="Vanaf"
                                     required
                                     readOnly={isInfo}
-                                    value={toDateString(currentScedule.startDate)}
+                                    value={toShortDateString(currentScedule.startDate)}
                                     icon={IconCalendarAfter}
-                                    max={toDateString(currentScedule.endDate) || undefined}
+                                    max={toShortDateString(currentScedule.endDate) || undefined}
                                     onChange={value =>
                                         setCurrentScedule({...currentScedule, startDate: fromDateString(value)})
                                     }
@@ -386,12 +402,12 @@ export default function ParticipantPopUp({
                                 <Input
                                     key={`endDate-${currentScedule.id ?? "new"}`}
                                     id="endDate"
-                                    type="datetime-local"
+                                    type="date"
                                     label="Tot en met"
                                     readOnly={isInfo}
-                                    value={toDateString(currentScedule.endDate)}
+                                    value={toShortDateString(currentScedule.endDate)}
                                     icon={IconCalendarBefore}
-                                    min={toDateString(currentScedule.startDate) || undefined}
+                                    min={toShortDateString(currentScedule.startDate) || undefined}
                                     onChange={value =>
                                         setCurrentScedule({...currentScedule, endDate: fromDateString(value)})
                                     }
@@ -400,19 +416,22 @@ export default function ParticipantPopUp({
 
                             <FloorPlans
                                 participants={participants}
+                                setParticipants={setParticipants}
                                 rooms={rooms}
                                 height="h-42"
                                 stacked
                                 popupPropsExtra={{
                                     currentScedule: currentScedule,
                                     setCurrentScedule: setCurrentScedule,
+                                    currentParticipant: currentParticipant,
+                                    isInfo: isInfo,
                                 }}
-                                PopUpContent={!isInfo ? ParticipantpopUpFloorplans : undefined}
+                                PopUpContent={ParticipantpopUpFloorplans}
                                 currentEditedScedule={currentScedule}></FloorPlans>
                         </div>
                     ) : (
                         <>
-                            <div className="flex flex-col gap-3 max-h-100 overflow-auto">
+                            <div className="flex flex-col gap-3 max-h-100 overflow-auto mb-6">
                                 {schedules.map((scedule, index) => (
                                     <div
                                         key={scedule.id ?? scedule.name}

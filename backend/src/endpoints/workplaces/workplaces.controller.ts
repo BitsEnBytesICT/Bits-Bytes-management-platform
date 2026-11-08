@@ -15,4 +15,16 @@ export default class WorkplaceController {
         const workplaces = await this.service.list(...(req.body?.where ?? []));
         res.json(workplaces);
     }
+
+    @AuthenticationDecorator(PermissionsList.workplaceCreate)
+    async create(req: Request, res: Response) {
+        await this.service.create(req.body?.workplace);
+        res.sendStatus(200);
+    }
+
+    @AuthenticationDecorator(PermissionsList.workplaceUpdate)
+    async update(req: Request, res: Response) {
+        await this.service.update(req.body.where, ...req.body.values);
+        res.sendStatus(200);
+    }
 }

@@ -50,7 +50,7 @@ interface SelectInput extends InputBase {
     onMenuOpen?: () => void;
     onMenuClose?: () => void;
     onInputChange?: (newValue: string, actionMeta: InputActionMeta) => void;
-    onChange?: (input: string) => void;
+    onChange?: ((input: string) => Promise<void>) | ((input: string) => void);
 }
 
 type IInput = CheckboxInput | TextInput | TextareaInput | DateInput | SelectInput;
