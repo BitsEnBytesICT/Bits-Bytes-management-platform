@@ -59,7 +59,7 @@ export default function ParticipantpopUpFloorplans({
                 <span className={occupancyStatus.color}>{occupancyStatus.label}</span>
             </div>
 
-            <div className="h-px bg-(--color-black)/5"></div>
+            <div className="h-pxbg-(--color-black)/5"></div>
 
             {Object.keys(currentWorkplace.timeslots[currentDay]).map((timeslot, index) => {
                 const scheduleField = scheduleFields?.[index];

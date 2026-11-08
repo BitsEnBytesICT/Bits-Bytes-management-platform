@@ -21,7 +21,7 @@ export default function PopUp({onClose, onPrevious, title, children, button, err
                 {title && <div className="text-[20px] font-extrabold text-center text-(--color-darkblue)">{title}</div>}
 
                 <div className="flex flex-1 flex-col gap-y-7">
-                    {children[page]}
+                    <div className="flex-1 flex items-center justify-center">{children[page]}</div>
                     <div className="flex flex-col h-6">
                         {errors &&
                             errors.map(e => (

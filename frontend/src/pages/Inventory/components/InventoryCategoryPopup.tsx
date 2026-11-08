@@ -1,5 +1,4 @@
 import PopUp from "../../../common/components/PopUp.tsx";
-import {useState} from "react";
 import Input from "../../../common/components/Input.tsx";
 
 interface IInventoryCategoryPopupProps {
@@ -7,17 +6,22 @@ interface IInventoryCategoryPopupProps {
 }
 
 export default function InventoryCategoryPopup({onClose}: IInventoryCategoryPopupProps) {
-    const [error] = useState([]);
+    const error: string[] = [];
 
     return (
         <PopUp
             onClose={onClose}
             errors={error}
-            button={""}
+            button=""
             children={[
-                <div>
-                    <div className={"grid grid-cols-2 gap-x-6 gap-y-4"}>
-                        <Input type={"text"} id={"category"} label={"Categorie naam"} />
+                <div className="w-full max-w-md mx-auto">
+                    <div
+                        className="w-full min-h-[160px] px-6 py-6 flex items-center justify-center text-sm font-medium
+                            text-(--color-darkblue) bg-(--color-white) rounded-2xl
+                            shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
+                        <div className="w-full">
+                            <Input type="text" id="category" label="Categorie naam" />
+                        </div>
                     </div>
                 </div>,
             ]}

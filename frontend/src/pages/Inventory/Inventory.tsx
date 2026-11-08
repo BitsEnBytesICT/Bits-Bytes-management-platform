@@ -63,6 +63,7 @@ export default function Inventory() {
                             <SmallButton
                                 label={"Voeg categorie toe"}
                                 icon={<img src={PlusIcon} className="select-none [-webkit-user-drag:none]" />}
+                                onClick={() => setIsInventoryCategoryPopupOpen(true)}
                             />
                         </div>
                     )}
