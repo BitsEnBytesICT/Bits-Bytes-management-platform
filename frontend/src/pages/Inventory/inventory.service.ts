@@ -11,4 +11,14 @@ export class InventoryService {
             console.log("Inventarisatie geeft error", response.status);
         }
     }
+
+    async createCategory(name: string): Promise<void> {
+        if (!name && name.length === 0) return;
+        const response: Response = await http("/api/inventory/create", "POST", {
+            name,
+        });
+        if (response.status === 200) {
+            console.log("Inventory category created");
+        }
+    }
 }
