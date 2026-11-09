@@ -24,7 +24,7 @@ const dummyData = [
 
 export default function IctDashboardTable({setServerOnline}: any) {
     const displayRows = dummyData as any;
-    const participantColumns: ITableColumn<IParticipantWithSchedules> = [
+    const participantColumns: any[] = [
         {key: "hostname", label: "Hostname"},
         {key: "ipAdres", label: "IP Adres"},
         {key: "version", label: "OS/Versie"},
