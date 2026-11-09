@@ -3,10 +3,10 @@
 import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import Card from "../../common/components/Card";
 import Shortcuts from "../../common/components/Shortcuts/Shortcuts";
-import {IconSettings, IconVMs} from "../../assets";
+import { IconSettings, IconVMs } from "../../assets";
 import SmallButton from "../../common/components/SmallButton";
 import IctDashboardTable from "./components/IctDashboardTable";
-import {useState} from "react";
+import { useState } from "react";
 import IctPopUp from "./components/ictpopup.tsx"
 
 let storageUsed = 20;
@@ -51,15 +51,15 @@ export default function IctDashboard() {
                         </div>
                     </div>
                     <IctDashboardTable serverOnline={serverOnline} setServerOnline={setServerOnline} />
-                </div>            
+                </div>
             </div>
 
             {isAddVmShown && (
-                    <IctPopUp
-                        setIsAddVmShown={setIsAddVmShown}
-                        onClose={() => setIsAddVmShown(false)}
-                    />
-                )}
+                <IctPopUp
+                    setIsAddVmShown={setIsAddVmShown}
+                    onClose={() => setIsAddVmShown(false)}
+                />
+            )}
         </>
     );
 }

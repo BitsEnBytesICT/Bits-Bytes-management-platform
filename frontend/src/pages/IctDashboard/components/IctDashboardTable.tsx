@@ -19,12 +19,12 @@ const dummyData = [
     }
 ];
 
-export default function IctDashboardTable({setServerOnline}: any) {
+export default function IctDashboardTable({ setServerOnline }: any) {
     const displayRows = dummyData as any;
     const participantColumns: any[] = [
-        {key: "hostname", label: "Hostname"},
-        {key: "ipAdres", label: "IP Adres"},
-        {key: "version", label: "OS/Versie"},
+        { key: "hostname", label: "Hostname" },
+        { key: "ipAdres", label: "IP Adres" },
+        { key: "version", label: "OS/Versie" },
         {
             key: "onlineStatus",
             label: "Status",

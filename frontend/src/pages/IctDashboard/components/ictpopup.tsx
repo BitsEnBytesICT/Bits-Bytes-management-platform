@@ -1,8 +1,8 @@
 import PopUp from "../../../common/components/PopUp";
 import Button from "../../../common/components/Button";
 
-export default function IctPopUp({setIsAddVmShown, onClose}) {
-    const error:string[] = ["error"]
+export default function IctPopUp({ setIsAddVmShown, onClose }) {
+    const error: string[] = ["error"]
     return (
         <>
             <PopUp
@@ -12,12 +12,12 @@ export default function IctPopUp({setIsAddVmShown, onClose}) {
                 children={[
                     <>
                         <div>
-                           <p>hai</p>
+                            <p>hai</p>
                         </div>
                     </>
                 ]}
                 button={
-                    <Button onClick={() => setIsAddVmShown(true) }>
+                    <Button onClick={() => setIsAddVmShown(true)}>
                         haifisch
                     </Button>
                 }
