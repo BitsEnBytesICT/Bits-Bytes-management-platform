@@ -1,7 +1,7 @@
 import PopUp from "../../../common/components/PopUp";
 import Button from "../../../common/components/Button";
 
-export default function IctPopUp({ setIsAddVmShown, onClose }) {
+export default function IctPopUp({setIsAddVmShown, onClose}) {
     const error: string[] = ["error"]
     return (
         <>

@@ -1,5 +1,4 @@
 import Table from "../../../common/components/Table";
-
 const dummyData = [
     {
         id: "1",
@@ -18,8 +17,7 @@ const dummyData = [
         onlineStatus: 0
     }
 ];
-
-export default function IctDashboardTable({ setServerOnline }: any) {
+export default function IctDashboardTable({setServerOnline}: any) {
     const displayRows = dummyData as any;
     const participantColumns: any[] = [
         { key: "hostname", label: "Hostname" },
@@ -38,35 +36,11 @@ export default function IctDashboardTable({ setServerOnline }: any) {
         {
             key: "schijfruimte",
             label: "schijfruimte",
-            render: row => {
+            render: (row:any) => {
                 return <div className="flex flex-wrap">{(row as any).schijfruimte}</div>
             },
-            // render: row => {
-            //     const weekday = new Date().getDay() - 1;
-            //     const day = weekday < 0 || weekday > 4 ? 0 : weekday;
-            //     const morningField = scheduleFieldsByDay[day * 2][0];
-            //     const afternoonField = scheduleFieldsByDay[day * 2 + 1][0];
-            //     const now = Date.now();
-
-            //     const workplaceIds = new Set(
-            //         row.schedules
-            //             .filter(s => !s.endDate || s.endDate.getTime() > now)
-            //             .flatMap(s => [s[morningField], s[afternoonField]])
-            //             .filter(id => id != null),
-            //     );
-
-            //     return (
-            //         <div className="flex flex-wrap">
-            //             {workplaces
-            //                 .filter(wp => workplaceIds.has(wp.id))
-            //                 .map(wp => wp.name)
-            //                 .join(", ")}
-            //         </div>
-            //     );
-            // },
-        },
+        }
     ];
-
     return (
         <div className="max-h-120">
             <Table
