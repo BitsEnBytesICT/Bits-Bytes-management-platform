@@ -3,11 +3,10 @@
 import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import Card from "../../common/components/Card";
 import Shortcuts from "../../common/components/Shortcuts/Shortcuts";
-import {IconSettings, IconExport} from "../../assets";
+import {IconSettings, IconVMs} from "../../assets";
 import SmallButton from "../../common/components/SmallButton";
 import IctDashboardTable from "./components/IctDashboardTable";
 import {useState} from "react";
-import IctPopUp from "./components/IctPopUp";
 
 let storageUsed = 20;
 let storageTotal = 40;
@@ -38,14 +37,14 @@ export default function IctDashboard() {
                     <div className="flex flex-row justify-end">
                         <div className="flex flex-row gap-6">
                             <SmallButton
-                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconSettings} />}
+                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconVMs} />}
                                 label="VM Toevoegen"
                                 onClick={() => setIsAddVmShown(true)}
                             />
 
                             <SmallButton
                                 label="Beheer"
-                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconExport} />}
+                                icon={<img className="select-none [-webkit-user-drag:none]" src={IconSettings} />}
                                 active={false}
                             />
                         </div>
