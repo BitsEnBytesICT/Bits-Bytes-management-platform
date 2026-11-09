@@ -1,7 +1,4 @@
 import Table from "../../../common/components/Table";
-import type {IParticipantWithSchedules} from "../../../types/compontents/IParticipant";
-
-import type {ITableColumn} from "../../../types/compontents/ITable";
 
 const dummyData = [
     {
