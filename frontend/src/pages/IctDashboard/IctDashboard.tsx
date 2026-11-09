@@ -7,6 +7,7 @@ import {IconSettings, IconVMs} from "../../assets";
 import SmallButton from "../../common/components/SmallButton";
 import IctDashboardTable from "./components/IctDashboardTable";
 import {useState} from "react";
+import IctPopUp from "./components/ictpopup.tsx"
 
 let storageUsed = 20;
 let storageTotal = 40;
