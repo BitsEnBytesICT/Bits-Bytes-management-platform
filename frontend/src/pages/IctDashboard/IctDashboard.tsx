@@ -10,7 +10,7 @@ import {useState} from "react";
 
 let storageUsed = 20;
 let storageTotal = 40;
-let vmOnline = 5;
+let vmOnline = 4;
 
 export default function IctDashboard() {
     // const [presentParticipants, setPresentParticipants] = useState<IParticipant[]>([]);
