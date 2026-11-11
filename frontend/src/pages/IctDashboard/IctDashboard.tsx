@@ -5,7 +5,14 @@ import {IconSettings, IconVMs} from "../../assets";
 import SmallButton from "../../common/components/SmallButton";
 import IctDashboardTable from "./components/IctDashboardTable";
 import {useState} from "react";
-import IctPopUp from "./components/ictpopup.tsx"
+import IctPopUp from "./components/ictpopup.tsx";
+import FloorplansPopUp from "../../common/components/floorplans/FloorplansPopUp";
+import type {IRoom} from "../../types/floorPlans/IRoom";
+import {type IParticipantWithSchedules} from "../../types/compontents/IParticipant";
+import {type IWorkplace} from "../../types/floorPlans/IWorkplace";
+import FloorPlans from "../../common/components/floorplans/FloorPlans.tsx";
+import SupportDashboardService from "../SupportDashboard/SupportDashboard.service.ts";
+import {useEffect} from "react";
 
 let storageUsed = 20;
 let storageTotal = 40;
@@ -14,6 +21,46 @@ let vmOnline = 4;
 export default function IctDashboard() {
     const [isAddVmShown, setIsAddVmShown] = useState<boolean>(false);
     const [serverOnline, setServerOnline] = useState<any[]>([]);
+    const [participants, setParticipants] = useState<IParticipantWithSchedules[]>([]);
+    const [rooms, setRooms] = useState<IRoom[]>([]);
+    const [workplaces, setWorkplaces] = useState<IWorkplace[]>([]);
+    const [totalParticipants, setTotalParticipants] = useState<number>(0);
+    const [presentParticipants, setPresentParticipants] = useState<IParticipantWithSchedules[]>([]);
+    const [clockedin, setClockedin] = useState(0);
+
+    useEffect(() => {
+        const service = new SupportDashboardService();
+
+        const getData = async () => {
+            await service.getTotalParticipants().then(setTotalParticipants);
+            await service.getPresentParticipants().then(participants => {
+                service.getScedules().then(schedules => {
+                    setPresentParticipants(
+                        participants.map(p => {
+                            const schedule = schedules.filter(s => s.participant === p.id);
+                            return {...p, schedules: schedule};
+                        }),
+                    );
+                });
+            });
+            await service.getParticipants().then(participants => {
+                service.getScedules().then(schedules => {
+                    setParticipants(
+                        participants.map(p => {
+                            const schedule = schedules.filter(s => s.participant === p.id);
+                            return {...p, schedules: schedule};
+                        }),
+                    );
+                });
+            });
+            await service.getWorkplaces().then(setWorkplaces);
+            await service.getRooms().then(setRooms);
+            await service.getClockedinParticipants().then(setClockedin);
+        };
+
+        Promise.all([getData()]);
+    }, []);
+
     return (
         <>
             <div className="flex flex-col gap-25">
@@ -44,15 +91,16 @@ export default function IctDashboard() {
                         </div>
                     </div>
                     <IctDashboardTable serverOnline={serverOnline} setServerOnline={setServerOnline} />
-                </div>            
+                </div>
+                <FloorPlans
+                    rooms={rooms}
+                    participants={participants}
+                    PopUpContent={FloorplansPopUp}
+                    setParticipants={setParticipants}
+                    workplaces={workplaces}
+                />
             </div>
-            {isAddVmShown && (
-                    <IctPopUp
-                        setIsAddVmShown={setIsAddVmShown}
-                        onClose={() => setIsAddVmShown(false)}
-                    />
-                )}
+            {isAddVmShown && <IctPopUp setIsAddVmShown={setIsAddVmShown} onClose={() => setIsAddVmShown(false)} />}
         </>
     );
 }
-

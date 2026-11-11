@@ -6,7 +6,7 @@ const dummyData = [
         ipAdres: "128.0.0.1",
         version: "windows 98",
         schijfruimte: "45/100 GB (45%)",
-        onlineStatus: 1
+        onlineStatus: 1,
     },
     {
         id: "2",
@@ -14,15 +14,15 @@ const dummyData = [
         ipAdres: "128.0.0.2",
         version: "windows 95",
         schijfruimte: "22/100 GB (45%)",
-        onlineStatus: 0
-    }
+        onlineStatus: 0,
+    },
 ];
 export default function IctDashboardTable({setServerOnline}: any) {
     const displayRows = dummyData as any;
     const participantColumns: any[] = [
-        { key: "hostname", label: "Hostname" },
-        { key: "ipAdres", label: "IP Adres" },
-        { key: "version", label: "OS/Versie" },
+        {key: "hostname", label: "Hostname"},
+        {key: "ipAdres", label: "IP Adres"},
+        {key: "version", label: "OS/Versie"},
         {
             key: "onlineStatus",
             label: "Status",
@@ -36,10 +36,10 @@ export default function IctDashboardTable({setServerOnline}: any) {
         {
             key: "schijfruimte",
             label: "schijfruimte",
-            render: (row:any) => {
-                return <div className="flex flex-wrap">{(row as any).schijfruimte}</div>
+            render: (row: any) => {
+                return <div className="flex flex-wrap">{(row as any).schijfruimte}</div>;
             },
-        }
+        },
     ];
     return (
         <div className="max-h-120">
