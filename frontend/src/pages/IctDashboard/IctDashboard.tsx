@@ -24,7 +24,7 @@ export default function IctDashboard() {
     const [presentParticipants, setPresentParticipants] = useState<IParticipantWithSchedules[]>([]);
     const [clockedin, setClockedin] = useState(0);
 
-    let aanwezig = presentParticipants[0]
+    let aanwezig = presentParticipants[0];
 
     useEffect(() => {
         const service = new SupportDashboardService();
