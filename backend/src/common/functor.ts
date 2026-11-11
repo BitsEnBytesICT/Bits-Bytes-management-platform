@@ -19,6 +19,7 @@ type ValidatorCheck<value> = (_: value) => boolean | [value, boolean];
 export type validatorFun<input> = Fun<ValidatorValue<input> | ValidatorResult<input>, ValidatorResult<input>> & {
     and: <nextValue extends ValidatorValue<input>>(actual: ValidatorCheck<nextValue>) => validatorFun<input>;
     or: <nextValue extends ValidatorValue<input>>(actual: ValidatorCheck<nextValue>) => validatorFun<input>;
+    not: <nextValue extends ValidatorValue<input>>(actual: ValidatorCheck<nextValue>) => validatorFun<input>;
 };
 
 const checkValidity = <value>(actual: ValidatorCheck<value>, value: value): boolean => {
@@ -35,6 +36,10 @@ const createValidatorFun = <input>(actual: (_: ValidatorValue<input> | Validator
     f.or = <nextValue extends ValidatorValue<input>>(actual: ValidatorCheck<nextValue>) => createValidatorFun<input>(input => {
         const [value, valid] = f(input);
         return [value, valid || checkValidity(actual, value as nextValue)];
+    });
+    f.not = <nextValue extends ValidatorValue<input>>(actual: ValidatorCheck<nextValue>) => createValidatorFun<input>(input => {
+        const [value, valid] = f(input);
+        return [value, valid && !checkValidity(actual, value as nextValue)];
     });
     return f;
 };
