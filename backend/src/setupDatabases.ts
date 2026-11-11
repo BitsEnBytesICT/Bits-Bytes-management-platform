@@ -19,20 +19,21 @@ export const setupDatabase = () => {
     db.pragma('foreign_keys = ON');
 
     db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('admin', '*');
+    db.prepare("INSERT INTO Permissions (role, permissions) VALUES (?, ?)").run('participant', '-');
     db.prepare("INSERT INTO ApiKeys (apikey, permissionId) VALUES (?, ?)").run('test-api-key', 1);
 
     db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('support', 'support', 'support', 'support', 'admin', encrypt('test123'));
     db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('it', 'it', 'it', 'it', 'admin', encrypt('test123'));
-    db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Jan', 'JanD', 'de Vries', 'admin', encrypt('test123'));
+    db.prepare("INSERT INTO Accounts (type, firstname, prefix, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?, ?)").run('participant', 'Jan', "de", 'JanD', 'Vries', 'admin', encrypt('test123'));
     db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Maria', 'MariaJ', 'Jansen', 'admin', encrypt('test123'));
     db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Peter', 'PeterB', 'Bakker', 'admin', encrypt('test123'));
     db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Sophie', 'SophieV', 'Visser', 'admin', encrypt('test123'));
     db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Daan', 'DaanS', 'Smit', 'admin', encrypt('test123'));
     db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Emma', 'EmmaM', 'Meijer', 'admin', encrypt('test123'));
-    db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Lucas', 'LucasD', 'de Boer', 'admin', encrypt('test123'));
+    db.prepare("INSERT INTO Accounts (type, firstname, prefix, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?, ?)").run('participant', 'Lucas', "de", 'LucasD', 'Boer', 'admin', encrypt('test123'));
     db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Noor', 'NoorM', 'Mulder', 'admin', encrypt('test123'));
     db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Milan', 'MilanD', 'Dekker', 'admin', encrypt('test123'));
-    db.prepare("INSERT INTO Accounts (type, firstname, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?)").run('participant', 'Lotte', 'LotteV', 'van Dijk', 'admin', encrypt('test123'));
+    db.prepare("INSERT INTO Accounts (type, firstname, prefix, username, lastname, role, password) VALUES (?, ?, ?, ?, ?, ?, ?)").run('participant', 'Lotte', "van", 'LotteV', 'Dijk', 'admin', encrypt('test123'));
 
     const calendars = JSON.stringify([
         { label: 'Algemeen', url: 'https://calendar.google.com/calendar/embed?src=bnglprk6ouafmihk094plj9gu0%40group.calendar.google.com&ctz=Europe%2FAmsterdam' },
@@ -47,16 +48,16 @@ export const setupDatabase = () => {
     db.prepare("UPDATE Accounts SET shortcuts = ? WHERE type = ?").run(shortcuts, 'support');
 
     const now = getCurrentDate();
-    db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Jan', 'de Vries', 'WMO', 3, '11F3EF12', now, 1, 0, 'Develop');
+    db.prepare("INSERT INTO Participants (firstname, prefix, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Jan', 'de', 'Vries', 'WMO', 3, '11F3EF12', now, 1, 0, 'Develop');
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Maria', 'Jansen', 'Orionis', 4, 'E1C7A710', now, 1, 1, 'Zorg');
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Peter', 'Bakker', 'Gemeente', 5, '98765432', now, 1, 0, 'Dagbesteding');
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Sophie', 'Visser', 'WMO', 6, 'A1B2C301', now, 1, 0, 'Develop');
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Daan', 'Smit', 'Orionis', 7, 'A1B2C302', now, 1, 0, 'Zorg');
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Emma', 'Meijer', 'Gemeente', 8, 'A1B2C303', now, 1, 0, 'Dagbesteding');
-    db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Lucas', 'de Boer', 'WMO', 9, 'A1B2C304', now, 1, 0, 'Develop');
+    db.prepare("INSERT INTO Participants (firstname, prefix, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Lucas', 'de', 'Boer', 'WMO', 9, 'A1B2C304', now, 1, 0, 'Develop');
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Noor', 'Mulder', 'Orionis', 10, 'A1B2C305', now, 1, 0, 'Zorg');
     db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Milan', 'Dekker', 'Gemeente', 11, 'A1B2C306', now, 1, 0, 'Dagbesteding');
-    db.prepare("INSERT INTO Participants (firstname, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Lotte', 'van Dijk', 'WMO', 12, 'A1B2C307', now, 1, 0, 'Develop');
+    db.prepare("INSERT INTO Participants (firstname, prefix, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Lotte', 'van', 'Dijk', 'WMO', 12, 'A1B2C307', now, 1, 0, 'Develop');
 
     db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100);
     db.prepare("INSERT INTO Attendances (participantID, clockinDate, signature, clockoutDate, workDuration) VALUES (?, ?, ?, ?, ?)").run(1, now, "svg hier", now, 100);

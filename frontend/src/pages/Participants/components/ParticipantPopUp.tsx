@@ -142,9 +142,10 @@ export default function ParticipantPopUp({
             const newAccount: IAccount = {
                 type: PermissionsList.participant,
                 firstname: currentParticipant.firstname,
+                prefix: currentParticipant.prefix,
                 lastname: currentParticipant.lastname,
                 username: `${currentParticipant.firstname}${currentParticipant.lastname.slice(0, 1)}`,
-                role: Roles.admin,
+                role: Roles.participant,
                 password: password,
             };
 
@@ -258,8 +259,8 @@ export default function ParticipantPopUp({
                 <>
                     <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                         <Input
-                            label="Naam"
-                            placeholder="Naam"
+                            label="voornaam"
+                            placeholder="voornaam"
                             id="firstname"
                             type="text"
                             value={currentParticipant?.firstname}
@@ -268,6 +269,16 @@ export default function ParticipantPopUp({
                             onChange={(value: string) =>
                                 setCurrentParticipant({...currentParticipant, firstname: value})
                             }
+                        />
+                        <Input
+                            label="Tussenvoegsel"
+                            placeholder="Tussenvoegsel"
+                            id="prefix"
+                            type="text"
+                            value={currentParticipant?.prefix}
+                            readOnly={isInfo}
+                            required={false}
+                            onChange={(value: string) => setCurrentParticipant({...currentParticipant, prefix: value})}
                         />
                         <Input
                             label="Achternaam"
