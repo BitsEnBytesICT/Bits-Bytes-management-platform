@@ -32,14 +32,19 @@ describe("ParticipantService", () => {
         assert.equal(count, 10);
     });
 
-    it("countPresent counts the participants scheduled today in the seed data", async () => {
-        // Sunday through Saturday, based on the schedules in setupDatabase.
-        const expectedByWeekday = [0, 7, 5, 6, 6, 6, 0];
-        const expected = expectedByWeekday[new Date().getUTCDay()];
+    // Sunday through Saturday, based on the schedules in setupDatabase.
+    const expectedByWeekday = [0, 7, 5, 6, 6, 6, 0];
+    for (const [weekday, expected] of expectedByWeekday.entries()) {
+        it(`countPresent returns ${expected} scheduled participants on UTC weekday ${weekday}`, async (context) => {
+            const date = new Date();
+            date.setUTCDate(date.getUTCDate() - date.getUTCDay() + weekday);
+            date.setUTCHours(12, 0, 0, 0);
+            context.mock.timers.enable({ apis: ["Date"], now: date });
 
-        const participants = await service.countPresent();
-        assert.equal(participants.length, expected);
-    });
+            const participants = await service.countPresent();
+            assert.equal(participants.length, expected);
+        });
+    }
 
     it("list returns every participant with the expected fields", async () => {
         const participants = await service.list();
