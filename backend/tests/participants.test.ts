@@ -5,7 +5,6 @@ import ParticipantService from "../src/endpoints/participants/participants.servi
 import { ParticipantValidator } from "../src/validators/participantValidator";
 import IParticipant from "../src/types/participant/IParticipant";
 import { runMigrations } from "../src/common/migrationsLoader";
-import AccountService from "../src/endpoints/accounts/accounts.service";
 import IAccount from "../src/types/accounts/IAccount";
 import { PermissionsList } from "../src/types/accounts/accountTypes";
 import { Roles } from "../src/types/permissions/rolesList";
@@ -14,7 +13,6 @@ import { getCurrentDate } from "../src/common/dateFunctions";
 
 describe("ParticipantService", () => {
     const service = new ParticipantService();
-    const accountService = new AccountService();
 
     before(async () => {
         process.env.DATABASE_TYPE = "sqllite";
@@ -100,7 +98,8 @@ describe("ParticipantValidator", () => {
     const validParticipant: IParticipant = {
         id: 1,
         firstname: "Jan",
-        lastname: "de Vries",
+        prefix: "de",
+        lastname: "Vries",
         organisation: "IT Afdeling",
         account: 1,
         rfid: "11F3EF12",
@@ -119,6 +118,7 @@ describe("ParticipantValidator", () => {
         const results = ParticipantValidator({
             id: -1,
             firstname: "",
+            prefix: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             lastname: "",
             organisation: "",
             account: -1,
@@ -126,10 +126,11 @@ describe("ParticipantValidator", () => {
             createdAt: "",
             active: -1,
             clockedin: -1,
-            financing: "",
+            financing: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             bday: ""
         });
 
+        const res = results.every((r) => r.kind === "error")
         assert.ok(results.every((r) => r.kind === "error"));
     });
 
