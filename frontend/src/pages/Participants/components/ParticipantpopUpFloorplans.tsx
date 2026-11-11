@@ -103,7 +103,8 @@ export default function ParticipantpopUpFloorplans({
                             labelPos="right"
                             checked={
                                 popupPropsExtra?.currentScedule[scheduleField] === currentWorkplace.id ||
-                                popupPropsExtra?.currentScedule.participant === currentParticipants?.[index]?.id
+                                (currentParticipants?.[index]?.id &&
+                                    popupPropsExtra?.currentScedule.participant === currentParticipants?.[index]?.id)
                             }
                             onChange={value => {
                                 if (!scheduleField || !popupPropsExtra) return;
