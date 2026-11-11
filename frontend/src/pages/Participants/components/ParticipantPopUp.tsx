@@ -375,15 +375,6 @@ export default function ParticipantPopUp({
                                 setCurrentParticipant({...currentParticipant, financing: value})
                             }
                         />
-                        {/* {isInfo && (
-                            <Input
-                                label="Huidige plek"
-                                placeholder="Huidige plek"
-                                id="location"
-                                type="text"
-                                readOnly={isInfo}
-                            />
-                        )} */}
                     </div>
                 </>,
                 <div className="flex flex-col justify-between grow">
