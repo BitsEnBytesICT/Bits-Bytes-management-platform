@@ -1,7 +1,7 @@
 import { Fun, validatorFun } from "../common/functor";
 import { ValidatorMap, validatorPipe, validatorPipePartial, ValidatorTuple } from "../common/Validator";
 import IParticipant from "../types/participant/IParticipant";
-import { validateDate, validateLenBelow50, validateNotNegativeOrUndefined, validatePositiveNumber, validateStringNotEmpty, validateStringUndefinedOrLenBelow50CharAndUndefined } from "./globalValidators";
+import { validateDate, validateLenBelow50, validateNotNegativeNumber, validateNotNegativeOrUndefined, validatePositiveNumber, validateStringNotEmpty, validateStringUndefinedOrLenBelow50CharAndUndefined } from "./globalValidators";
 
 const validateOneorZero = validatorFun<number>(id => id === 0 || id === 1);
 const validateOneorZeroUndefined = validatorFun<number | undefined>(id => id === undefined ? true : id === 0 || id === 1);
@@ -25,7 +25,7 @@ export const participantValidatorFunctors: ValidatorMap<IParticipant> = {
     prefix: [validateStringUndefinedOrLenBelow50CharAndUndefined, "prefix cannot be above 50 chars"],
     lastname: [validateStringNotEmpty.then(validateOnlyutf8Andbasicspecialchars).then(validateLenBelow50), "lastname cannot be empty or above 50 chars and can not contain numbers or special characters"],
     organisation: [validateStringNotEmpty.then(validateLenBelow50), "organisation cannot be empty or above 50 chars"],
-    account: [validatePositiveNumber, "account id cannot be negative"],
+    account: [validateNotNegativeNumber, "account id cannot be negative"],
     rfid: [validateStringNotEmpty.then(validateLenBelow50), "rfid cannot be empty or above 50 chars"],
     createdAt: [validateDate, "createdAt time is not valid"],
     active: [validateOneorZero, "active can only be a one or a zero"],
