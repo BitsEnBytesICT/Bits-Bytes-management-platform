@@ -100,7 +100,8 @@ describe("ParticipantValidator", () => {
     const validParticipant: IParticipant = {
         id: 1,
         firstname: "Jan",
-        lastname: "de Vries",
+        prefix: "de",
+        lastname: "Vries",
         organisation: "IT Afdeling",
         account: 1,
         rfid: "11F3EF12",
@@ -119,6 +120,7 @@ describe("ParticipantValidator", () => {
         const results = ParticipantValidator({
             id: -1,
             firstname: "",
+            prefix: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             lastname: "",
             organisation: "",
             account: -1,
