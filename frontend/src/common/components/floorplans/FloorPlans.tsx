@@ -125,7 +125,8 @@ export default function FloorPlans<T>({
 
                     if (!workplace) continue;
 
-                    workplace.timeslots[dayIndex][period] = `${participant.firstname} ${participant.lastname}`;
+                    workplace.timeslots[dayIndex][period] =
+                        `${participant.firstname} ${participant.prefix ?? ""} ${participant.lastname}`;
                 }
             }
         }
@@ -213,7 +214,7 @@ export default function FloorPlans<T>({
                         wp =>
                             wp.id ===
                             (currentEditedScedule[scheduleFieldsByDay[value * 2][0]] ??
-                                currentEditedScedule[scheduleFieldsByDay[value * 2][1]]),
+                                currentEditedScedule[scheduleFieldsByDay[value * 2 + 1][0]]),
                     );
                     if (foudWorkplace && foudWorkplace.RoomID) {
                         const roomIndex = rooms.findIndex(r => r.id === foudWorkplace.RoomID);
