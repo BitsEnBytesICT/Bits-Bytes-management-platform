@@ -1,14 +1,15 @@
 import { validatorFun } from "../common/functor";
 import { ValidatorMap, validatorPipe, validatorPipePartial, ValidatorTuple } from "../common/Validator";
 import IPermissions from "../types/permissions/IPermissions";
+import { PermissionsList } from "../types/permissions/permissionsList";
 import { Roles } from "../types/permissions/rolesList";
-import { validatePositiveNumberOrUndefined } from "./globalValidators";
+import { validateNotNegativeNumber, validateNumberUndefined } from "./globalValidators";
 
-const validateArrayLength = validatorFun<any[]>((arr) => arr.length > 0);
+const validateArrayLength = validatorFun<PermissionsList[]>((arr) => arr.length > 0);
 const validateRole = validatorFun<Roles>((str) => Object.values(Roles).includes(str as Roles));
 
 export const permissionsValidatorFunctors: ValidatorMap<IPermissions> = {
-    id: [validatePositiveNumberOrUndefined, "id is not valid"],
+    id: [validateNumberUndefined.or(validateNotNegativeNumber), "id is not valid"],
     role: [validateRole, "role cannot be empty"],
     permissions: [validateArrayLength, "permissions cannot be empty"]
 }

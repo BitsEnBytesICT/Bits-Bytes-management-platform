@@ -1,14 +1,14 @@
 import { ValidatorMap, validatorPipe, validatorPipePartial, ValidatorTuple } from "../common/Validator";
 import IAttendance from '../types/attendance/IAttendance';
-import { validateDate, validateDateOrUndefined, validateNotNegativeOrUndefined, validatePositiveNumber, validatePositiveNumberOrUndefined, validateStringNotEmpty } from './globalValidators';
+import { validateDate, validateNotNegativeNumber, validateNumberUndefined, validatePositiveNumber, validateStringNotEmpty, validateStringUndefined } from './globalValidators';
 
 
 export const attendanceValidatorFunctors: ValidatorMap<IAttendance> = {
-    id: [validatePositiveNumberOrUndefined, "id is not valid"],
+    id: [validateNumberUndefined.or(validateNotNegativeNumber), "id is not valid"],
     participantID: [validatePositiveNumber, "participantID is required"],
     clockinDate: [validateDate, "clockinDate is not a valid date"],
-    clockoutDate: [validateDateOrUndefined, "clockoutDate is not a valid date"],
-    workDuration: [validateNotNegativeOrUndefined, "workDuration is not valid"],
+    clockoutDate: [validateStringUndefined.or(validateDate), "clockoutDate is not a valid date"],
+    workDuration: [validateNumberUndefined.or(validatePositiveNumber), "workDuration is not valid"],
     signature: [validateStringNotEmpty, "signature is required"]
 }
 
