@@ -8,7 +8,7 @@ export const attendanceValidatorFunctors: ValidatorMap<IAttendance> = {
     participantID: [validatePositiveNumber, "participantID is required"],
     clockinDate: [validateDate, "clockinDate is not a valid date"],
     clockoutDate: [validateStringUndefined.or(validateDate), "clockoutDate is not a valid date"],
-    workDuration: [validateNumberUndefined.or(validatePositiveNumber), "workDuration is not valid"],
+    workDuration: [validateNumberUndefined.or(validateNotNegativeNumber), "workDuration is not valid"],
     signature: [validateStringNotEmpty, "signature is required"]
 }
 

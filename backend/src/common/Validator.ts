@@ -31,7 +31,7 @@ type AllKeysValidators<a> = { [K in keyof a]: [K, Fun<a[K], [a[K], boolean]>, st
 type HasAllKeys<a, T extends AllKeysValidators<a>[]> = [keyof a] extends [T[number][0]] ? T : never;
 export const validatorPipe = <a extends object, T extends AllKeysValidators<a>[]>(data: a, ...args: T & HasAllKeys<a, T>): Result<a, a[keyof a]>[] => {
     const results: Array<Result<a, a[keyof a]>> = [];
-    (args as Array<[keyof a, Fun<any, [a[keyof a], boolean]>, string]>).forEach((func) => {
+    (args as Array<[keyof a, Fun<a[keyof a], [a[keyof a], boolean]>, string]>).forEach((func) => {
         const [key, validator, errorMSG] = func;
         try {
             if (validator(data[key])[1]) results.push({ kind: "success", value: data[key], key });
