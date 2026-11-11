@@ -14,10 +14,6 @@ import FloorPlans from "../../common/components/floorplans/FloorPlans.tsx";
 import SupportDashboardService from "../SupportDashboard/SupportDashboard.service.ts";
 import {useEffect} from "react";
 
-let storageUsed = 20;
-let storageTotal = 40;
-let vmOnline = 4;
-
 export default function IctDashboard() {
     const [isAddVmShown, setIsAddVmShown] = useState<boolean>(false);
     const [serverOnline, setServerOnline] = useState<any[]>([]);
@@ -27,6 +23,8 @@ export default function IctDashboard() {
     const [totalParticipants, setTotalParticipants] = useState<number>(0);
     const [presentParticipants, setPresentParticipants] = useState<IParticipantWithSchedules[]>([]);
     const [clockedin, setClockedin] = useState(0);
+
+    let aanwezig = presentParticipants[0]
 
     useEffect(() => {
         const service = new SupportDashboardService();
@@ -70,8 +68,8 @@ export default function IctDashboard() {
                         <DateTimeDisplay />
                     </div>
                     <div className="flex flex-row gap-8 min-[1000px]:gap-16">
-                        <Card title="VM's Online" value={vmOnline} />
-                        <Card title="Opslag Windows:" value={`${storageUsed}GB/${storageTotal}GB`} />
+                        <Card title="VM's Online" value={clockedin} />
+                        <Card title="Opslag Windows:" value={`${aanwezig}GB/${totalParticipants}GB`} />
                     </div>
                 </div>
                 <Shortcuts />
