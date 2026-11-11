@@ -151,7 +151,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
                 action: 'clock_out',
                 message: 'Tot ziens, ' + participant.firstname + '!',
                 user: {
-                    name: participant.firstname + ' ' + participant.lastname,
+                    name: `${participant.firstname} ${participant.prefix && participant.prefix} ${participant.lastname}`,
                     department: participant.organisation,
                 },
             };
@@ -162,7 +162,7 @@ export default class AttendanceService implements serviceBase<IAttendance> {
             action: 'clock_in',
             message: 'Welkom, ' + participant.firstname + '!',
             user: {
-                name: participant.firstname + ' ' + participant.lastname,
+                name: `${participant.firstname} ${participant.prefix && participant.prefix} ${participant.lastname}`,
                 department: participant.organisation,
             },
         };

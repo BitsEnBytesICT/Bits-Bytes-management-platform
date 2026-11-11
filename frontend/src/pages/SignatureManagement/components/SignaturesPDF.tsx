@@ -3,7 +3,6 @@ import {Document, Image, Page, Path, StyleSheet, Svg, Text, View} from "@react-p
 import type IAttendance from "../../../types/compontents/IAttendance";
 
 import {LogoDefaultPng} from "../../../assets";
-import {formatDate} from "../../../common/helperFunctions";
 import type {IParticipant} from "../../../types/compontents/IParticipant";
 
 interface ISignaturesPDF {
@@ -22,16 +21,17 @@ const PAGE_HEIGHT = 841.89;
 const PADDING_X = 30;
 const PADDING_TOP = 100;
 const PADDING_BOTTOM = 40;
+const COLUMNS_PER_PAGE = 4;
+const ROWS_PER_PAGE = 4;
+const ENTRIES_PER_PAGE = COLUMNS_PER_PAGE * ROWS_PER_PAGE;
 const CELL_PADDING = 14;
-const CELL_WIDTH = (PAGE_WIDTH - PADDING_X * 2) / 2;
-const CELL_HEIGHT = (PAGE_HEIGHT - PADDING_TOP - PADDING_BOTTOM) / 2;
+const CELL_WIDTH = (PAGE_WIDTH - PADDING_X * 2) / COLUMNS_PER_PAGE;
+const CELL_HEIGHT = (PAGE_HEIGHT - PADDING_TOP - PADDING_BOTTOM) / ROWS_PER_PAGE;
 
 const SIGNATURE_BOX_PADDING = 6;
-const SIGNATURE_BOX_HEIGHT = 150;
+const SIGNATURE_BOX_HEIGHT = 50;
 const SIGNATURE_MAX_WIDTH = CELL_WIDTH - CELL_PADDING * 2 - SIGNATURE_BOX_PADDING * 2;
 const SIGNATURE_MAX_HEIGHT = SIGNATURE_BOX_HEIGHT - SIGNATURE_BOX_PADDING * 2;
-
-const ENTRIES_PER_PAGE = 4;
 
 function parseSignature(svg: string): IParsedSignature | null {
     const root = new DOMParser().parseFromString(svg, "image/svg+xml").querySelector("svg");
@@ -87,7 +87,7 @@ export default function SignaturesPDF({signatures, participants}: ISignaturesPDF
             flexWrap: "wrap",
         },
         cell: {
-            width: "50%",
+            width: CELL_WIDTH,
             height: CELL_HEIGHT,
             padding: CELL_PADDING,
         },
@@ -95,12 +95,10 @@ export default function SignaturesPDF({signatures, participants}: ISignaturesPDF
             position: "absolute",
             top: PADDING_TOP,
             bottom: PADDING_BOTTOM,
-            left: PAGE_WIDTH / 2,
             borderLeft: "1px solid #1e293b",
         },
         rowDivider: {
             position: "absolute",
-            top: PADDING_TOP + CELL_HEIGHT,
             left: PADDING_X,
             right: PADDING_X,
             borderTop: "1px solid #1e293b",
@@ -114,11 +112,11 @@ export default function SignaturesPDF({signatures, participants}: ISignaturesPDF
             marginBottom: 12,
         },
         row: {
-            flexDirection: "row",
+            flexDirection: "column",
             marginBottom: 6,
         },
         rowLabel: {
-            width: 80,
+            marginBottom: 2,
         },
         signatureLabel: {
             marginTop: 6,
@@ -187,26 +185,36 @@ export default function SignaturesPDF({signatures, participants}: ISignaturesPDF
                         <Image style={styles.logo} src={LogoDefaultPng} />
                     </View>
 
-                    <View style={styles.columnDivider} fixed />
-                    <View style={styles.rowDivider} fixed />
+                    {Array.from({length: COLUMNS_PER_PAGE - 1}, (_, index) => (
+                        <View
+                            key={index}
+                            style={[styles.columnDivider, {left: PADDING_X + CELL_WIDTH * (index + 1)}]}
+                            fixed
+                        />
+                    ))}
+                    {Array.from({length: ROWS_PER_PAGE - 1}, (_, index) => (
+                        <View
+                            key={index}
+                            style={[styles.rowDivider, {top: PADDING_TOP + CELL_HEIGHT * (index + 1)}]}
+                            fixed
+                        />
+                    ))}
 
                     <View style={styles.grid}>
                         {pageSignatures.map((signature, index) => {
                             const participant = participants.find(p => p.id === signature.participantID);
 
                             return (
-                                <View key={signature.id ?? index} style={styles.cell}>
+                                <View key={signature.id ?? index} style={styles.cell} wrap={false}>
                                     <Text style={styles.name}>
                                         {participant
                                             ? `${participant.firstname} ${participant.lastname}`
                                             : `Deelnemer ${signature.participantID}`}
                                     </Text>
                                     <Field label="Organisatie:" value={participant?.organisation ?? "-"} />
-                                    <Field label="Ingeklokt:" value={formatDate(signature.clockinDate)} />
-                                    <Field label="Uitgeklokt:" value={formatDate(signature.clockoutDate)} />
                                     <Field
-                                        label="Werkduur:"
-                                        value={signature.workDuration != null ? `${signature.workDuration} min` : "-"}
+                                        label="Datum:"
+                                        value={signature.clockinDate.toLocaleDateString("nl-NL", {dateStyle: "short"})}
                                     />
 
                                     <Text style={styles.signatureLabel}>Handtekening:</Text>

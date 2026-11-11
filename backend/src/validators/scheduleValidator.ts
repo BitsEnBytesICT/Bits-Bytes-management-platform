@@ -1,14 +1,14 @@
-import { Fun } from "../common/functor";
+import { Fun, validatorFun } from "../common/functor";
 import { ValidatorMap, validatorPipe, validatorPipePartial, ValidatorTuple } from "../common/Validator";
 import ISchedule from "../types/schedules/ISchedule";
 import { validateDate } from "./globalValidators";
 
-const validateId = Fun<number, boolean>(value => Number.isInteger(value) && value > 0 && value <= 4294967295);
-const validateIdOrUndefined = Fun<number | undefined, boolean>(value => value === undefined || validateId(value));
-const validateOptionalWorkplace = Fun<number | null | undefined, boolean>(value => value == null || validateId(value));
-const validateName = Fun<string, boolean>(value => typeof value === "string" && value.trim().length > 0 && value.length <= 255);
-const validateScheduleDate = Fun<string, boolean>(value => typeof value === "string" && validateDate(value));
-const validateOptionalDate = Fun<string | null | undefined, boolean>(value => value == null || validateScheduleDate(value));
+const validateId = validatorFun<number>(value => Number.isInteger(value) && value > 0 && value <= 4294967295);
+const validateIdOrUndefined = validatorFun<number | undefined>(value => value === undefined || validateId(value)[1]);
+const validateOptionalWorkplace = validatorFun<number | null | undefined>(value => value == null || validateId(value)[1]);
+const validateName = validatorFun<string>(value => typeof value === "string" && value.trim().length > 0 && value.length <= 255);
+const validateScheduleDate = validatorFun<string>(value => typeof value === "string" && validateDate(value)[1]);
+const validateOptionalDate = validatorFun<string | null | undefined>(value => value == null || validateScheduleDate(value)[1]);
 
 export const scheduleValidatorFunctors: ValidatorMap<ISchedule> = {
     id: [validateIdOrUndefined, "id must be a positive integer"],

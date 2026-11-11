@@ -4,13 +4,14 @@ import IShortcut from "./IShortcut";
 import { PermissionsList } from "./accountTypes";
 
 export default interface IAccount {
-    id?: number,
-    type: PermissionsList,
-    firstname: string,
-    lastname: string,
-    username: string,
-    role: Roles,
-    password: string,
-    calendars?: ICalendar[],
-    shortcuts?: IShortcut[]
+    id?: number;
+    type: PermissionsList;
+    firstname: string;
+    prefix?: string;
+    lastname: string;
+    username: string;
+    role: Roles;
+    password: string;
+    calendars?: ICalendar[];
+    shortcuts?: IShortcut[];
 }
