@@ -10,6 +10,7 @@ import type {IWorkplace, WorkplaceWithOccupancy} from "../../../types/floorPlans
 import type IFloorPlans from "../../../types/compontents/IFloorPlans";
 import {scheduleFieldsByDay} from "../../../types/schedules/ISchedule";
 import FloorplansService from "./floorplans.service";
+import SupportDashboardService from "../../../pages/SupportDashboard/SupportDashboard.service";
 
 export default function FloorPlans<T>({
     rooms,
@@ -36,6 +37,7 @@ export default function FloorPlans<T>({
     const canvas = useRef<HTMLCanvasElement>(null);
     const popup = useRef<HTMLDivElement>(null);
     const currentScale = useRef<number | undefined>(undefined);
+    const allWorkplaces = useRef<IWorkplace[]>(workplaces);
 
     const popupWidth = 300;
 
@@ -47,12 +49,20 @@ export default function FloorPlans<T>({
     };
 
     const floorplansService: FloorplansService = new FloorplansService();
+    const supportDashboardService = new SupportDashboardService();
 
     useEffect(() => {
         if (!rooms[active]) return;
 
-        if (workplaces?.length > 0) setOccupancy(workplaces.filter(wp => wp.RoomID === rooms[active].id));
-        else floorplansService.getWorkplaces(rooms[active].id).then(setOccupancy);
+        if (allWorkplaces.current?.length > 0)
+            setOccupancy(allWorkplaces.current.filter(wp => wp.RoomID === rooms[active].id));
+        else {
+            supportDashboardService
+                .getWorkplaces()
+                .then(wps => (allWorkplaces.current = wps))
+                .then(wps => setOccupancy(wps.filter(wp => wp.RoomID === rooms[active].id)));
+        }
+
         floorplansService.getWalls(rooms[active].id).then(setWalls);
     }, [rooms, active]);
 
@@ -115,7 +125,8 @@ export default function FloorPlans<T>({
 
                     if (!workplace) continue;
 
-                    workplace.timeslots[dayIndex][period] = `${participant.firstname} ${participant.lastname}`;
+                    workplace.timeslots[dayIndex][period] =
+                        `${participant.firstname} ${participant.prefix ?? ""} ${participant.lastname}`;
                 }
             }
         }
@@ -195,7 +206,22 @@ export default function FloorPlans<T>({
         <Tabs
             tabs={["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag"]}
             active={currentDay}
-            onChange={setCurrentDay}
+            onChange={value => {
+                setCurrentDay(value);
+
+                if (currentEditedScedule) {
+                    const foudWorkplace = allWorkplaces.current.find(
+                        wp =>
+                            wp.id ===
+                            (currentEditedScedule[scheduleFieldsByDay[value * 2][0]] ??
+                                currentEditedScedule[scheduleFieldsByDay[value * 2 + 1][0]]),
+                    );
+                    if (foudWorkplace && foudWorkplace.RoomID) {
+                        const roomIndex = rooms.findIndex(r => r.id === foudWorkplace.RoomID);
+                        if (roomIndex !== -1 && roomIndex !== active) setActive(roomIndex);
+                    }
+                }
+            }}
             classNameExtra={stacked ? "grow justify-between" : undefined}
         />
     );

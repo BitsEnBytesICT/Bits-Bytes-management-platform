@@ -108,7 +108,11 @@ export default class ParticipantService implements serviceBase<IParticipant> {
         if (errors.length > 0) throw errors;
 
         const firstname = values.find((value) => value[0] === "firstname");
+        const prefix = values.find((value) => value[0] === "prefix");
         const lastname = values.find((value) => value[0] === "lastname");
+
+        if (prefix && prefix[1] !== account.prefix) await this.accountService.update(["id", account.id], ["prefix", (prefix ? prefix[1] : account.prefix)]);
+        
         if ((firstname && firstname[1] !== account.firstname) || (lastname && lastname[1] !== account.lastname)) {
             const allAccounts = await this.accountService.list();
             if (allAccounts.find((a) => a.firstname === (firstname ? firstname[1] : account.firstname) && a.lastname === (lastname ? lastname[1] : account.lastname))) throw {
