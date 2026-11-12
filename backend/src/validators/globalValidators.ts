@@ -1,4 +1,4 @@
-import { Fun } from "../common/functor";
+import { Fun, validatorFun } from "../common/functor";
 
 const MYSQL_DATETIME_PATTERN = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
 
@@ -22,12 +22,14 @@ export function isMySqlDateTime(value: string): boolean {
         && date.getUTCSeconds() === second;
 }
 
-export const validatePositiveNumber = Fun<number, boolean>(value => value > 0);
-export const validateNotNegativeNumber = Fun<number, boolean>(value => value >= 0);
-export const validatePositiveNumberOrUndefined = Fun<number | undefined, boolean>(value => value === undefined || value > 0);
-export const validateNotNegativeOrUndefined = Fun<number | undefined, boolean>(value => value === undefined || value >= 0);
-export const validateStringNotEmpty = Fun<string, boolean>(value => value.length > 0);
-export const validateStringNotEmptyAndLenBelow50Char = Fun<string, boolean>(value => value.length > 0 && value.length < 51);
-export const validateDate = Fun<string, boolean>(isMySqlDateTime);
-export const validateDateOrUndefined = Fun<string | undefined, boolean>(value => value === undefined || isMySqlDateTime(value));
-export const identityValidator = Fun<any, boolean>((_ => true));
+export const validateStringUndefinedOrLenBelow50CharAndUndefined = validatorFun<string | undefined>(str => 
+    !str ? true : validateStringNotEmpty.then(validateLenBelow50)(str)[1]);
+export const validatePositiveNumber = validatorFun<number>(value => value > 0);
+export const validateNotNegativeNumber = validatorFun<number>(value => value >= 0);
+export const validatePositiveNumberOrUndefined = validatorFun<number | undefined>(value => value === undefined || value > 0);
+export const validateNotNegativeOrUndefined = validatorFun<number | undefined>(value => value === undefined || value >= 0);
+export const validateStringNotEmpty = validatorFun<string>(value => value.length > 0);
+export const validateLenBelow50 = validatorFun<string>(value => value.length < 51);
+export const validateDate = validatorFun<string>(isMySqlDateTime);
+export const validateDateOrUndefined = validatorFun<string | undefined>(value => value === undefined || isMySqlDateTime(value));
+export const identityValidator = validatorFun<any>((_ => true));

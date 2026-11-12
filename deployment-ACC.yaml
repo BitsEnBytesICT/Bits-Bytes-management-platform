@@ -65,7 +65,7 @@ spec:
                 bitsenbytes.net/mysql-role: database
             topologyKey: kubernetes.io/hostname
   router:
-    instances: 2
+    instances: 3
     version: "8.0.46"
     podLabels:
       bitsenbytes.net/mysql-role: router
