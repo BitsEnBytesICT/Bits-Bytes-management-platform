@@ -13,6 +13,7 @@ import roomRouter from './endpoints/rooms/rooms.routes';
 import wallRouter from './endpoints/walls/walls.routes';
 import workplaceRouter from './endpoints/workplaces/workplaces.routes';
 import scheduleRouter from './endpoints/schedules/schedules.routes';
+import ProxmoxRouter from './endpoints/proxmox/proxmox.routes';
 import { setupDatabase } from './setupDatabases';
 import { createConnection } from './common/db';
 import { environmentFileChecker } from './common/environmentFileChecker';
@@ -69,6 +70,7 @@ const startServer = async () => {
     app.use(wallRouter);
     app.use(workplaceRouter);
     app.use(scheduleRouter);
+    app.use(ProxmoxRouter);
 
     app.use((err: IError[] | IError, req: Request, res: Response, next: NextFunction) => {
         console.log(err)
