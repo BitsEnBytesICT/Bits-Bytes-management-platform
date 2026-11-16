@@ -5,7 +5,8 @@ const dummyData = [
         hostname: "Server 1",
         ipAdres: "128.0.0.1",
         version: "windows 98",
-        schijfruimte: "45/100 GB (45%)",
+        schijfruimteGebruikt: "22",
+        schijfruimteTotaal: "100",
         onlineStatus: 1,
     },
     {
@@ -13,7 +14,8 @@ const dummyData = [
         hostname: "Server 2",
         ipAdres: "128.0.0.2",
         version: "windows 95",
-        schijfruimte: "22/100 GB (45%)",
+        schijfruimteGebruikt: "37",
+        schijfruimteTotaal: "100",
         onlineStatus: 0,
     },
 ];
@@ -37,7 +39,8 @@ export default function IctDashboardTable({setServerOnline}: any) {
             key: "schijfruimte",
             label: "schijfruimte",
             render: (row: any) => {
-                return <div className="flex flex-wrap">{(row as any).schijfruimte}</div>;
+                return <div className="flex flex-wrap">
+                    {`${row.schijfruimteGebruikt} / ${row.schijfruimteTotaal} GB`}</div>;
             },
         },
     ];

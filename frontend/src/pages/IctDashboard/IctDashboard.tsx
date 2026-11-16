@@ -13,9 +13,11 @@ import {type IWorkplace} from "../../types/floorPlans/IWorkplace";
 import FloorPlans from "../../common/components/floorplans/FloorPlans.tsx";
 import SupportDashboardService from "../SupportDashboard/SupportDashboard.service.ts";
 import {useEffect} from "react";
+import BeheerPopUp from "./components/beheerpopup.tsx";
 
 export default function IctDashboard() {
     const [isAddVmShown, setIsAddVmShown] = useState<boolean>(false);
+    const [isBeheerShown, setIsBeheerShown] = useState<boolean>(false);
     const [serverOnline, setServerOnline] = useState<any[]>([]);
     const [participants, setParticipants] = useState<IParticipantWithSchedules[]>([]);
     const [rooms, setRooms] = useState<IRoom[]>([]);
@@ -85,6 +87,7 @@ export default function IctDashboard() {
                                 label="Beheer"
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconSettings} />}
                                 active={false}
+                                onClick = {() => setIsBeheerShown(true)}
                             />
                         </div>
                     </div>
@@ -99,6 +102,7 @@ export default function IctDashboard() {
                 />
             </div>
             {isAddVmShown && <IctPopUp setIsAddVmShown={setIsAddVmShown} onClose={() => setIsAddVmShown(false)} />}
+            {isBeheerShown && <BeheerPopUp setIsBeheerShown={setIsBeheerShown} onClose={() => setIsBeheerShown(false)} />}
         </>
     );
 }
