@@ -10,6 +10,12 @@ export default class ParticipantController {
         this.service = new ParticipantService();
     }
 
+    @AuthenticationDecorator(PermissionsList.participantCurrent)
+    async current(req: Request, res: Response) {
+        const participant = await this.service.current(req.cookies["login"]);
+        res.status(200).json(participant);
+    }
+
     @AuthenticationDecorator(PermissionsList.participantList)
     async count (req: Request, res: Response) {
         const count = await this.service.count();

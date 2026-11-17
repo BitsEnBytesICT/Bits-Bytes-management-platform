@@ -6,11 +6,10 @@ import ShortcutTile, {tileClassName} from "./ShortcutTile";
 import ShortcutService from "./Shortcut.service";
 
 import type IShortcut from "../../../types/accounts/IShortcut";
-import type IShortcuts from "../../../types/compontents/IShortcuts";
 
 import {IconEdit} from "../../../assets";
 
-export default function Shortcuts({fixedShortcuts = []}: IShortcuts) {
+export default function Shortcuts() {
     const [shortcuts, setShortcuts] = useState<IShortcut[]>([]);
 
     const service = new ShortcutService();
@@ -29,22 +28,13 @@ export default function Shortcuts({fixedShortcuts = []}: IShortcuts) {
             <div className="text-[18px] font-medium text-(--color-darkblue)">Jouw snelkoppelingen</div>
 
             <div className="flex flex-row flex-wrap gap-4">
-                {fixedShortcuts.map(shortcut => (
-                    <ShortcutTile key={shortcut.shortcut.url} {...shortcut} />
-                ))}
-
                 {shortcuts.map(shortcut => (
                     <ShortcutTile key={shortcut.url} shortcut={shortcut} />
                 ))}
 
-                <button
-                    type="button"
-                    onClick={() => setIsManageShown(true)}
-                    title="Snelkoppelingen beheren"
-                    aria-label="Snelkoppelingen beheren"
-                    className={tileClassName}>
-                    <img alt="" src={IconEdit} className="size-6 select-none [-webkit-user-drag:none]" />
-                </button>
+                <div onClick={() => setIsManageShown(true)} title="Snelkoppelingen beheren" className={tileClassName}>
+                    <img src={IconEdit} className="size-6 select-none [-webkit-user-drag:none]" />
+                </div>
             </div>
 
             {isManageShown && (

@@ -53,28 +53,28 @@ export default class ParticipantDashboardService {
         return await response.json();
     };
 
-    getParticipants = async (): Promise<IParticipantWithSchedules[]> => {
-        const [participantsResponse, schedulesResponse] = await Promise.all([
-            http("/api/participants", "POST"),
-            http("/api/schedules", "POST"),
-        ]);
+    getCurrentParticipant = async (): Promise<IParticipantWithSchedules | null> => {
+        const response = await http("/api/participant/current", "GET");
+        if (response.status !== 200) throw new Error("De bezetting kon niet geladen worden.");
 
-        if (participantsResponse.status !== 200 || schedulesResponse.status !== 200)
-            throw new Error("De bezetting kon niet geladen worden.");
+        const participant:
+            | (IParticipant & {
+                  schedules: (Omit<ISchedule, "startDate" | "endDate"> & {
+                      startDate: string;
+                      endDate?: string | null;
+                  })[];
+              })
+            | null = await response.json();
 
-        const participants: IParticipant[] = await participantsResponse.json();
-        const schedules: (Omit<ISchedule, "startDate" | "endDate"> & {startDate: string; endDate?: string})[] =
-            await schedulesResponse.json();
+        if (!participant) return null;
 
-        return participants.map(participant => ({
+        return {
             ...participant,
-            schedules: schedules
-                .filter(schedule => schedule.participant === participant.id)
-                .map(schedule => ({
-                    ...schedule,
-                    startDate: fromDateString(schedule.startDate),
-                    endDate: schedule.endDate ? fromDateString(schedule.endDate) : undefined,
-                })),
-        }));
+            schedules: participant.schedules.map(schedule => ({
+                ...schedule,
+                startDate: fromDateString(schedule.startDate),
+                endDate: schedule.endDate ? fromDateString(schedule.endDate) : undefined,
+            })),
+        };
     };
 }

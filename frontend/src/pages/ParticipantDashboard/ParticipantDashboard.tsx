@@ -4,7 +4,6 @@ import Card from "../../common/components/Card";
 import ConfirmButton from "../../common/components/ConfirmButton";
 import DateTimeDisplay from "../../common/components/DateTimeDisplay";
 import FloorPlans from "../../common/components/floorplans/FloorPlans";
-import Icon from "../../common/components/Icon";
 import Shortcuts from "../../common/components/Shortcuts/Shortcuts";
 import SmallButton from "../../common/components/SmallButton";
 import SmallPopUp from "../../common/components/SmallPopUp";
@@ -15,7 +14,7 @@ import ParticipantDashboardService from "./ParticipantDashboard.service";
 import type {IParticipantWithSchedules} from "../../types/compontents/IParticipant";
 import type {IRoom} from "../../types/floorPlans/IRoom";
 
-import {IconInventory, IconKnowledgeBase, IconSettings, IconVMs} from "../../assets";
+import {IconSettings, IconVMs} from "../../assets";
 
 export default function ParticipantDashboard() {
     const [virtualMachines, setVirtualMachines] = useState(() =>
@@ -35,11 +34,11 @@ export default function ParticipantDashboard() {
         const service = new ParticipantDashboardService();
         let cancelled = false;
 
-        Promise.all([service.getRooms(), service.getParticipants()])
-            .then(([rooms, participants]) => {
+        Promise.all([service.getRooms(), service.getCurrentParticipant()])
+            .then(([rooms, participant]) => {
                 if (cancelled) return;
                 setRooms(rooms);
-                setParticipants(participants);
+                setParticipants(participant ? [participant] : []);
             })
             .catch(() => {
                 if (!cancelled) setHasError(true);
@@ -77,22 +76,7 @@ export default function ParticipantDashboard() {
                     </div>
                 </div>
 
-                <Shortcuts
-                    fixedShortcuts={[
-                        {
-                            shortcut: {label: "Inventarisatie", url: "/inventarisatie"},
-                            icon: IconInventory,
-                            onClick: () => setPlaceholderTitle("Inventarisatie"),
-                        },
-                        {
-                            shortcut: {label: "Kennisbank", url: "/kennisbank"},
-                            icon: IconKnowledgeBase,
-                            onClick: () => setPlaceholderTitle("Kennisbank"),
-                        },
-                        {shortcut: {label: "Google", url: "https://www.google.com"}},
-                        {shortcut: {label: "Google Calendar", url: "https://calendar.google.com"}},
-                    ]}
-                />
+                <Shortcuts />
 
                 <section aria-label="Virtuele machines" className="flex flex-col gap-4">
                     <div className="flex flex-row flex-wrap gap-4 items-center justify-between">
@@ -100,13 +84,21 @@ export default function ParticipantDashboard() {
 
                         <div className="flex flex-row flex-wrap gap-6">
                             <SmallButton
-                                icon={<Icon src={IconVMs} />}
+                                icon={
+                                    <img alt="" src={IconVMs} className="size-5 select-none [-webkit-user-drag:none]" />
+                                }
                                 label="VM toevoegen"
                                 onClick={() => setPlaceholderTitle("VM toevoegen")}
                             />
 
                             <SmallButton
-                                icon={<Icon src={IconSettings} />}
+                                icon={
+                                    <img
+                                        alt=""
+                                        src={IconSettings}
+                                        className="size-5 select-none [-webkit-user-drag:none]"
+                                    />
+                                }
                                 label="Beheer"
                                 onClick={() => setPlaceholderTitle("VM-beheer")}
                             />
