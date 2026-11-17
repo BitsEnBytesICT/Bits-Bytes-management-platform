@@ -4,18 +4,32 @@ import { KeyValuePair, ValidatorTuple } from "../../common/Validator";
 import IAccount from "../../types/accounts/IAccount";
 import { ErrorCodes } from "../../types/error/ErrorCodes";
 import IError from "../../types/error/IError";
-import IParticipant from "../../types/participant/IParticipant";
+import IParticipant, { IParticipantWithSchedules } from "../../types/participant/IParticipant";
 import { participantValidatorFunctors, partialParticipantValidator, ParticipantValidator } from "../../validators/participantValidator";
 import AccountService from "../accounts/accounts.service";
+import ScheduleDao from "../schedules/schedules.dao";
 import ParticipantDao from "./participants.dao";
 
 export default class ParticipantService implements serviceBase<IParticipant> {
     dao: ParticipantDao;
     accountService: AccountService;
+    scheduleDao: ScheduleDao;
 
     constructor() {
         this.dao = new ParticipantDao();
         this.accountService = new AccountService();
+        this.scheduleDao = new ScheduleDao();
+    }
+
+    async current(token: string): Promise<IParticipantWithSchedules | null> {
+        const account = await this.accountService.current(token);
+        if (account.id === undefined) return null;
+
+        const participant = await this.dao.findOne(["account", account.id]);
+        if (participant?.id === undefined) return null;
+
+        const schedules = await this.scheduleDao.list(["participant", participant.id]);
+        return { ...participant, schedules };
     }
 
     async findOne(...where: KeyValuePair<IParticipant>[]): Promise<IParticipant | undefined> {

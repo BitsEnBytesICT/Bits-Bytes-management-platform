@@ -11,6 +11,7 @@ export enum PermissionsList {
     attendanceCreate = "attendance.create",
     attendanceUpdate = "attendance.update",
     attendanceClockIn = "attendance.clock_in",
+    participantCurrent = "participant.current",
     participantList = "participant.list",
     participantCreate = "participant.create",
     participantUpdate = "participant.update",

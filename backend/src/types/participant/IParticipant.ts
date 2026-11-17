@@ -1,3 +1,5 @@
+import ISchedule from "../schedules/ISchedule";
+
 export default interface IParticipant {
     id?: number;
     firstname: string;
@@ -11,4 +13,8 @@ export default interface IParticipant {
     clockedin?: number;
     financing?: string;
     bday?: string;
+}
+
+export interface IParticipantWithSchedules extends IParticipant {
+    schedules: ISchedule[];
 }
