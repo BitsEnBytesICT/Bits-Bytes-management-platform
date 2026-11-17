@@ -1,6 +1,6 @@
 import PopUp from "../../../common/components/PopUp";
 import Button from "../../../common/components/Button";
-
+import { IconDelete, IconEdit } from "../../../assets";
 const dummyData = [
     {
         id: "1",
@@ -44,9 +44,9 @@ export default function BeheerPopUp({setIsBeheerShown, onClose}) {
                                         <div className={`font-semibold ${presenceColor}`}>
                                             {isPresent ? "Online" : "Offline"}
                                         </div>
-                                        <div className="w-16 h-8 justify-between items-center flex text-center">
-                                            <div className="w-6 h-6 border border-black">E</div>
-                                            <div className="w-6 h-6 border border-black">X</div>
+                                        <div className="gap-2 h-8 justify-between items-center flex text-center">
+                                            <div className="w-6 h-6 flex items-center justify-center"><img src={IconEdit}/></div>
+                                            <div className="w-6 h-6 flex items-center justify-center"><img src={IconDelete}/></div>
                                         </div>
                                     </div>
                                     

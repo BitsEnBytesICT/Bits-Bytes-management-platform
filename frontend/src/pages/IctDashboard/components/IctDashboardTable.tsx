@@ -19,6 +19,18 @@ const dummyData = [
         onlineStatus: 0,
     },
 ];
+const dummyFooterDataOne = [
+    {
+        id: "1",
+        text: "Totaal aantal accounts op de windows server",
+        link: "url hier"
+    },
+    {
+        id: "2",
+        text: "admin accounts",
+        link: "url hier"
+    }
+]
 export default function IctDashboardTable({setServerOnline}: any) {
     const displayRows = dummyData as any;
     const participantColumns: any[] = [
@@ -32,7 +44,7 @@ export default function IctDashboardTable({setServerOnline}: any) {
                 const isPresent = (row as any).onlineStatus === 1;
                 const presenceColor = isPresent ? "text-(--color-green)" : "text-(--color-red)";
 
-                return <div className={`font-semibold ${presenceColor}`}>{isPresent ? "Ingeklokt" : "Uitgeklokt"}</div>;
+                return <div className={`font-semibold ${presenceColor}`}>{isPresent ? "Online" : "Offline"}</div>;
             },
         },
         {

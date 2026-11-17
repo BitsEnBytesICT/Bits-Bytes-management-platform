@@ -14,6 +14,7 @@ import FloorPlans from "../../common/components/floorplans/FloorPlans.tsx";
 import SupportDashboardService from "../SupportDashboard/SupportDashboard.service.ts";
 import {useEffect} from "react";
 import BeheerPopUp from "./components/beheerpopup.tsx";
+import IctBottomFooter from "./components/ictbottomfooter.tsx";
 
 export default function IctDashboard() {
     const [isAddVmShown, setIsAddVmShown] = useState<boolean>(false);
@@ -100,6 +101,7 @@ export default function IctDashboard() {
                     setParticipants={setParticipants}
                     workplaces={workplaces}
                 />
+                <IctBottomFooter />
             </div>
             {isAddVmShown && <IctPopUp setIsAddVmShown={setIsAddVmShown} onClose={() => setIsAddVmShown(false)} />}
             {isBeheerShown && <BeheerPopUp setIsBeheerShown={setIsBeheerShown} onClose={() => setIsBeheerShown(false)} />}
