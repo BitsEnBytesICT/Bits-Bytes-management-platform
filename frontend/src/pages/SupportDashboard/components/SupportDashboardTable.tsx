@@ -14,7 +14,11 @@ interface ISupportDashboardTable {
 export default function SupportDashboardTable({participants, setParticipants, workplaces}: ISupportDashboardTable) {
     const participantColumns: ITableColumn<IParticipantWithSchedules>[] = [
         {key: "firstname", label: "Naam"},
-        {key: "lastname", label: "Achternaam"},
+        {
+            key: "lastname",
+            label: "Achternaam",
+            render: row => (row.prefix ? `${row.prefix} ${row.lastname}` : row.lastname),
+        },
         {
             key: "clockedin",
             label: "Ingeklokt",

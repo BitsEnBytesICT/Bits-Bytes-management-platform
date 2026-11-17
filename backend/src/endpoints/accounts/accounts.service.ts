@@ -72,9 +72,11 @@ export default class AccountService implements serviceBase<IAccount> {
 
     async delete(id: number) {
         const participant = await this.participantDAO.findOne(["account", id]);
-        const scedules = await this.scheduleDAO.list(["participant", Number(participant?.id)]);
-        await Promise.all(scedules.map((schedule) => this.scheduleDAO.delete(["id", Number(schedule.id)])));
-        if (participant?.id) await this.participantDAO.delete(["id", participant.id]);
+        if (participant?.id) {
+            const scedules = await this.scheduleDAO.list(["participant", Number(participant?.id)]);
+            await Promise.all(scedules.map((schedule) => schedule?.id && this.scheduleDAO.delete(["id", Number(schedule.id)])));
+            await this.participantDAO.delete(["id", participant.id]);
+        }
         await this.dao.delete(["id", id]);
     }
 

@@ -3,6 +3,7 @@ import ISchedule from "../schedules/ISchedule";
 export default interface IParticipant {
     id?: number;
     firstname: string;
+    prefix?: string;
     lastname: string;
     organisation: string;
     account: number;
@@ -11,6 +12,7 @@ export default interface IParticipant {
     active: number;
     clockedin?: number;
     financing?: string;
+    bday?: string;
 }
 
 export interface IParticipantWithSchedules extends IParticipant {

@@ -78,7 +78,8 @@ export default function SignatureManagement() {
             key: "lastname",
             label: "Achternaam",
             sortable: true,
-            render: row => findParticipant(row.participantID)?.lastname ?? "-",
+            render: row =>
+                `${findParticipant(row.participantID).prefix ?? ""} ${findParticipant(row.participantID)?.lastname ?? "-"}`,
         },
         {key: "clockinDate", label: "Ingeklokt", render: row => formatDate(row.clockinDate)},
         {key: "clockoutDate", label: "Uitgeklokt", render: row => formatDate(row.clockoutDate)},
