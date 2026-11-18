@@ -1,6 +1,6 @@
 import PopUp from "../../../common/components/PopUp";
 import Button from "../../../common/components/Button";
-import { IconDelete, IconEdit } from "../../../assets";
+import {IconDelete, IconEdit} from "../../../assets";
 const dummyData = [
     {
         id: "1",
@@ -22,7 +22,7 @@ const dummyData = [
 
 export default function BeheerPopUp({setIsBeheerShown, onClose}) {
     const error: string[] = [""];
-    
+
     return (
         <>
             <PopUp
@@ -30,8 +30,8 @@ export default function BeheerPopUp({setIsBeheerShown, onClose}) {
                 title={"Virtual Machine Toevoegen"}
                 errors={error}
                 children={[
-                    <div key="all-servers" className="flex flex-col gap-[10px]">
-                        {dummyData.map((server) => {
+                    <div key="all-servers" className="flex flex-col gap-[10px] text-(--color-darkblue)">
+                        {dummyData.map(server => {
                             const isPresent = server.onlineStatus === 1;
                             const presenceColor = isPresent ? "text-(--color-green)" : "text-(--color-red)";
 
@@ -45,19 +45,21 @@ export default function BeheerPopUp({setIsBeheerShown, onClose}) {
                                             {isPresent ? "Online" : "Offline"}
                                         </div>
                                         <div className="gap-2 h-8 justify-between items-center flex text-center">
-                                            <div className="w-6 h-6 flex items-center justify-center"><img src={IconEdit}/></div>
-                                            <div className="w-6 h-6 flex items-center justify-center"><img src={IconDelete}/></div>
+                                            <div className="w-6 h-6 flex items-center justify-center">
+                                                <img src={IconEdit} />
+                                            </div>
+                                            <div className="w-6 h-6 flex items-center justify-center">
+                                                <img src={IconDelete} />
+                                            </div>
                                         </div>
                                     </div>
-                                    
                                 </div>
                             );
                         })}
-                    </div>
+                    </div>,
                 ]}
                 button={<Button onClick={() => setIsBeheerShown(true)}>Volgende</Button>}
             />
         </>
     );
 }
-

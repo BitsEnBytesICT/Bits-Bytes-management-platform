@@ -88,7 +88,7 @@ export default function IctDashboard() {
                                 label="Beheer"
                                 icon={<img className="select-none [-webkit-user-drag:none]" src={IconSettings} />}
                                 active={false}
-                                onClick = {() => setIsBeheerShown(true)}
+                                onClick={() => setIsBeheerShown(true)}
                             />
                         </div>
                     </div>
@@ -103,8 +103,12 @@ export default function IctDashboard() {
                 />
                 <IctBottomFooter />
             </div>
-            {isAddVmShown && <IctPopUp setIsAddVmShown={setIsAddVmShown} onClose={() => setIsAddVmShown(false)} />}
-            {isBeheerShown && <BeheerPopUp setIsBeheerShown={setIsBeheerShown} onClose={() => setIsBeheerShown(false)} />}
+            {isAddVmShown && (
+                <IctPopUp setIsAddVmShown={setIsAddVmShown} onClose={() => setIsAddVmShown(false)} server={""} />
+            )}
+            {isBeheerShown && (
+                <BeheerPopUp setIsBeheerShown={setIsBeheerShown} onClose={() => setIsBeheerShown(false)} />
+            )}
         </>
     );
 }

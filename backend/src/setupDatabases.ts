@@ -46,6 +46,7 @@ export const setupDatabase = () => {
         { label: 'ZilliZ', url: 'https://zilliz.com' },
     ]);
     db.prepare("UPDATE Accounts SET shortcuts = ? WHERE type = ?").run(shortcuts, 'support');
+    db.prepare("UPDATE Accounts SET shortcuts = ? WHERE type = ?").run(shortcuts, 'it');
 
     const now = getCurrentDate();
     db.prepare("INSERT INTO Participants (firstname, prefix, lastname, organisation, account, rfid, createdAt, active, clockedin, financing) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").run('Jan', 'de', 'Vries', 'WMO', 3, '11F3EF12', now, 1, 0, 'Develop');
