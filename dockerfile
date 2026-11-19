@@ -2,6 +2,7 @@
 FROM node:22-bookworm AS bitsenbytesfrontend
 RUN apt-get update
 RUN apt-get install iputils-ping -y
+RUN apt-get install openssh-client -y
 WORKDIR /usr/src/
 COPY ./frontend/package-lock.json ./frontend/package-lock.json
 COPY ./frontend/package.json ./frontend/package.json
@@ -12,6 +13,7 @@ RUN npm i --ignore-scripts
 FROM node:22-bookworm AS bitsenbytesbackend
 RUN apt-get update
 RUN apt-get install iputils-ping -y
+RUN apt-get install openssh-client -y
 WORKDIR /usr/src/
 COPY ./backend/package-lock.json ./backend/package-lock.json
 COPY ./backend/package.json ./backend/package.json
@@ -26,6 +28,7 @@ COPY ./frontend/dist /usr/share/nginx/html
 COPY ./frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 FROM node:22-bookworm AS bitsenbytesbackendACC
+RUN apt-get install openssh-client -y
 COPY ./backend/dist /usr/backend
 COPY ./backend/src/casbin /usr/backend/src/casbin
 COPY ./backend/package.json /usr/backend/package.json
@@ -41,6 +44,7 @@ COPY ./frontend/dist /usr/share/nginx/html
 COPY ./frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 FROM node:22-bookworm AS bitsenbytesbackendPROD
+RUN apt-get install openssh-client -y
 COPY ./backend/dist /usr/backend
 COPY ./backend/src/casbin /usr/backend/src/casbin
 COPY ./backend/package.json /usr/backend/package.json
