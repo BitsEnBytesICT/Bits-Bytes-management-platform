@@ -34,13 +34,14 @@ export default function ParticipantpopUpFloorplans({
         setCurrentParticipants([
             participants.find(
                 p =>
-                    `${p.firstname} ${p.lastname}` === currentWorkplace.timeslots[currentDay].Ochtend &&
+                    `${p.firstname} ${p.prefix ?? ""}${p.prefix ? " " : ""}${p.lastname}` ===
+                        currentWorkplace.timeslots[currentDay].Ochtend &&
                     p.id !== popupPropsExtra.currentParticipant.id,
             ),
             participants.find(
                 p =>
-                    `${p.firstname} ${p.lastname}` === currentWorkplace.timeslots[currentDay].Middag &&
-                    p.id !== popupPropsExtra.currentParticipant.id,
+                    `${p.firstname} ${p.prefix ?? ""}${p.prefix ? " " : ""}${p.lastname}` ===
+                        currentWorkplace.timeslots[currentDay].Middag && p.id !== popupPropsExtra.currentParticipant.id,
             ),
         ]);
     }, [participants, currentDay]);
@@ -73,7 +74,6 @@ export default function ParticipantpopUpFloorplans({
 
             {Object.keys(currentWorkplace.timeslots[currentDay]).map((timeslot, index) => {
                 const scheduleField = scheduleFields?.[index];
-
                 return (
                     <div key={timeslot} className="flex flex-row gap-3 items-center">
                         <span
