@@ -1,4 +1,16 @@
 import Table from "../../../common/components/Table";
+import type { ITableColumn } from "../../../types/compontents/ITable";
+
+interface IServer {
+    id: number;
+    hostname: string;
+    ipAdres: string;
+    version: string
+    schijfruimteGebruikt: number;
+    schijfruimteTotaal: number;
+    onlineStatus: number;
+}
+
 const dummyData = [
     {
         id: "1",
@@ -15,32 +27,21 @@ const dummyData = [
         ipAdres: "128.0.0.2",
         version: "windows 95",
         schijfruimteGebruikt: "37",
-        schijfruimteTotaal: "100",
+        schijfruimteTotaal: "60",
         onlineStatus: 0,
     },
 ];
-// const dummyFooterDataOne = [
-//     {
-//         id: "1",
-//         text: "Totaal aantal accounts op de windows server",
-//         link: "url hier"
-//     },
-//     {
-//         id: "2",
-//         text: "admin accounts",
-//         link: "url hier"
-//     }
-// ]
+
 export default function IctDashboardTable({setServerOnline}: any) {
     const displayRows = dummyData as any;
-    const participantColumns: any[] = [
+    const serverColumns: ITableColumn<IServer>[] = [
         {key: "hostname", label: "Hostname"},
         {key: "ipAdres", label: "IP Adres"},
         {key: "version", label: "OS/Versie"},
         {
             key: "onlineStatus",
             label: "Status",
-            render: row => {
+            render: (row: any) => {
                 const isPresent = (row as any).onlineStatus === 1;
                 const presenceColor = isPresent ? "text-(--color-green)" : "text-(--color-red)";
 
@@ -51,16 +52,19 @@ export default function IctDashboardTable({setServerOnline}: any) {
             key: "schijfruimte",
             label: "schijfruimte",
             render: (row: any) => {
-                return (
-                    <div className="flex flex-wrap">{`${row.schijfruimteGebruikt} / ${row.schijfruimteTotaal} GB`}</div>
-                );
+                return <div className="flex flex-wrap">
+                    {
+                        `${row.schijfruimteGebruikt} / ${row.schijfruimteTotaal} GB
+                        (${Math.round((row.schijfruimteGebruikt / row.schijfruimteTotaal) * 100 )}%)`
+                    }
+                    </div>;
             },
         },
     ];
     return (
         <div className="max-h-120">
             <Table
-                columns={participantColumns}
+                columns={serverColumns}
                 rows={displayRows}
                 setRows={setServerOnline}
                 checkBox={false}
