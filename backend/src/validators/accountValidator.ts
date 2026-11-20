@@ -5,7 +5,7 @@ import IAccount from "../types/accounts/IAccount";
 import ICalendar from "../types/accounts/ICalendar";
 import IShortcut from "../types/accounts/IShortcut";
 import { Roles } from "../types/permissions/rolesList";
-import { validateLenBelow50, validateNotNegativeOrUndefined, validateStringNotEmpty, validateStringUndefinedOrLenBelow50CharAndUndefined } from "./globalValidators";
+import { validateLenBelow50, validateNotNegativeNumber, validateNumberUndefined, validateStringEmpty, validateStringNotEmpty } from "./globalValidators";
 
 const validateType = validatorFun<PermissionsList>((str) => Object.values(PermissionsList).includes(str as PermissionsList));
 const validateRole = validatorFun<Roles>((str) => Object.values(Roles).includes(str as Roles));
@@ -16,14 +16,13 @@ const validateLabelAndUrl = (items: (ICalendar | IShortcut)[] | undefined): bool
 const validateCalendars = validatorFun<ICalendar[] | undefined>(validateLabelAndUrl);
 const validateShortcuts = validatorFun<IShortcut[] | undefined>(validateLabelAndUrl);
 
-
 export const accountValidatorFunctors: ValidatorMap<IAccount> = {
-    id: [validateNotNegativeOrUndefined, "id cannot be negative"],
-    firstname: [validateStringNotEmpty.then(validateLenBelow50), "firstname cannot be empty or above 50 chars"],
-    prefix: [validateStringUndefinedOrLenBelow50CharAndUndefined, "prefix cannot be above 50 chars"],
-    lastname: [validateStringNotEmpty.then(validateLenBelow50), "lastname cannot be empty or above 50 chars"],
+    id: [validateNumberUndefined.or(validateNotNegativeNumber), "id cannot be negative"],
+    firstname: [validateStringNotEmpty.and(validateLenBelow50), "firstname cannot be empty or above 50 chars"],
+    prefix: [validateStringEmpty.or(validateStringNotEmpty.and(validateLenBelow50)), "prefix cannot be above 50 chars"],
+    lastname: [validateStringNotEmpty.and(validateLenBelow50), "lastname cannot be empty or above 50 chars"],
     type: [validateType, "type value does not exist in PermissionsList"],
-    username: [validateStringNotEmpty.then(validateLenBelow50), "username cannot be empty or above 50 chars"],
+    username: [validateStringNotEmpty.and(validateLenBelow50), "username cannot be empty or above 50 chars"],
     password: [validateStringNotEmpty, "password cannot be empty"],
     role: [validateRole, "role value does not exist in roles"],
     calendars: [validateCalendars, "calendars must be a list of a label and a url"],
