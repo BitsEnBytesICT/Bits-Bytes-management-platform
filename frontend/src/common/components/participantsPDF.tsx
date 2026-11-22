@@ -125,7 +125,9 @@ export default function ParticipantsPDF({data}: IParticipantsPDF) {
                         {pageParticipants.map((participant, index) => (
                             <View key={index} style={styles.cell}>
                                 <Text style={styles.name}>
-                                    {participant.firstname} {participant.lastname}
+                                    {participant.firstname} {participant.prefix ?? ""}
+                                    {participant.prefix ? " " : ""}
+                                    {participant.lastname}
                                 </Text>
                                 <Field label="Organisatie:" value={participant.organisation} />
                                 <Field label="RFID Tag:" value={participant.rfid} />
