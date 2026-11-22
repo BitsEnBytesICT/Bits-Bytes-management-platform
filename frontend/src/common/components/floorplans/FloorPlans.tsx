@@ -126,7 +126,7 @@ export default function FloorPlans<T>({
                     if (!workplace) continue;
 
                     workplace.timeslots[dayIndex][period] =
-                        `${participant.firstname} ${participant.prefix ?? ""} ${participant.lastname}`;
+                        `${participant.firstname} ${participant.prefix ?? ""}${participant.prefix ? " " : ""}${participant.lastname}`;
                 }
             }
         }
