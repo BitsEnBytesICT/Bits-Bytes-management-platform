@@ -1,7 +1,6 @@
 import {Document, Page, StyleSheet, Text, View, Image} from "@react-pdf/renderer";
-
-import {LogoDefaultPng} from "../../assets";
-import type {IParticipant} from "../../types/compontents/IParticipant";
+import type {IParticipant} from "../../../types/compontents/IParticipant";
+import {LogoDefaultPng} from "../../../assets";
 
 interface IParticipantsPDF {
     data: IParticipant[];
