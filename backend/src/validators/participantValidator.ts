@@ -1,7 +1,7 @@
 import { Fun, validatorFun } from "../common/functor";
 import { ValidatorMap, validatorPipe, validatorPipePartial, ValidatorTuple } from "../common/Validator";
 import IParticipant from "../types/participant/IParticipant";
-import { validateDate, validateLenBelow50, validateNotNegativeNumber, validateNotNegativeOrUndefined, validatePositiveNumber, validateStringNotEmpty, validateStringUndefinedOrLenBelow50CharAndUndefined } from "./globalValidators";
+import { validateDate, validateLenBelow50, validateNotNegativeNumber, validateNotNegativeOrUndefined, validateStringNotEmpty, validateStringUndefinedOrLenBelow50CharAndUndefined } from "./globalValidators";
 
 const validateOneorZero = validatorFun<number>(id => id === 0 || id === 1);
 const validateOneorZeroUndefined = validatorFun<number | undefined>(id => id === undefined ? true : id === 0 || id === 1);
@@ -18,6 +18,9 @@ const validateBirthdayOrUndefined = validatorFun<string | undefined>(value => {
 });
 
 const validateOnlyutf8Andbasicspecialchars = validatorFun<string>(value => /^[\p{L} '’-]+$/u.test(value));
+export const validateLenBelow100 = validatorFun<string>(value => value.length < 101);
+export const validateStringUndefinedOrLenBelow100 = validatorFun<string | undefined>(str => 
+    !str ? true : validateStringNotEmpty.then(validateLenBelow100)(str)[1]);
 
 export const participantValidatorFunctors: ValidatorMap<IParticipant> = {
     id: [validateNotNegativeOrUndefined, "id cannot be negative"],
@@ -31,7 +34,8 @@ export const participantValidatorFunctors: ValidatorMap<IParticipant> = {
     active: [validateOneorZero, "active can only be a one or a zero"],
     clockedin: [validateOneorZeroUndefined, "clockin state can only be a one or a zero"],
     financing: [validateStringUndefinedOrLenBelow50CharAndUndefined, "financing cannot be above 50 chars"],
-    bday: [validateBirthdayOrUndefined, "bday must be a valid date in dd-mm format"]
+    bday: [validateBirthdayOrUndefined, "bday must be a valid date in dd-mm format"],
+    shortComments: [validateStringUndefinedOrLenBelow100, "comment cannot be above 100 chars"]
 }
 
 export function ParticipantValidator(participant: IParticipant) {

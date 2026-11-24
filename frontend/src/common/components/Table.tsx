@@ -71,14 +71,14 @@ export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITa
 
         if (column.copyable === false) {
             return (
-                <td key={String(column.key)} className="px-4 py-4 font-semibold">
+                <td key={String(column.key)} className="px-4 py-4 font-semibold text-center">
                     {content}
                 </td>
             );
         }
 
         return (
-            <td key={String(column.key)} className="px-4 py-4 relative font-semibold">
+            <td key={String(column.key)} className="px-4 py-4 relative font-semibold text-center">
                 <div
                     onMouseEnter={event => handleCellMouseEnter(event, cellKey)}
                     onMouseLeave={() => setTooltipKey(null)}
@@ -123,7 +123,7 @@ export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITa
                             <th
                                 key={String(column.key)}
                                 onClick={() => handleHeaderClick(column)}
-                                className={`px-4 py-3 font-medium text-(--color-darkblue)/50 truncate ${
+                                className={`px-4 py-3 font-medium text-(--color-darkblue)/50 truncate text-center ${
                                     column.sortable !== false ? "cursor-pointer select-none" : ""
                                 }`}>
                                 {column.label} {getSortIndicator(column)}
