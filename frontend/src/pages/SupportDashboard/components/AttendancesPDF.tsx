@@ -82,9 +82,27 @@ export default function AttendanceExportPDF({
 }: IAttendanceExportPDF) {
     const day = WORKDAYS[new Date().getDay() - 1] ?? "Maandag";
     const sections = [
-        {title: "Ochtend", participants: morningParticipants, minimumRows: 5},
-        {title: "Middag", participants: afternoonParticipants, minimumRows: 4},
-        {title: "Hele dag", participants: fullDayParticipants, minimumRows: 18},
+        {
+            title: "Ochtend",
+            participants: morningParticipants.sort((a, b) =>
+                a.firstname.localeCompare(b.firstname, "nl", {sensitivity: "base"}),
+            ),
+            minimumRows: 5,
+        },
+        {
+            title: "Middag",
+            participants: afternoonParticipants.sort((a, b) =>
+                a.firstname.localeCompare(b.firstname, "nl", {sensitivity: "base"}),
+            ),
+            minimumRows: 4,
+        },
+        {
+            title: "Hele dag",
+            participants: fullDayParticipants.sort((a, b) =>
+                a.firstname.localeCompare(b.firstname, "nl", {sensitivity: "base"}),
+            ),
+            minimumRows: 18,
+        },
     ];
 
     return (
@@ -128,6 +146,7 @@ export default function AttendanceExportPDF({
                         </View>
                     </View>
                 ))}
+                <Text>{morningParticipants.length + afternoonParticipants.length + fullDayParticipants.length}</Text>
             </Page>
         </Document>
     );
