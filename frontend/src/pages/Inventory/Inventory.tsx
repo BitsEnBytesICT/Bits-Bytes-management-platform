@@ -1,35 +1,51 @@
 import {useEffect, useMemo, useState} from "react";
 import SmallButton from "../../common/components/SmallButton.tsx";
 import type IInventory from "../../types/Inventory/IInventory.ts";
+import type ICategory from "../../types/Inventory/ICategory.ts";
 import InventoryTable from "./components/InventoryTable.tsx";
 import InventoryFilter from "./components/InventoryFilter.tsx";
 import CategorySelect, {ALL_CATEGORIES} from "./components/CategorySelect.tsx";
 import {InventoryService} from "./inventory.service.ts";
 import {IconFilter, PlusIcon} from "../../assets";
 import InventoryCategoryPopup from "./components/InventoryCategoryPopup.tsx";
+import InventoryItemPopup from "./components/InventoryItemPopup.tsx";
 
 export default function Inventory() {
     const [inventoryItems, setInventoryItems] = useState<IInventory[]>([]);
     const [filteredInventoryItems, setFilteredInventoryItems] = useState<IInventory[]>([]);
+    const [inventoryCategories, setInventoryCategories] = useState<ICategory[]>([]);
     const [isFilterShown, setIsFilterShown] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<string>(ALL_CATEGORIES);
 
     const [isCategorySelected] = useState<boolean>(true);
     const [isInventoryCategoryPopupOpen, setIsInventoryCategoryPopupOpen] = useState(false);
+    const [isInventoryItemPopupOpen, setIsInventoryItemPopupOpen] = useState(false);
 
     const service = new InventoryService();
 
+    const fetchInventoryItems = async (): Promise<void> => {
+        const items = await service.getInventoryItems();
+        setInventoryItems(items);
+    };
+
+    const fetchInventoryCategories = async (): Promise<void> => {
+        const fetchedCategories = await service.getCategories();
+        setInventoryCategories(fetchedCategories);
+    };
+
     useEffect(() => {
-        const fetchInventoryItems = async (): Promise<void> => {
+        const fetchData = async (): Promise<void> => {
             const items = await service.getInventoryItems();
             setInventoryItems(items);
+            const fetchedCategories = await service.getCategories();
+            setInventoryCategories(fetchedCategories);
         };
-        fetchInventoryItems().catch(console.error);
+        fetchData().catch(console.error);
     }, []);
 
     const categories = useMemo(
-        () => [...new Set(inventoryItems.map(item => item.category))].sort((a, b) => a.localeCompare(b)),
-        [inventoryItems],
+        () => inventoryCategories.map(category => category.name).sort((a, b) => a.localeCompare(b)),
+        [inventoryCategories],
     );
 
     const visibleInventoryItems = useMemo(
@@ -59,6 +75,7 @@ export default function Inventory() {
                             <SmallButton
                                 label={"Voeg item toe"}
                                 icon={<img src={PlusIcon} className="select-none [-webkit-user-drag:none]" />}
+                                onClick={() => setIsInventoryItemPopupOpen(true)}
                             />
                             <SmallButton
                                 label={"Voeg categorie toe"}
@@ -69,7 +86,17 @@ export default function Inventory() {
                     )}
                     <div>
                         {isInventoryCategoryPopupOpen && (
-                            <InventoryCategoryPopup onClose={() => setIsInventoryCategoryPopupOpen(false)} />
+                            <InventoryCategoryPopup
+                                onClose={() => setIsInventoryCategoryPopupOpen(false)}
+                                onCreated={fetchInventoryCategories}
+                            />
+                        )}
+                        {isInventoryItemPopupOpen && (
+                            <InventoryItemPopup
+                                categories={inventoryCategories}
+                                onClose={() => setIsInventoryItemPopupOpen(false)}
+                                onCreated={fetchInventoryItems}
+                            />
                         )}
                     </div>
                 </div>
