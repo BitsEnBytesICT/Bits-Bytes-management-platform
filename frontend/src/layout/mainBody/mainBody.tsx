@@ -1,4 +1,4 @@
-import {Routes, Route, useLocation, useNavigate} from "react-router-dom";
+import {Routes, Route, useLocation, useNavigate, Navigate} from "react-router-dom";
 
 import {navigationItemsMenu, navigationItemsIT, navigationItemsAccount} from "../navigation/Navigation.config";
 import Login from "../../pages/Login/Login";
@@ -6,6 +6,7 @@ import {useEffect, useState} from "react";
 import {PermissionsList} from "../../types/accounts/accountTypes";
 import http from "../../common/http";
 import type IAccount from "../../types/accounts/IAccount";
+import type {INavigationItem} from "../../types/navigation/INavigation";
 
 export default function MainBody({setIsOpen}) {
     const [currentAccountType, setCurrentAccountType] = useState<PermissionsList>();
@@ -38,18 +39,18 @@ export default function MainBody({setIsOpen}) {
             <Routes>
                 {routes.map(route => {
                     if (route.path === "/") {
-                        if (currentAccountType === PermissionsList.support) {
+                        if (currentAccountType === PermissionsList.support)
                             return <Route path={route.path} element={route.page[0]} />;
-                        }
 
-                        if (currentAccountType === PermissionsList.participant) {
+                        if (currentAccountType === PermissionsList.participant)
                             return <Route path={route.path} element={route.page[1]} />;
-                        }
 
                         return null;
                     }
 
-                    if (currentAccountType) return <Route path={route.path} element={route.page} />;
+                    if (route.roles.find(r => r === currentAccountType))
+                        return <Route path={route.path} element={route.page} />;
+                    else return <Route key={route.path} path={route.path} element={<Navigate to="/" replace />} />;
                 })}
                 <Route path="/login" element={<Login setCurrentAccountType={setCurrentAccountType} />} />
             </Routes>
