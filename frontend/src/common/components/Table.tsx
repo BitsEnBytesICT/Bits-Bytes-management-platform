@@ -45,7 +45,7 @@ export default function Table<T>({name, columns, rows, setRows, rowKey, checkBox
         const key = String(column.key);
 
         if (sortKey !== key || (sortKey === key && sortDirection === "desc")) {
-            if (sortDirection === "desc") setSortKey(null);
+            if (sortKey === key && sortDirection === "desc") setSortKey(null);
             else setSortKey(key);
             setSortDirection("asc");
         } else if (sortDirection === "asc") setSortDirection("desc");
