@@ -79,8 +79,8 @@ export default function FloorplansPopUp({
                         options={[
                             {value: "Vrij", label: "Vrij"},
                             ...participants.map(p => ({
-                                value: `${p.firstname} ${p.prefix ?? ""} ${p.lastname}`,
-                                label: `${p.firstname} ${p.prefix ?? ""} ${p.lastname}`,
+                                value: `${p.firstname} ${p.prefix ?? ""}${p.prefix ? " " : ""}${p.lastname}`,
+                                label: `${p.firstname} ${p.prefix ?? ""}${p.prefix ? " " : ""}${p.lastname}`,
                             })),
                         ]}
                         value={currentWorkplace.timeslots[currentDay][timeslot]}
@@ -88,12 +88,13 @@ export default function FloorplansPopUp({
                             let participant: IParticipantWithSchedules;
                             if (value !== "Vrij")
                                 participant = participants.find(
-                                    p => `${p.firstname} ${p.prefix ?? ""} ${p.lastname}` === value,
+                                    p =>
+                                        `${p.firstname} ${p.prefix ?? ""}${p.prefix ? " " : ""}${p.lastname}` === value,
                                 );
                             else
                                 participant = participants.find(
                                     p =>
-                                        `${p.firstname} ${p.prefix ?? ""} ${p.lastname}` ===
+                                        `${p.firstname} ${p.prefix ?? ""}${p.prefix ? " " : ""}${p.lastname}` ===
                                         currentWorkplace.timeslots[currentDay][timeslot],
                                 );
 
