@@ -1,7 +1,6 @@
 import {Document, Page, StyleSheet, Text, View, Image} from "@react-pdf/renderer";
-
-import {LogoDefaultPng} from "../../assets";
-import type {IParticipant} from "../../types/compontents/IParticipant";
+import type {IParticipant} from "../../../types/compontents/IParticipant";
+import {LogoDefaultPng} from "../../../assets";
 
 interface IParticipantsPDF {
     data: IParticipant[];
@@ -125,7 +124,9 @@ export default function ParticipantsPDF({data}: IParticipantsPDF) {
                         {pageParticipants.map((participant, index) => (
                             <View key={index} style={styles.cell}>
                                 <Text style={styles.name}>
-                                    {participant.firstname} {participant.lastname}
+                                    {participant.firstname} {participant.prefix ?? ""}
+                                    {participant.prefix ? " " : ""}
+                                    {participant.lastname}
                                 </Text>
                                 <Field label="Organisatie:" value={participant.organisation} />
                                 <Field label="RFID Tag:" value={participant.rfid} />
