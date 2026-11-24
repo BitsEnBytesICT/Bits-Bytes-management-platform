@@ -127,10 +127,10 @@ describe("ParticipantValidator", () => {
             active: -1,
             clockedin: -1,
             financing: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            bday: ""
+            bday: "",
+            shortComments: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         });
 
-        const res = results.every((r) => r.kind === "error")
         assert.ok(results.every((r) => r.kind === "error"));
     });
 
