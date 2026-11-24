@@ -254,8 +254,8 @@ export default function ParticipantPopUp({
             <>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                     <Input
-                        label="voornaam"
-                        placeholder="voornaam"
+                        label="Voornaam"
+                        placeholder="Voornaam"
                         id="firstname"
                         type="text"
                         value={currentParticipant?.firstname}
