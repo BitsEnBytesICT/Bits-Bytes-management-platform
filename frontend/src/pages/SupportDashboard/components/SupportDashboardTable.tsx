@@ -66,6 +66,7 @@ export default function SupportDashboardTable({participants, setParticipants, wo
     return (
         <div className="max-h-120">
             <Table
+                name="attendanceTable"
                 columns={participantColumns}
                 rows={participants}
                 setRows={setParticipants}

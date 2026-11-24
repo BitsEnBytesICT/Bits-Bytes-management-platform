@@ -210,6 +210,7 @@ export default function SignatureManagement() {
                 setFilteredSignatures={setFilteredSignatures}>
                 <div>
                     <Table
+                        name="signaturesTable"
                         columns={signatureColumns}
                         rows={filteredSignatures}
                         setRows={setFilteredSignatures}
