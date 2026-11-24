@@ -10,10 +10,11 @@ import ParticipantsService from "./Participants.service";
 
 import {IconAddUser, IconDelete, IconExport, IconFilter} from "../../assets";
 
-import buildPDF from "../../common/buildPDF";
 import SmallPopUp from "../../common/components/SmallPopUp";
 import type {IRoom} from "../../types/floorPlans/IRoom";
 import type {IParticipantWithSchedules} from "../../types/compontents/IParticipant";
+import {downloadPDF} from "../../common/buildPDF";
+import ParticipantsPDF from "./components/participantsPDF";
 
 export default function Participants() {
     const [participants, setParticipants] = useState<IParticipantWithSchedules[]>([]);
@@ -85,7 +86,12 @@ export default function Participants() {
                             />
                             <SmallButton
                                 classNameExtra="animate-[fade-in_0.3s_ease-in-out]"
-                                onClick={() => buildPDF(filteredParticipants.filter(p => p.checked))}
+                                onClick={async () =>
+                                    await downloadPDF(
+                                        <ParticipantsPDF data={filteredParticipants.filter(p => p.checked)} />,
+                                        "participants-export.pdf",
+                                    )
+                                }
                                 icon={<img src={IconExport} className="select-none [-webkit-user-drag:none]" />}
                                 label="Selectie exporteren"
                             />
@@ -98,7 +104,12 @@ export default function Participants() {
                     />
 
                     <SmallButton
-                        onClick={() => buildPDF(filteredParticipants)}
+                        onClick={async () =>
+                            await downloadPDF(
+                                <ParticipantsPDF data={filteredParticipants} />,
+                                "participants-export.pdf",
+                            )
+                        }
                         icon={<img src={IconExport} className="select-none [-webkit-user-drag:none]" />}
                         label="Exporteer"
                     />

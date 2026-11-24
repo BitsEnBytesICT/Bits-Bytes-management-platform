@@ -208,7 +208,7 @@ export default function SignaturesPDF({signatures, participants}: ISignaturesPDF
                                 <View key={signature.id ?? index} style={styles.cell} wrap={false}>
                                     <Text style={styles.name}>
                                         {participant
-                                            ? `${participant.firstname} ${participant.lastname}`
+                                            ? `${participant.firstname} ${participant.prefix ?? ""}${participant.prefix ? " " : ""}${participant.lastname}`
                                             : `Deelnemer ${signature.participantID}`}
                                     </Text>
                                     <Field label="Organisatie:" value={participant?.organisation ?? "-"} />

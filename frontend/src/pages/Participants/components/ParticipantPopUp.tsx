@@ -249,236 +249,241 @@ export default function ParticipantPopUp({
         onClose();
     }
 
+    function popupContent() {
+        const content = [
+            <>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                    <Input
+                        label="Voornaam"
+                        placeholder="Voornaam"
+                        id="firstname"
+                        type="text"
+                        value={currentParticipant?.firstname}
+                        readOnly={isInfo}
+                        required={!isInfo}
+                        onChange={(value: string) => setCurrentParticipant({...currentParticipant, firstname: value})}
+                    />
+                    <Input
+                        label="Tussenvoegsel"
+                        placeholder="Tussenvoegsel"
+                        id="prefix"
+                        type="text"
+                        value={currentParticipant?.prefix}
+                        readOnly={isInfo}
+                        required={false}
+                        onChange={(value: string) => setCurrentParticipant({...currentParticipant, prefix: value})}
+                    />
+                    <Input
+                        label="Achternaam"
+                        placeholder="Achternaam"
+                        id="lastname"
+                        type="text"
+                        value={currentParticipant?.lastname}
+                        readOnly={isInfo}
+                        required={!isInfo}
+                        onChange={(value: string) => setCurrentParticipant({...currentParticipant, lastname: value})}
+                    />
+                    <Input
+                        label="Verjaardag (dd-mm)"
+                        placeholder="Verjaardag"
+                        id="location"
+                        type="text"
+                        readOnly={isInfo}
+                        value={currentParticipant?.bday}
+                        onChange={(value: string) => setCurrentParticipant({...currentParticipant, bday: value})}
+                    />
+                    <Input
+                        label="Organisatie"
+                        placeholder="Organisatie"
+                        id="organisation"
+                        type="text"
+                        value={currentParticipant?.organisation}
+                        readOnly={isInfo}
+                        required={!isInfo}
+                        onChange={(value: string) =>
+                            setCurrentParticipant({...currentParticipant, organisation: value})
+                        }
+                    />
+                    <Input
+                        label="Actief"
+                        id="active"
+                        type="checkbox"
+                        checked={Boolean(currentParticipant?.active)}
+                        readOnly={isInfo}
+                        onChange={(value: boolean) =>
+                            setCurrentParticipant({...currentParticipant, active: value ? 1 : 0})
+                        }
+                    />
+                    {isInfo && (
+                        <Input
+                            label="Username"
+                            placeholder="Username"
+                            id="username"
+                            type="text"
+                            value={account.username}
+                            readOnly={true}
+                            required={false}
+                        />
+                    )}
+                    <Input
+                        label="Password"
+                        placeholder="Password"
+                        id="password"
+                        type="text"
+                        value={mode !== "add" && account?.password ? `${account?.password}` : ""}
+                        readOnly={isInfo}
+                        onChange={(value: string) => setPassword(value)}
+                        required={!isInfo}
+                    />
+                    <Input
+                        label="RFID Tag"
+                        placeholder="RFID Tag"
+                        id="rfid"
+                        type="text"
+                        value={currentParticipant?.rfid}
+                        readOnly={isInfo}
+                        required={!isInfo}
+                        onChange={(value: string) => setCurrentParticipant({...currentParticipant, rfid: value})}
+                    />
+                    {isInfo && (
+                        <Input
+                            label="Aanwezig"
+                            placeholder="Aanwezig"
+                            id="clockedin"
+                            type="text"
+                            value={currentParticipant?.clockedin === 1 ? "Aanwezig" : "Afwezig"}
+                            readOnly
+                        />
+                    )}
+                    <Input
+                        label="Financiering"
+                        placeholder="Financiering"
+                        id="financing"
+                        type="text"
+                        value={currentParticipant?.financing ?? ""}
+                        readOnly={isInfo}
+                        onChange={(value: string) => setCurrentParticipant({...currentParticipant, financing: value})}
+                    />
+                </div>
+            </>,
+        ];
+
+        if ((!schedules.length || schedules.length < 1) && isInfo) return content;
+
+        content.push(
+            <div className="flex flex-col justify-between grow">
+                {currentScedule ? (
+                    <div className="flex flex-col gap-7">
+                        <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                            <div className="col-span-2">
+                                <Input
+                                    key={currentScedule.id ?? "new"}
+                                    id="scheduleName"
+                                    type="text"
+                                    label="Naam"
+                                    required
+                                    readOnly={isInfo}
+                                    placeholder="Naam van het schema"
+                                    value={currentScedule.name}
+                                    onChange={value => setCurrentScedule({...currentScedule, name: value})}
+                                />
+                            </div>
+
+                            <Input
+                                key={`startDate-${currentScedule.id ?? "new"}`}
+                                id="startDate"
+                                type="date"
+                                label="Vanaf"
+                                required
+                                readOnly={isInfo}
+                                value={toShortDateString(currentScedule.startDate)}
+                                icon={IconCalendarAfter}
+                                max={toShortDateString(currentScedule.endDate) || undefined}
+                                onChange={value =>
+                                    setCurrentScedule({...currentScedule, startDate: fromDateString(value)})
+                                }
+                            />
+
+                            <Input
+                                key={`endDate-${currentScedule.id ?? "new"}`}
+                                id="endDate"
+                                type="date"
+                                label="Tot en met"
+                                readOnly={isInfo}
+                                value={toShortDateString(currentScedule.endDate)}
+                                icon={IconCalendarBefore}
+                                min={toShortDateString(currentScedule.startDate) || undefined}
+                                onChange={value =>
+                                    setCurrentScedule({...currentScedule, endDate: fromDateString(value)})
+                                }
+                            />
+                        </div>
+
+                        <FloorPlans
+                            participants={participants}
+                            setParticipants={setParticipants}
+                            rooms={rooms}
+                            height="h-42"
+                            stacked
+                            popupPropsExtra={{
+                                currentScedule: currentScedule,
+                                setCurrentScedule: setCurrentScedule,
+                                currentParticipant: currentParticipant,
+                                isInfo: isInfo,
+                            }}
+                            PopUpContent={ParticipantpopUpFloorplans}
+                            currentEditedScedule={currentScedule}></FloorPlans>
+                    </div>
+                ) : (
+                    <>
+                        <div className="flex flex-col gap-3 max-h-100 overflow-auto mb-6">
+                            {schedules.map((scedule, index) => (
+                                <div
+                                    key={scedule.id ?? scedule.name}
+                                    className="px-[15px] py-3 flex flex-row gap-4 items-center bg-(--color-offwhite)
+                                        rounded-xl
+                                        shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
+                                    <span
+                                        className="min-w-0 grow font-semibold text-(--color-darkblue) truncate
+                                            select-none">
+                                        {scedule.name}
+                                    </span>
+
+                                    <img
+                                        onClick={() => openScheduleForm(index)}
+                                        src={IconEdit}
+                                        title="Aanpassen"
+                                        className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+                                    />
+
+                                    {!isInfo && (
+                                        <img
+                                            onClick={() => deleteSchedule(index)}
+                                            src={IconDelete}
+                                            title="Verwijderen"
+                                            className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
+                                        />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        {!isInfo && <Button onClick={() => openScheduleForm()}>Schema toevoegen</Button>}
+                    </>
+                )}
+            </div>,
+        );
+
+        return content;
+    }
+
     return (
         <PopUp
             onClose={onClose}
             onPrevious={currentScedule ? closeScheduleForm : undefined}
             title={titles[mode]}
             errors={error}
-            children={[
-                <>
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-                        <Input
-                            label="voornaam"
-                            placeholder="voornaam"
-                            id="firstname"
-                            type="text"
-                            value={currentParticipant?.firstname}
-                            readOnly={isInfo}
-                            required={!isInfo}
-                            onChange={(value: string) =>
-                                setCurrentParticipant({...currentParticipant, firstname: value})
-                            }
-                        />
-                        <Input
-                            label="Tussenvoegsel"
-                            placeholder="Tussenvoegsel"
-                            id="prefix"
-                            type="text"
-                            value={currentParticipant?.prefix}
-                            readOnly={isInfo}
-                            required={false}
-                            onChange={(value: string) => setCurrentParticipant({...currentParticipant, prefix: value})}
-                        />
-                        <Input
-                            label="Achternaam"
-                            placeholder="Achternaam"
-                            id="lastname"
-                            type="text"
-                            value={currentParticipant?.lastname}
-                            readOnly={isInfo}
-                            required={!isInfo}
-                            onChange={(value: string) =>
-                                setCurrentParticipant({...currentParticipant, lastname: value})
-                            }
-                        />
-                        <Input
-                            label="Verjaardag (dd-mm)"
-                            placeholder="Verjaardag"
-                            id="location"
-                            type="text"
-                            readOnly={isInfo}
-                            value={currentParticipant?.bday}
-                            onChange={(value: string) => setCurrentParticipant({...currentParticipant, bday: value})}
-                        />
-                        <Input
-                            label="Organisatie"
-                            placeholder="Organisatie"
-                            id="organisation"
-                            type="text"
-                            value={currentParticipant?.organisation}
-                            readOnly={isInfo}
-                            required={!isInfo}
-                            onChange={(value: string) =>
-                                setCurrentParticipant({...currentParticipant, organisation: value})
-                            }
-                        />
-                        <Input
-                            label="Actief"
-                            id="active"
-                            type="checkbox"
-                            checked={Boolean(currentParticipant?.active)}
-                            readOnly={isInfo}
-                            onChange={(value: boolean) =>
-                                setCurrentParticipant({...currentParticipant, active: value ? 1 : 0})
-                            }
-                        />
-                        {isInfo && (
-                            <Input
-                                label="Username"
-                                placeholder="Username"
-                                id="username"
-                                type="text"
-                                value={account.username}
-                                readOnly={true}
-                                required={false}
-                            />
-                        )}
-                        <Input
-                            label="Password"
-                            placeholder="Password"
-                            id="password"
-                            type="text"
-                            value={mode !== "add" && account?.password ? `${account?.password}` : ""}
-                            readOnly={isInfo}
-                            onChange={(value: string) => setPassword(value)}
-                            required={!isInfo}
-                        />
-                        <Input
-                            label="RFID Tag"
-                            placeholder="RFID Tag"
-                            id="rfid"
-                            type="text"
-                            value={currentParticipant?.rfid}
-                            readOnly={isInfo}
-                            required={!isInfo}
-                            onChange={(value: string) => setCurrentParticipant({...currentParticipant, rfid: value})}
-                        />
-                        {isInfo && (
-                            <Input
-                                label="Aanwezig"
-                                placeholder="Aanwezig"
-                                id="clockedin"
-                                type="text"
-                                value={currentParticipant?.clockedin === 1 ? "Aanwezig" : "Afwezig"}
-                                readOnly
-                            />
-                        )}
-                        <Input
-                            label="Financiering"
-                            placeholder="Financiering"
-                            id="financing"
-                            type="text"
-                            value={currentParticipant?.financing ?? ""}
-                            readOnly={isInfo}
-                            onChange={(value: string) =>
-                                setCurrentParticipant({...currentParticipant, financing: value})
-                            }
-                        />
-                    </div>
-                </>,
-                <div className="flex flex-col justify-between grow">
-                    {currentScedule ? (
-                        <div className="flex flex-col gap-7">
-                            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-                                <div className="col-span-2">
-                                    <Input
-                                        key={currentScedule.id ?? "new"}
-                                        id="scheduleName"
-                                        type="text"
-                                        label="Naam"
-                                        required
-                                        readOnly={isInfo}
-                                        placeholder="Naam van het schema"
-                                        value={currentScedule.name}
-                                        onChange={value => setCurrentScedule({...currentScedule, name: value})}
-                                    />
-                                </div>
-
-                                <Input
-                                    key={`startDate-${currentScedule.id ?? "new"}`}
-                                    id="startDate"
-                                    type="date"
-                                    label="Vanaf"
-                                    required
-                                    readOnly={isInfo}
-                                    value={toShortDateString(currentScedule.startDate)}
-                                    icon={IconCalendarAfter}
-                                    max={toShortDateString(currentScedule.endDate) || undefined}
-                                    onChange={value =>
-                                        setCurrentScedule({...currentScedule, startDate: fromDateString(value)})
-                                    }
-                                />
-
-                                <Input
-                                    key={`endDate-${currentScedule.id ?? "new"}`}
-                                    id="endDate"
-                                    type="date"
-                                    label="Tot en met"
-                                    readOnly={isInfo}
-                                    value={toShortDateString(currentScedule.endDate)}
-                                    icon={IconCalendarBefore}
-                                    min={toShortDateString(currentScedule.startDate) || undefined}
-                                    onChange={value =>
-                                        setCurrentScedule({...currentScedule, endDate: fromDateString(value)})
-                                    }
-                                />
-                            </div>
-
-                            <FloorPlans
-                                participants={participants}
-                                setParticipants={setParticipants}
-                                rooms={rooms}
-                                height="h-42"
-                                stacked
-                                popupPropsExtra={{
-                                    currentScedule: currentScedule,
-                                    setCurrentScedule: setCurrentScedule,
-                                    currentParticipant: currentParticipant,
-                                    isInfo: isInfo,
-                                }}
-                                PopUpContent={ParticipantpopUpFloorplans}
-                                currentEditedScedule={currentScedule}></FloorPlans>
-                        </div>
-                    ) : (
-                        <>
-                            <div className="flex flex-col gap-3 max-h-100 overflow-auto mb-6">
-                                {schedules.map((scedule, index) => (
-                                    <div
-                                        key={scedule.id ?? scedule.name}
-                                        className="px-[15px] py-3 flex flex-row gap-4 items-center bg-(--color-offwhite)
-                                            rounded-xl
-                                            shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-black)_5%,transparent)]">
-                                        <span
-                                            className="min-w-0 grow font-semibold text-(--color-darkblue) truncate
-                                                select-none">
-                                            {scedule.name}
-                                        </span>
-
-                                        <img
-                                            onClick={() => openScheduleForm(index)}
-                                            src={IconEdit}
-                                            title="Aanpassen"
-                                            className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
-                                        />
-
-                                        {!isInfo && (
-                                            <img
-                                                onClick={() => deleteSchedule(index)}
-                                                src={IconDelete}
-                                                title="Verwijderen"
-                                                className="shrink-0 cursor-pointer select-none [-webkit-user-drag:none]"
-                                            />
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-
-                            {!isInfo && <Button onClick={() => openScheduleForm()}>Schema toevoegen</Button>}
-                        </>
-                    )}
-                </div>,
-            ]}
+            children={popupContent()}
             button={
                 <Button
                     onClick={async () => {
