@@ -364,6 +364,17 @@ export default function ParticipantPopUp({
                         readOnly={isInfo}
                         onChange={(value: string) => setCurrentParticipant({...currentParticipant, financing: value})}
                     />
+                    <Input
+                        label="Korte opmerking"
+                        placeholder="Korte opmerking"
+                        id="shortComment"
+                        type="text"
+                        value={currentParticipant?.shortComments ?? ""}
+                        readOnly={isInfo}
+                        onChange={(value: string) =>
+                            setCurrentParticipant({...currentParticipant, shortComments: value})
+                        }
+                    />
                 </div>
             </>,
         ];

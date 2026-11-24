@@ -13,6 +13,7 @@ export interface IParticipant {
     clockedin?: number;
     financing?: string;
     bday?: string;
+    shortComments?: string;
 }
 
 export interface IParticipantWithSchedules extends IParticipant {
