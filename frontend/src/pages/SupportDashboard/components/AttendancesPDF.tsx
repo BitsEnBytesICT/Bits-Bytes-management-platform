@@ -1,4 +1,4 @@
-import {Document, Page, StyleSheet, Text, View} from "@react-pdf/renderer";
+import {Document, Page, Path, StyleSheet, Svg, Text, View} from "@react-pdf/renderer";
 
 import type {IParticipant} from "../../../types/compontents/IParticipant";
 
@@ -9,6 +9,7 @@ interface IAttendanceExportPDF {
 }
 
 const ROW_HEIGHT = 13.56;
+const COMMENT_COLOR = "#FF5E5E";
 const WORKDAYS = ["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag"];
 
 const styles = StyleSheet.create({
@@ -59,8 +60,18 @@ const styles = StyleSheet.create({
         lineHeight: `${ROW_HEIGHT}pt`,
     },
     name: {
+        lineHeight: `${ROW_HEIGHT}pt`,
+    },
+    commentArrow: {
+        width: 10,
+        height: ROW_HEIGHT,
+        marginHorizontal: 3,
+        flexShrink: 0,
+    },
+    comment: {
         flex: 1,
         lineHeight: `${ROW_HEIGHT}pt`,
+        color: COMMENT_COLOR,
     },
 });
 
@@ -71,9 +82,27 @@ export default function AttendanceExportPDF({
 }: IAttendanceExportPDF) {
     const day = WORKDAYS[new Date().getDay() - 1] ?? "Maandag";
     const sections = [
-        {title: "Ochtend", participants: morningParticipants, minimumRows: 5},
-        {title: "Middag", participants: afternoonParticipants, minimumRows: 4},
-        {title: "Hele dag", participants: fullDayParticipants, minimumRows: 18},
+        {
+            title: "Ochtend",
+            participants: morningParticipants.sort((a, b) =>
+                a.firstname.localeCompare(b.firstname, "nl", {sensitivity: "base"}),
+            ),
+            minimumRows: 5,
+        },
+        {
+            title: "Middag",
+            participants: afternoonParticipants.sort((a, b) =>
+                a.firstname.localeCompare(b.firstname, "nl", {sensitivity: "base"}),
+            ),
+            minimumRows: 4,
+        },
+        {
+            title: "Hele dag",
+            participants: fullDayParticipants.sort((a, b) =>
+                a.firstname.localeCompare(b.firstname, "nl", {sensitivity: "base"}),
+            ),
+            minimumRows: 18,
+        },
     ];
 
     return (
@@ -97,11 +126,27 @@ export default function AttendanceExportPDF({
                                             .filter(Boolean)
                                             .join(" ")}
                                     </Text>
+                                    {participant.shortComments && (
+                                        <>
+                                            <Svg style={styles.commentArrow} viewBox="0 0 10 14">
+                                                <Path
+                                                    d="M1 7 H9 M6 4 L9 7 L6 10"
+                                                    fill="none"
+                                                    stroke={COMMENT_COLOR}
+                                                    strokeWidth={1.1}
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                />
+                                            </Svg>
+                                            <Text style={styles.comment}>{participant.shortComments}</Text>
+                                        </>
+                                    )}
                                 </View>
                             ))}
                         </View>
                     </View>
                 ))}
+                <Text>{morningParticipants.length + afternoonParticipants.length + fullDayParticipants.length}</Text>
             </Page>
         </Document>
     );

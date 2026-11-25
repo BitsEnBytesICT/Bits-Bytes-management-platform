@@ -47,7 +47,7 @@ export default function SupportDashboardTable({participants, setParticipants, wo
                 );
 
                 return (
-                    <div className="flex flex-wrap">
+                    <div className="flex flex-wrap justify-center">
                         {workplaces
                             .filter(wp => workplaceIds.has(wp.id))
                             .map(wp => wp.name)
@@ -56,11 +56,17 @@ export default function SupportDashboardTable({participants, setParticipants, wo
                 );
             },
         },
+        {
+            key: "shortComments",
+            label: "Korte opmerking",
+            render: row => `${row.shortComments ? row.shortComments : "-"}`,
+        },
     ];
 
     return (
         <div className="max-h-120">
             <Table
+                name="attendanceTable"
                 columns={participantColumns}
                 rows={participants}
                 setRows={setParticipants}

@@ -134,6 +134,7 @@ export default function ParticipantsTable({
     return (
         <div className="flex-1 min-h-0">
             <Table
+                name="participantsTable"
                 columns={participantColumns}
                 rows={filteredParticipants}
                 setRows={setFilteredParticipants}
