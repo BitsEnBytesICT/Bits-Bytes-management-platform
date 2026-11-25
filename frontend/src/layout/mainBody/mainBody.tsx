@@ -6,7 +6,6 @@ import {useEffect, useState} from "react";
 import {PermissionsList} from "../../types/accounts/accountTypes";
 import http from "../../common/http";
 import type IAccount from "../../types/accounts/IAccount";
-import type {INavigationItem} from "../../types/navigation/INavigation";
 
 export default function MainBody({setIsOpen}) {
     const [currentAccountType, setCurrentAccountType] = useState<PermissionsList>();
