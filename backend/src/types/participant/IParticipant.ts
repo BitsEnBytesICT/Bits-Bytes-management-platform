@@ -11,4 +11,5 @@ export default interface IParticipant {
     clockedin?: number;
     financing?: string;
     bday?: string;
+    shortComments?: string;
 }

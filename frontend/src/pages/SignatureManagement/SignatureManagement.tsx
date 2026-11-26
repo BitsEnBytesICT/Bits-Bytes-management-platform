@@ -79,7 +79,7 @@ export default function SignatureManagement() {
             label: "Achternaam",
             sortable: true,
             render: row =>
-                `${findParticipant(row.participantID).prefix ?? ""} ${findParticipant(row.participantID)?.lastname ?? "-"}`,
+                `${findParticipant(row.participantID)?.prefix ?? ""} ${findParticipant(row.participantID)?.lastname ?? "-"}`,
         },
         {key: "clockinDate", label: "Ingeklokt", render: row => formatDate(row.clockinDate)},
         {key: "clockoutDate", label: "Uitgeklokt", render: row => formatDate(row.clockoutDate)},
@@ -210,6 +210,7 @@ export default function SignatureManagement() {
                 setFilteredSignatures={setFilteredSignatures}>
                 <div>
                     <Table
+                        name="signaturesTable"
                         columns={signatureColumns}
                         rows={filteredSignatures}
                         setRows={setFilteredSignatures}

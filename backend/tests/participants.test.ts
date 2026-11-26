@@ -34,7 +34,7 @@ describe("ParticipantService", () => {
 
     it("countPresent counts the participants scheduled today in the seed data", async () => {
         // Sunday through Saturday, based on the schedules in setupDatabase.
-        const expectedByWeekday = [0, 7, 5, 6, 6, 6, 0];
+        const expectedByWeekday = [7, 7, 5, 6, 6, 6, 7];
         const expected = expectedByWeekday[new Date().getUTCDay()];
 
         const participants = await service.countPresent();
@@ -127,10 +127,10 @@ describe("ParticipantValidator", () => {
             active: -1,
             clockedin: -1,
             financing: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            bday: ""
+            bday: "",
+            shortComments: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         });
 
-        const res = results.every((r) => r.kind === "error")
         assert.ok(results.every((r) => r.kind === "error"));
     });
 

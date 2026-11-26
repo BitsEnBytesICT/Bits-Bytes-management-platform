@@ -13,6 +13,7 @@ export interface ITableColumn<T> {
 interface ITableBase<T> {
     columns: ITableColumn<T>[];
     rowKey: keyof T;
+    name: string;
 }
 
 interface ITableUnchecked<T> extends ITableBase<T> {

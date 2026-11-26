@@ -1,13 +1,14 @@
 import {useEffect, useState} from "react";
-import type {ITableColumn, SortDirection} from "../../types/compontents/ITable";
+import type {ITableColumn} from "../../types/compontents/ITable";
 import Input from "./Input";
 import type ITable from "../../types/compontents/ITable";
+import useLocalStorage from "../hooks/useLocalStorage";
 
-export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITable<T>) {
+export default function Table<T>({name, columns, rows, setRows, rowKey, checkBox}: ITable<T>) {
     const [tooltipKey, setTooltipKey] = useState<string | null>(null);
-    const [sortKey, setSortKey] = useState<string | null>(null);
-    const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
     const [allChecked, setAllChecked] = useState<boolean>(false);
+    const [sortKey, setSortKey] = useLocalStorage(`${name}.sortKey`, "");
+    const [sortDirection, setSortDirection] = useLocalStorage(`${name}.sortDirection`, "");
 
     function sortRows<R>(rows: readonly R[]): R[] {
         const sorted = [...rows].sort((a, b) => {
@@ -43,19 +44,11 @@ export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITa
 
         const key = String(column.key);
 
-        if (sortKey !== key) {
-            setSortKey(key);
+        if (sortKey !== key || (sortKey === key && sortDirection === "desc")) {
+            if (sortKey === key && sortDirection === "desc") setSortKey(null);
+            else setSortKey(key);
             setSortDirection("asc");
-            return;
-        }
-
-        if (sortDirection === "asc") {
-            setSortDirection("desc");
-            return;
-        }
-
-        setSortKey(null);
-        setSortDirection("asc");
+        } else if (sortDirection === "asc") setSortDirection("desc");
     }
 
     function handleCellMouseEnter(event: React.MouseEvent<HTMLDivElement>, cellKey: string) {
@@ -71,14 +64,14 @@ export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITa
 
         if (column.copyable === false) {
             return (
-                <td key={String(column.key)} className="px-4 py-4 font-semibold">
+                <td key={String(column.key)} className="px-4 py-4 font-semibold text-center">
                     {content}
                 </td>
             );
         }
 
         return (
-            <td key={String(column.key)} className="px-4 py-4 relative font-semibold">
+            <td key={String(column.key)} className="px-4 py-4 relative font-semibold text-center">
                 <div
                     onMouseEnter={event => handleCellMouseEnter(event, cellKey)}
                     onMouseLeave={() => setTooltipKey(null)}
@@ -123,7 +116,7 @@ export default function Table<T>({columns, rows, setRows, rowKey, checkBox}: ITa
                             <th
                                 key={String(column.key)}
                                 onClick={() => handleHeaderClick(column)}
-                                className={`px-4 py-3 font-medium text-(--color-darkblue)/50 truncate ${
+                                className={`px-4 py-3 font-medium text-(--color-darkblue)/50 truncate text-center ${
                                     column.sortable !== false ? "cursor-pointer select-none" : ""
                                 }`}>
                                 {column.label} {getSortIndicator(column)}

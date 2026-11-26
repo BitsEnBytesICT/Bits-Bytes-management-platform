@@ -1,11 +1,12 @@
 import { validatorFun } from "../common/functor";
 import { ValidatorMap, validatorPipe, validatorPipePartial, ValidatorTuple } from "../common/Validator";
 import IParticipant from "../types/participant/IParticipant";
-import { validateDate, validateLenBelow50, validateNotNegativeNumber, validateNumberUndefined, validateStringEmpty, validateStringNotEmpty, validateStringUndefined } from "./globalValidators";
+import { validateDate, validateLenBelow50, validateNotNegativeNumber, validateNumberUndefined, validateStringEmpty, validateStringNotEmpty } from "./globalValidators";
 
 const validateOneorZero = validatorFun<number>(id => id === 0 || id === 1);
 const validateOneorZeroUndefined = validatorFun<number | undefined>(id => id === undefined ? true : id === 0 || id === 1);
-const validateBirthday = validatorFun<string>(value => {
+const validateBirthdayOrUndefined = validatorFun<string | undefined>(value => {
+    if (value === undefined) return true;
     if (typeof value !== "string" || value.length !== 5 || !/^\d{2}-\d{2}$/.test(value)) return false;
 
     const day = Number(value.slice(0, 2));
@@ -17,6 +18,9 @@ const validateBirthday = validatorFun<string>(value => {
 });
 
 const validateOnlyutf8Andbasicspecialchars = validatorFun<string>(value => /^[\p{L} '’-]+$/u.test(value));
+export const validateLenBelow100 = validatorFun<string>(value => value.length < 101);
+export const validateStringUndefinedOrLenBelow100 = validatorFun<string | undefined>(str => 
+    !str ? true : validateStringNotEmpty.then(validateLenBelow100)(str)[1]);
 
 export const participantValidatorFunctors: ValidatorMap<IParticipant> = {
     id: [validateNumberUndefined.or(validateNotNegativeNumber), "id cannot be negative"],
@@ -29,8 +33,9 @@ export const participantValidatorFunctors: ValidatorMap<IParticipant> = {
     createdAt: [validateDate, "createdAt time is not valid"],
     active: [validateOneorZero, "active can only be a one or a zero"],
     clockedin: [validateOneorZeroUndefined, "clockin state can only be a one or a zero"],
-    financing: [validateStringEmpty.or(validateStringNotEmpty.and(validateLenBelow50)), "financing cannot be above 50 chars"],
-    bday: [validateStringUndefined.or(validateBirthday), "bday must be a valid date in dd-mm format"]
+    financing: [validateStringEmpty.or(validateLenBelow50), "financing cannot be above 50 chars"],
+    bday: [validateBirthdayOrUndefined, "bday must be a valid date in dd-mm format"],
+    shortComments: [validateStringUndefinedOrLenBelow100, "comment cannot be above 100 chars"]
 }
 
 export function ParticipantValidator(participant: IParticipant) {
@@ -42,3 +47,4 @@ export function ParticipantValidator(participant: IParticipant) {
 export function partialParticipantValidator(participant: Partial<IParticipant>, mappedValidators: ValidatorTuple<IParticipant>[]) {
     return validatorPipePartial(participant, ...mappedValidators);
 }
+
