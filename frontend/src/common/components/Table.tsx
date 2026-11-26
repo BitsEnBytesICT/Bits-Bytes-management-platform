@@ -10,15 +10,17 @@ export default function Table<T>({name, columns, rows, setRows, rowKey, checkBox
     const [sortKey, setSortKey] = useLocalStorage(`${name}.sortKey`, "");
     const [sortDirection, setSortDirection] = useLocalStorage(`${name}.sortDirection`, "");
 
-    function sortRows<R>(rows: readonly R[]): R[] {
-        const sorted = [...rows].sort((a, b) => {
+    function sortRows<R>(rows: R[]): R[] {
+        const sortedRows = [...rows].sort((a, b) => {
             const valueA = String(a[sortKey as unknown as keyof R]);
             const valueB = String(b[sortKey as unknown as keyof R]);
+            const comparison = valueA.localeCompare(valueB, undefined, {numeric: true, sensitivity: "base"});
 
-            return valueA.localeCompare(valueB, undefined, {numeric: true, sensitivity: "base"});
+            return sortDirection === "asc" ? comparison : -comparison;
         });
 
-        return sortDirection === "asc" ? sorted : sorted.reverse();
+        if (sortedRows.some((row, index) => row !== rows[index])) return sortedRows;
+        return rows;
     }
 
     useEffect(() => {
@@ -27,11 +29,11 @@ export default function Table<T>({name, columns, rows, setRows, rowKey, checkBox
     }, [rows]);
 
     useEffect(() => {
-        if (!sortKey) return;
+        if (!sortKey || rows.length < 1) return;
 
         if (checkBox === true) setRows(sortRows(rows));
         else setRows(sortRows(rows));
-    }, [sortKey, sortDirection]);
+    }, [rows, sortKey, sortDirection, checkBox]);
 
     function getSortIndicator(column: ITableColumn<T>): string {
         if (column.sortable === false || sortKey !== String(column.key)) return "";
