@@ -81,14 +81,14 @@ export const setupDatabase = () => {
         { xpos: 17700, ypos: 200, name: 'a6', extraInfo: 'test info' },
         { xpos: 19200, ypos: 2700, name: 'a7', extraInfo: 'test info', rotation: 90 },
         { xpos: 19200, ypos: 3600, name: 'a8', extraInfo: 'test info', rotation: 90 },
-        { xpos: 16800, ypos: 5200, name: 'a9', extraInfo: 'test info' },
-        { xpos: 17700, ypos: 5200, name: 'a10', extraInfo: 'test info 2' },
-        { xpos: 13400, ypos: 5200, name: 'a11', extraInfo: 'test info' },
-        { xpos: 14300, ypos: 5200, name: 'a12', extraInfo: 'test info' },
-        { xpos: 10000, ypos: 5200, name: 'a13', extraInfo: 'test info' },
-        { xpos: 10900, ypos: 5200, name: 'a14', extraInfo: 'test info' },
-        { xpos: 10000, ypos: 3500, name: 'a15', extraInfo: 'test info' },
-        { xpos: 10900, ypos: 3500, name: 'a16', extraInfo: 'test info' },
+        { xpos: 17700, ypos: 5200, name: 'a9', extraInfo: 'test info 2' },
+        { xpos: 16800, ypos: 5200, name: 'a10', extraInfo: 'test info' },
+        { xpos: 14300, ypos: 5200, name: 'a11', extraInfo: 'test info' },
+        { xpos: 13400, ypos: 5200, name: 'a12', extraInfo: 'test info' },
+        { xpos: 10900, ypos: 5200, name: 'a13', extraInfo: 'test info' },
+        { xpos: 10000, ypos: 5200, name: 'a14', extraInfo: 'test info' },
+        { xpos: 10900, ypos: 3500, name: 'a15', extraInfo: 'test info' },
+        { xpos: 10000, ypos: 3500, name: 'a16', extraInfo: 'test info' },
         { xpos: 4000, ypos: 1200, name: 'a17', extraInfo: 'test info' },
         { xpos: 1800, ypos: 2000, name: 'a18', extraInfo: 'test info', rotation: 90 },
         { xpos: 200, ypos: 2000, name: 'a19', extraInfo: 'test info', rotation: 90 },
@@ -109,11 +109,11 @@ export const setupDatabase = () => {
 
     const b1Id = Number(insertWorkplace.run(3500, 200, quietRoomId, 'B1', 'test info', 90).lastInsertRowid);
     const b2Id = Number(insertWorkplace.run(5200, 2650, quietRoomId, 'B2', 'test info', 90).lastInsertRowid);
-    const b3Id = Number(insertWorkplace.run(3500, 2650, quietRoomId, 'B3', 'test info', 90).lastInsertRowid);
-    const b4Id = Number(insertWorkplace.run(5200, 3550, quietRoomId, 'B4', 'test info', 90).lastInsertRowid);
+    const b4Id = Number(insertWorkplace.run(5200, 3550, quietRoomId, 'B3', 'test info', 90).lastInsertRowid);
+    const b3Id = Number(insertWorkplace.run(3500, 2650, quietRoomId, 'B4', 'test info', 90).lastInsertRowid);
     const b5Id = Number(insertWorkplace.run(3500, 3550, quietRoomId, 'B5', 'test info', 90).lastInsertRowid);
-    const b6Id = Number(insertWorkplace.run(200, 1850, quietRoomId, 'B6', 'test info', null).lastInsertRowid);
-    const b7Id = Number(insertWorkplace.run(200, 3550, quietRoomId, 'B7', 'test info', null).lastInsertRowid);
+    const b7Id = Number(insertWorkplace.run(200, 3550, quietRoomId, 'B6', 'test info', null).lastInsertRowid);
+    const b6Id = Number(insertWorkplace.run(200, 1850, quietRoomId, 'B7', 'test info', null).lastInsertRowid);
 
     const startDate = fromDateString(now);
     const dayOfMonth = startDate.getUTCDate();
