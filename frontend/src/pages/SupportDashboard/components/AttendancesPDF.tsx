@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
         paddingLeft: 59.3,
         paddingRight: 12,
         paddingTop: 2,
+        paddingBottom: `${ROW_HEIGHT}pt`,
     },
     participant: {
         flexDirection: "row",
@@ -87,21 +88,18 @@ export default function AttendanceExportPDF({
             participants: morningParticipants.sort((a, b) =>
                 a.firstname.localeCompare(b.firstname, "nl", {sensitivity: "base"}),
             ),
-            minimumRows: 5,
         },
         {
             title: "Middag",
             participants: afternoonParticipants.sort((a, b) =>
                 a.firstname.localeCompare(b.firstname, "nl", {sensitivity: "base"}),
             ),
-            minimumRows: 4,
         },
         {
             title: "Hele dag",
             participants: fullDayParticipants.sort((a, b) =>
                 a.firstname.localeCompare(b.firstname, "nl", {sensitivity: "base"}),
             ),
-            minimumRows: 18,
         },
     ];
 
@@ -112,12 +110,12 @@ export default function AttendanceExportPDF({
                     {day}
                 </Text>
 
-                {sections.map(({title, participants, minimumRows}, sectionIndex) => (
+                {sections.map(({title, participants}, sectionIndex) => (
                     <View key={title} style={sectionIndex ? [styles.section, styles.adjoiningSection] : styles.section}>
                         <Text style={styles.heading} minPresenceAhead={ROW_HEIGHT * 2}>
                             {title}
                         </Text>
-                        <View style={[styles.participants, {minHeight: minimumRows * ROW_HEIGHT}]}>
+                        <View style={[styles.participants, {minHeight: ROW_HEIGHT}]}>
                             {participants.map((participant, index) => (
                                 <View key={participant.id ?? index} style={styles.participant} wrap={false}>
                                     <Text style={styles.bullet}>-</Text>
